@@ -1,0 +1,115 @@
+<o:Table Id="F6805B41-F925-499D-A5C3-E20D9E1C075C">
+<a:ObjectID>F6805B41-F925-499D-A5C3-E20D9E1C075C</a:ObjectID>
+<a:Name>Customer</a:Name>
+<a:Code>CUSTOMER</a:Code>
+<a:CreationDate>1586204078</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1586204078</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:TotalSavingCurrency/>
+<a:ExtendedAttributesText>{2B8936D7-8688-4269-BCA9-64EBA2E802A8},XModel_Modeling_Extension,74={41F8D165-86A1-4DE2-A7DC-6EFD4541DAB2},xm_stereotype,16=ExampleTableType
+
+</a:ExtendedAttributesText>
+<c:ExtendedCollections>
+<o:ExtendedCollection Id="8F881B7D-20F7-4F83-A98B-B8F4B39BC2B3">
+<a:ObjectID>8F881B7D-20F7-4F83-A98B-B8F4B39BC2B3</a:ObjectID>
+<a:Name>Related Tables</a:Name>
+<a:ExtendedBaseCollection.CollectionName>Related Tables</a:ExtendedBaseCollection.CollectionName>
+<a:CreationDate>1586204078</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1586204078</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+</o:ExtendedCollection>
+</c:ExtendedCollections>
+<c:Columns>
+<o:Column Id="3D04C647-83E0-4127-B119-4C2909186DDD">
+<a:ObjectID>3D04C647-83E0-4127-B119-4C2909186DDD</a:ObjectID>
+<a:Name>Id</a:Name>
+<a:Code>ID</a:Code>
+<a:CreationDate>1586204078</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1586204078</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:DataType>int</a:DataType>
+<a:Column.Mandatory>1</a:Column.Mandatory>
+</o:Column>
+<o:Column Id="E559812F-8447-4816-9FC9-D01428CF716E">
+<a:ObjectID>E559812F-8447-4816-9FC9-D01428CF716E</a:ObjectID>
+<a:Name>FirstName</a:Name>
+<a:Code>FIRSTNAME</a:Code>
+<a:CreationDate>1586204078</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1586204078</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:DataType>varchar(50)</a:DataType>
+<a:Length>50</a:Length>
+</o:Column>
+<o:Column Id="C5B23E10-0B19-40FF-BE99-48EFD103A137">
+<a:ObjectID>C5B23E10-0B19-40FF-BE99-48EFD103A137</a:ObjectID>
+<a:Name>LastName</a:Name>
+<a:Code>LASTNAME</a:Code>
+<a:CreationDate>1586204078</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1586204078</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:DataType>varchar(100)</a:DataType>
+<a:Length>100</a:Length>
+</o:Column>
+<o:Column Id="17A4DE88-42D8-4714-ABD0-147EE07FC63C">
+<a:ObjectID>17A4DE88-42D8-4714-ABD0-147EE07FC63C</a:ObjectID>
+<a:Name>City</a:Name>
+<a:Code>CITY</a:Code>
+<a:CreationDate>1586204078</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1586204078</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:DataType>varchar(50)</a:DataType>
+<a:Length>50</a:Length>
+</o:Column>
+<o:Column Id="B31552FB-8F5D-417C-9468-08787878F658">
+<a:ObjectID>B31552FB-8F5D-417C-9468-08787878F658</a:ObjectID>
+<a:Name>Country</a:Name>
+<a:Code>COUNTRY</a:Code>
+<a:CreationDate>1586204078</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1586204078</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:DataType>varchar(3)</a:DataType>
+<a:Length>3</a:Length>
+</o:Column>
+<o:Column Id="0EBD2089-B09C-46C5-BA56-35AD323252DA">
+<a:ObjectID>0EBD2089-B09C-46C5-BA56-35AD323252DA</a:ObjectID>
+<a:Name>Phone</a:Name>
+<a:Code>PHONE</a:Code>
+<a:CreationDate>1586204078</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1586204078</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:DataType>varchar(20)</a:DataType>
+<a:Length>20</a:Length>
+</o:Column>
+</c:Columns>
+<c:Keys>
+<o:Key Id="313E55D3-9B97-4F36-85B2-DC3B99639C16">
+<a:ObjectID>313E55D3-9B97-4F36-85B2-DC3B99639C16</a:ObjectID>
+<a:Name>PK_Customer</a:Name>
+<a:Code>PK_CUSTOMER</a:Code>
+<a:CreationDate>1586204078</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1586204078</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<c:Key.Columns>
+<o:Column Ref="3D04C647-83E0-4127-B119-4C2909186DDD"/>
+</c:Key.Columns>
+</o:Key>
+</c:Keys>
+<c:Owner>
+<o:User Ref="9FFABB3E-18F3-44ED-A56D-6A1ECDB0A8B6"/>
+</c:Owner>
+<c:PrimaryKey>
+<o:Key Ref="313E55D3-9B97-4F36-85B2-DC3B99639C16"/>
+</c:PrimaryKey>
+<c:ClusterObject>
+<o:Key Ref="313E55D3-9B97-4F36-85B2-DC3B99639C16"/>
+</c:ClusterObject>
+</o:Table>

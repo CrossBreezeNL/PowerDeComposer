@@ -1,0 +1,100 @@
+<o:Table Id="4A123D42-289F-4011-B72A-68E45365A9C5">
+<a:ObjectID>4A123D42-289F-4011-B72A-68E45365A9C5</a:ObjectID>
+<a:Name>Order</a:Name>
+<a:Code>ORDER</a:Code>
+<a:CreationDate>1586204078</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1586204078</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:TotalSavingCurrency/>
+<c:ExtendedCollections>
+<o:ExtendedCollection Id="2CD3FEF6-9131-437F-8B17-D67684AE9C55">
+<a:ObjectID>2CD3FEF6-9131-437F-8B17-D67684AE9C55</a:ObjectID>
+<a:Name>Related Tables</a:Name>
+<a:ExtendedBaseCollection.CollectionName>Related Tables</a:ExtendedBaseCollection.CollectionName>
+<a:CreationDate>1586204078</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1586204078</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+</o:ExtendedCollection>
+</c:ExtendedCollections>
+<c:Columns>
+<o:Column Id="70365685-B249-4E79-961B-1184DC08E2BB">
+<a:ObjectID>70365685-B249-4E79-961B-1184DC08E2BB</a:ObjectID>
+<a:Name>Id</a:Name>
+<a:Code>ID</a:Code>
+<a:CreationDate>1586204078</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1586204078</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:DataType>int</a:DataType>
+<a:Column.Mandatory>1</a:Column.Mandatory>
+</o:Column>
+<o:Column Id="ED86A135-EFAF-47BB-946A-3DFD998D0B0A">
+<a:ObjectID>ED86A135-EFAF-47BB-946A-3DFD998D0B0A</a:ObjectID>
+<a:Name>OrderDate</a:Name>
+<a:Code>ORDERDATE</a:Code>
+<a:CreationDate>1586204078</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1586204078</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:DataType>datetime</a:DataType>
+</o:Column>
+<o:Column Id="6A16BB79-3DDB-4F70-8643-677780DB6920">
+<a:ObjectID>6A16BB79-3DDB-4F70-8643-677780DB6920</a:ObjectID>
+<a:Name>OrderNumber</a:Name>
+<a:Code>ORDERNUMBER</a:Code>
+<a:CreationDate>1586204078</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1586204078</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:DataType>varchar(50)</a:DataType>
+<a:Length>50</a:Length>
+</o:Column>
+<o:Column Id="0D7F2C3C-FE86-4344-B1C9-26CCA1FDE368">
+<a:ObjectID>0D7F2C3C-FE86-4344-B1C9-26CCA1FDE368</a:ObjectID>
+<a:Name>CustomerId</a:Name>
+<a:Code>CUSTOMERID</a:Code>
+<a:CreationDate>1586204078</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1586204078</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:DataType>int</a:DataType>
+</o:Column>
+<o:Column Id="31834A2C-17D1-453D-A8F9-FFBDCD789999">
+<a:ObjectID>31834A2C-17D1-453D-A8F9-FFBDCD789999</a:ObjectID>
+<a:Name>TotalAmount</a:Name>
+<a:Code>TOTALAMOUNT</a:Code>
+<a:CreationDate>1586204078</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1586204078</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:DataType>decimal(12,2)</a:DataType>
+<a:Length>12</a:Length>
+<a:Precision>2</a:Precision>
+</o:Column>
+</c:Columns>
+<c:Keys>
+<o:Key Id="7180787B-D32E-4152-8B86-E8383526EEA2">
+<a:ObjectID>7180787B-D32E-4152-8B86-E8383526EEA2</a:ObjectID>
+<a:Name>PK_Order</a:Name>
+<a:Code>PK_ORDER</a:Code>
+<a:CreationDate>1586204078</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1586204078</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<c:Key.Columns>
+<o:Column Ref="70365685-B249-4E79-961B-1184DC08E2BB"/>
+</c:Key.Columns>
+</o:Key>
+</c:Keys>
+<c:Owner>
+<o:User Ref="9FFABB3E-18F3-44ED-A56D-6A1ECDB0A8B6"/>
+</c:Owner>
+<c:PrimaryKey>
+<o:Key Ref="7180787B-D32E-4152-8B86-E8383526EEA2"/>
+</c:PrimaryKey>
+<c:ClusterObject>
+<o:Key Ref="7180787B-D32E-4152-8B86-E8383526EEA2"/>
+</c:ClusterObject>
+</o:Table>

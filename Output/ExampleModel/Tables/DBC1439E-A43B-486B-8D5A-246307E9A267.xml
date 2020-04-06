@@ -1,0 +1,67 @@
+<o:Table Id="DBC1439E-A43B-486B-8D5A-246307E9A267">
+<a:ObjectID>DBC1439E-A43B-486B-8D5A-246307E9A267</a:ObjectID>
+<a:Name>OrderLine</a:Name>
+<a:Code>ORDERLINE</a:Code>
+<a:CreationDate>1586204095</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1586204327</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:TotalSavingCurrency/>
+<c:Columns>
+<o:Column Id="6F696429-F54E-43C6-AFB2-5E94D39AC352">
+<a:ObjectID>6F696429-F54E-43C6-AFB2-5E94D39AC352</a:ObjectID>
+<a:Name>OrderId</a:Name>
+<a:Code>ORDERID</a:Code>
+<a:CreationDate>1586204303</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1586204327</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:DataType>int</a:DataType>
+<a:Column.Mandatory>1</a:Column.Mandatory>
+<a:AutoMigrated>1</a:AutoMigrated>
+</o:Column>
+<o:Column Id="03A77CCA-607E-415B-B211-2641F403CE57">
+<a:ObjectID>03A77CCA-607E-415B-B211-2641F403CE57</a:ObjectID>
+<a:Name>ProductId</a:Name>
+<a:Code>PRODUCTID</a:Code>
+<a:CreationDate>1586204304</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1586204327</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:DataType>int</a:DataType>
+<a:Column.Mandatory>1</a:Column.Mandatory>
+<a:AutoMigrated>1</a:AutoMigrated>
+</o:Column>
+<o:Column Id="65A7FB70-5213-49AD-963B-D78552B9DC91">
+<a:ObjectID>65A7FB70-5213-49AD-963B-D78552B9DC91</a:ObjectID>
+<a:Name>Quantity</a:Name>
+<a:Code>QUANTITY</a:Code>
+<a:CreationDate>1586204306</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1586204327</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:DataType>int</a:DataType>
+</o:Column>
+</c:Columns>
+<c:Keys>
+<o:Key Id="20927ED8-9EAF-4776-83F5-A3C6FD082173">
+<a:ObjectID>20927ED8-9EAF-4776-83F5-A3C6FD082173</a:ObjectID>
+<a:Name>Key_1</a:Name>
+<a:Code>KEY_1</a:Code>
+<a:CreationDate>1586204306</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1586204327</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<c:Key.Columns>
+<o:Column Ref="6F696429-F54E-43C6-AFB2-5E94D39AC352"/>
+<o:Column Ref="03A77CCA-607E-415B-B211-2641F403CE57"/>
+</c:Key.Columns>
+</o:Key>
+</c:Keys>
+<c:PrimaryKey>
+<o:Key Ref="20927ED8-9EAF-4776-83F5-A3C6FD082173"/>
+</c:PrimaryKey>
+<c:ClusterObject>
+<o:Key Ref="20927ED8-9EAF-4776-83F5-A3C6FD082173"/>
+</c:ClusterObject>
+</o:Table>

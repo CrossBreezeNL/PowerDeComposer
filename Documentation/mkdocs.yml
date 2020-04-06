@@ -1,0 +1,54 @@
+# Project information
+site_name: 'PowerDeComposer v1.0'
+
+# Copyright
+copyright: 'Copyright &copy; 2020 - CrossBreeze'
+
+# Configuration
+theme:
+  name: 'material'
+  # TODO: Create logo
+  #logo: 'img/x-test-icon.png'
+  #favicon: 'img/favicon.ico'
+  language: 'en'
+  palette:
+    primary: 'blue grey'
+    accent: 'green'
+  feature:
+    tabs: true
+
+# Pages
+nav:
+- Home:
+    - 'Introduction'    : 'index.md'
+    - 'Getting started' : 'GettingStarted.md'   
+    - 'Release notes'   : 'ReleaseNotes.md'
+
+
+# Extra
+extra:
+  social:
+    - type: 'twitter'
+      link: 'https://twitter.com/CrossBreeze_NL'
+
+# Extensions
+markdown_extensions:
+  - codehilite
+  - toc:
+      permalink: true
+  - footnotes
+  - admonition
+  - def_list
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.critic
+  - pymdownx.details
+  - pymdownx.emoji
+  - pymdownx.inlinehilite
+  - pymdownx.magiclink
+  - pymdownx.mark
+  - pymdownx.superfences
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde

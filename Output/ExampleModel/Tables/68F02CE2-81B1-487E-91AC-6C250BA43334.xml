@@ -1,0 +1,66 @@
+<o:Table Id="68F02CE2-81B1-487E-91AC-6C250BA43334">
+<a:ObjectID>68F02CE2-81B1-487E-91AC-6C250BA43334</a:ObjectID>
+<a:Name>Product</a:Name>
+<a:Code>PRODUCT</a:Code>
+<a:CreationDate>1586204103</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1586204166</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:TotalSavingCurrency/>
+<c:Columns>
+<o:Column Id="51BF6CC1-9E00-480A-B540-CF6FD0045A20">
+<a:ObjectID>51BF6CC1-9E00-480A-B540-CF6FD0045A20</a:ObjectID>
+<a:Name>Id</a:Name>
+<a:Code>ID</a:Code>
+<a:CreationDate>1586204106</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1586204166</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:DataType>int</a:DataType>
+<a:Column.Mandatory>1</a:Column.Mandatory>
+</o:Column>
+<o:Column Id="32C68AAC-A013-4008-911A-45A92C172BDE">
+<a:ObjectID>32C68AAC-A013-4008-911A-45A92C172BDE</a:ObjectID>
+<a:Name>ProductName</a:Name>
+<a:Code>PRODUCTNAME</a:Code>
+<a:CreationDate>1586204106</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1586204166</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:DataType>varchar(25)</a:DataType>
+<a:Length>25</a:Length>
+</o:Column>
+<o:Column Id="8B79D9DB-07A3-46D8-B4D0-2521E5A1B0A2">
+<a:ObjectID>8B79D9DB-07A3-46D8-B4D0-2521E5A1B0A2</a:ObjectID>
+<a:Name>SalesPrice</a:Name>
+<a:Code>SALESPRICE</a:Code>
+<a:CreationDate>1586204106</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1586204166</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:DataType>numeric(6,2)</a:DataType>
+<a:Length>6</a:Length>
+<a:Precision>2</a:Precision>
+</o:Column>
+</c:Columns>
+<c:Keys>
+<o:Key Id="EDBC7742-8DBC-4B09-831A-8E9B20B5217B">
+<a:ObjectID>EDBC7742-8DBC-4B09-831A-8E9B20B5217B</a:ObjectID>
+<a:Name>Key_1</a:Name>
+<a:Code>KEY_1</a:Code>
+<a:CreationDate>1586204106</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1586204166</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<c:Key.Columns>
+<o:Column Ref="51BF6CC1-9E00-480A-B540-CF6FD0045A20"/>
+</c:Key.Columns>
+</o:Key>
+</c:Keys>
+<c:PrimaryKey>
+<o:Key Ref="EDBC7742-8DBC-4B09-831A-8E9B20B5217B"/>
+</c:PrimaryKey>
+<c:ClusterObject>
+<o:Key Ref="EDBC7742-8DBC-4B09-831A-8E9B20B5217B"/>
+</c:ClusterObject>
+</o:Table>

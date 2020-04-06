@@ -1,0 +1,34 @@
+<o:Reference Id="3F9AE28E-481C-4DD9-9C39-68974180F4C2">
+<a:ObjectID>3F9AE28E-481C-4DD9-9C39-68974180F4C2</a:ObjectID>
+<a:Name>Reference_3</a:Name>
+<a:Code>REFERENCE_3</a:Code>
+<a:CreationDate>1586204304</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1586204304</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:Cardinality>0..*</a:Cardinality>
+<c:ParentTable>
+<o:Table Ref="68F02CE2-81B1-487E-91AC-6C250BA43334"/>
+</c:ParentTable>
+<c:ChildTable>
+<o:Table Ref="DBC1439E-A43B-486B-8D5A-246307E9A267"/>
+</c:ChildTable>
+<c:ParentKey>
+<o:Key Ref="EDBC7742-8DBC-4B09-831A-8E9B20B5217B"/>
+</c:ParentKey>
+<c:Joins>
+<o:ReferenceJoin Id="8545279C-9335-4F10-B9D3-8C96B1F0D03A">
+<a:ObjectID>8545279C-9335-4F10-B9D3-8C96B1F0D03A</a:ObjectID>
+<a:CreationDate>1586204304</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1586204304</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<c:Object1>
+<o:Column Ref="51BF6CC1-9E00-480A-B540-CF6FD0045A20"/>
+</c:Object1>
+<c:Object2>
+<o:Column Ref="03A77CCA-607E-415B-B211-2641F403CE57"/>
+</c:Object2>
+</o:ReferenceJoin>
+</c:Joins>
+</o:Reference>

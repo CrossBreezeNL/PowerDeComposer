@@ -1,0 +1,34 @@
+<o:Reference Id="F20AA5C6-B349-4B3F-B49B-DC8989395C3E">
+<a:ObjectID>F20AA5C6-B349-4B3F-B49B-DC8989395C3E</a:ObjectID>
+<a:Name>Order_Customer</a:Name>
+<a:Code>ORDER_CUSTOMER</a:Code>
+<a:CreationDate>1586204078</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1586204078</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:Cardinality>0..*</a:Cardinality>
+<c:ParentTable>
+<o:Table Ref="F6805B41-F925-499D-A5C3-E20D9E1C075C"/>
+</c:ParentTable>
+<c:ChildTable>
+<o:Table Ref="4A123D42-289F-4011-B72A-68E45365A9C5"/>
+</c:ChildTable>
+<c:ParentKey>
+<o:Key Ref="313E55D3-9B97-4F36-85B2-DC3B99639C16"/>
+</c:ParentKey>
+<c:Joins>
+<o:ReferenceJoin Id="3A7799E9-3ED7-4652-B170-1C490B9B9398">
+<a:ObjectID>3A7799E9-3ED7-4652-B170-1C490B9B9398</a:ObjectID>
+<a:CreationDate>1586204078</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1586204078</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<c:Object1>
+<o:Column Ref="3D04C647-83E0-4127-B119-4C2909186DDD"/>
+</c:Object1>
+<c:Object2>
+<o:Column Ref="0D7F2C3C-FE86-4344-B1C9-26CCA1FDE368"/>
+</c:Object2>
+</o:ReferenceJoin>
+</c:Joins>
+</o:Reference>
