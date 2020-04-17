@@ -28,7 +28,7 @@ nav:
 # Extra
 extra:
   social:
-    - type: 'twitter'
+    - icon: fontawesome/brands/twitter
       link: 'https://twitter.com/CrossBreeze_NL'
 
 # Extensions
