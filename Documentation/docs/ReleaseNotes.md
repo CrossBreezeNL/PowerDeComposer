@@ -1,6 +1,6 @@
 # Release notes
 
-Here you can find the release notes of all CrossTest releases up till the release this documentation applies to.
+Here you can find the release notes of all PowerDeComposer releases up till the release this documentation applies to.
 Click on the header of a version number to go to the documentation of that specific version.
 
 [//]: # (Use the following example to create the release notes for a new release.)
@@ -20,7 +20,7 @@ Click on the header of a version number to go to the documentation of that speci
 [//]: # (>     * [ ] Binding)
 [//]: # (>         * [X] Some issue...)
 
-## [Version 1.0](../1.0/)
+## Version 1.0
 
 - [ ] 1.0 <sup>06-03-2020</sup>
 > Initial release
