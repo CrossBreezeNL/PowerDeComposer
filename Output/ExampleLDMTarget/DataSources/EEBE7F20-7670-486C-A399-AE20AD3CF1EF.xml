@@ -1,0 +1,14 @@
+<o:DefaultDataSource Id="EEBE7F20-7670-486C-A399-AE20AD3CF1EF">
+<a:ObjectID>EEBE7F20-7670-486C-A399-AE20AD3CF1EF</a:ObjectID>
+<a:Name>ExampleSource</a:Name>
+<a:Code>EXAMPLESOURCE</a:Code>
+<a:CreationDate>1587201179</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1587201222</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:AccessType>RO</a:AccessType>
+<a:BaseDataSource.ModelType>5F45F978-C4F3-4E35-A3FC-AF3318663A0F</a:BaseDataSource.ModelType>
+<c:BaseDataSource.SourceModels>
+<o:Shortcut Ref="0CC18BFF-BDFA-4AEF-9DAB-E3FDE1DF72E6"/>
+</c:BaseDataSource.SourceModels>
+</o:DefaultDataSource>

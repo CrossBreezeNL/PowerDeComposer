@@ -1,0 +1,35 @@
+<o:Relationship Id="82966087-565D-4D56-A2B0-82FCED9F9326">
+<a:ObjectID>82966087-565D-4D56-A2B0-82FCED9F9326</a:ObjectID>
+<a:Name>Relationship_1</a:Name>
+<a:Code>RELATIONSHIP_1</a:Code>
+<a:CreationDate>1587201240</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1587201248</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:Entity1ToEntity2RoleCardinality>0,n</a:Entity1ToEntity2RoleCardinality>
+<a:Entity2ToEntity1RoleCardinality>0,1</a:Entity2ToEntity1RoleCardinality>
+<c:Object1>
+<o:Entity Ref="880CBE63-1CA5-4654-A47E-4D84DEA84C22"/>
+</c:Object1>
+<c:Object2>
+<o:Entity Ref="7DB08289-F667-4F0D-8768-BF68757A9505"/>
+</c:Object2>
+<c:Joins>
+<o:RelationshipJoin Id="E855CB6B-9E97-4293-AB28-1925AD399358">
+<a:ObjectID>E855CB6B-9E97-4293-AB28-1925AD399358</a:ObjectID>
+<a:CreationDate>1587201245</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1587201248</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<c:Object1>
+<o:EntityAttribute Ref="08758950-C03D-4B25-8FF2-55D5368FBC90"/>
+</c:Object1>
+<c:Object2>
+<o:EntityAttribute Ref="AE337A58-00CA-4332-8A99-B0B1E5D027E7"/>
+</c:Object2>
+</o:RelationshipJoin>
+</c:Joins>
+<c:ParentIdentifier>
+<o:Identifier Ref="A19E7D95-07D2-441E-9FF9-A04AA5E6EA9A"/>
+</c:ParentIdentifier>
+</o:Relationship>

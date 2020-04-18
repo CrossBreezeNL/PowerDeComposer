@@ -1,0 +1,60 @@
+<o:Entity Id="D16A96D9-2011-41D2-BDD8-0DD459A4F791">
+<a:ObjectID>D16A96D9-2011-41D2-BDD8-0DD459A4F791</a:ObjectID>
+<a:Name>Customer</a:Name>
+<a:Code>CUSTOMER</a:Code>
+<a:CreationDate>1587200738</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1587201032</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<c:Identifiers>
+<o:Identifier Id="42CB050C-2C2D-4BAF-B33B-7AF6553DB5AF">
+<a:ObjectID>42CB050C-2C2D-4BAF-B33B-7AF6553DB5AF</a:ObjectID>
+<a:Name>Identifier_1</a:Name>
+<a:Code>IDENTIFIER_1</a:Code>
+<a:CreationDate>1587200739</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1587200961</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<c:Identifier.Attributes>
+<o:EntityAttribute Ref="A941AF16-E7E8-4A35-8ABE-B0E5C246B488"/>
+</c:Identifier.Attributes>
+</o:Identifier>
+</c:Identifiers>
+<c:PrimaryIdentifier>
+<o:Identifier Ref="42CB050C-2C2D-4BAF-B33B-7AF6553DB5AF"/>
+</c:PrimaryIdentifier>
+<c:Attributes>
+<o:EntityAttribute Id="A941AF16-E7E8-4A35-8ABE-B0E5C246B488">
+<a:ObjectID>A941AF16-E7E8-4A35-8ABE-B0E5C246B488</a:ObjectID>
+<a:Name>CustomerID</a:Name>
+<a:Code>CUSTOMERID</a:Code>
+<a:CreationDate>1587200739</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1587200961</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:DataType>I</a:DataType>
+<a:LogicalAttribute.Mandatory>1</a:LogicalAttribute.Mandatory>
+</o:EntityAttribute>
+<o:EntityAttribute Id="F170F682-DF52-47DF-AEB2-D69944472655">
+<a:ObjectID>F170F682-DF52-47DF-AEB2-D69944472655</a:ObjectID>
+<a:Name>Name</a:Name>
+<a:Code>NAME</a:Code>
+<a:CreationDate>1587200739</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1587200961</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:DataType>VA100</a:DataType>
+<a:Length>100</a:Length>
+</o:EntityAttribute>
+<o:EntityAttribute Id="F4F4C74F-22F4-4F55-8274-1D73887610A8">
+<a:ObjectID>F4F4C74F-22F4-4F55-8274-1D73887610A8</a:ObjectID>
+<a:Name>DateOfBirth</a:Name>
+<a:Code>DATEOFBIRTH</a:Code>
+<a:CreationDate>1587200739</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1587200961</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:DataType>D</a:DataType>
+</o:EntityAttribute>
+</c:Attributes>
+</o:Entity>

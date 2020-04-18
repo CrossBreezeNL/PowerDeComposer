@@ -1,0 +1,63 @@
+<o:Entity Id="7DB08289-F667-4F0D-8768-BF68757A9505">
+<a:ObjectID>7DB08289-F667-4F0D-8768-BF68757A9505</a:ObjectID>
+<a:Name>Customer</a:Name>
+<a:Code>CUSTOMER</a:Code>
+<a:CreationDate>1587201167</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1587201248</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<c:DefaultMapping>
+<o:DefaultObjectMapping Ref="41485D52-D79B-4D5A-9F23-08D0777DE539"/>
+</c:DefaultMapping>
+<c:Identifiers>
+<o:Identifier Id="A19E7D95-07D2-441E-9FF9-A04AA5E6EA9A">
+<a:ObjectID>A19E7D95-07D2-441E-9FF9-A04AA5E6EA9A</a:ObjectID>
+<a:Name>Identifier_1</a:Name>
+<a:Code>IDENTIFIER_1</a:Code>
+<a:CreationDate>1587201245</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1587201248</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<c:Identifier.Attributes>
+<o:EntityAttribute Ref="08758950-C03D-4B25-8FF2-55D5368FBC90"/>
+</c:Identifier.Attributes>
+</o:Identifier>
+</c:Identifiers>
+<c:PrimaryIdentifier>
+<o:Identifier Ref="A19E7D95-07D2-441E-9FF9-A04AA5E6EA9A"/>
+</c:PrimaryIdentifier>
+<c:Attributes>
+<o:EntityAttribute Id="08758950-C03D-4B25-8FF2-55D5368FBC90">
+<a:ObjectID>08758950-C03D-4B25-8FF2-55D5368FBC90</a:ObjectID>
+<a:Name>CustomerID</a:Name>
+<a:Code>CUSTOMERID</a:Code>
+<a:CreationDate>1587201194</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1587201248</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:DataType>I</a:DataType>
+<a:LogicalAttribute.Mandatory>1</a:LogicalAttribute.Mandatory>
+</o:EntityAttribute>
+<o:EntityAttribute Id="345CA508-8574-4C02-A917-19BCAA514E12">
+<a:ObjectID>345CA508-8574-4C02-A917-19BCAA514E12</a:ObjectID>
+<a:Name>Name</a:Name>
+<a:Code>NAME</a:Code>
+<a:CreationDate>1587201194</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1587201208</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:DataType>VA100</a:DataType>
+<a:Length>100</a:Length>
+</o:EntityAttribute>
+<o:EntityAttribute Id="3A1BC812-A201-4D83-B8C5-6CED958DEA4A">
+<a:ObjectID>3A1BC812-A201-4D83-B8C5-6CED958DEA4A</a:ObjectID>
+<a:Name>DateOfBirth</a:Name>
+<a:Code>DATEOFBIRTH</a:Code>
+<a:CreationDate>1587201194</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1587201208</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:DataType>D</a:DataType>
+</o:EntityAttribute>
+</c:Attributes>
+</o:Entity>

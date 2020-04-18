@@ -1,0 +1,62 @@
+<o:Entity Id="880CBE63-1CA5-4654-A47E-4D84DEA84C22">
+<a:ObjectID>880CBE63-1CA5-4654-A47E-4D84DEA84C22</a:ObjectID>
+<a:Name>SalesOrder</a:Name>
+<a:Code>SALESORDER</a:Code>
+<a:CreationDate>1587201168</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1587201253</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<c:DefaultMapping>
+<o:DefaultObjectMapping Ref="A35FCD43-155A-4552-AC41-80AF43E47FDE"/>
+</c:DefaultMapping>
+<c:Identifiers>
+<o:Identifier Id="E97D83B9-D85E-405D-A82A-2E995A53A6A3">
+<a:ObjectID>E97D83B9-D85E-405D-A82A-2E995A53A6A3</a:ObjectID>
+<a:Name>Identifier_1</a:Name>
+<a:Code>IDENTIFIER_1</a:Code>
+<a:CreationDate>1587201250</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1587201253</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<c:Identifier.Attributes>
+<o:EntityAttribute Ref="AFD8E4BE-DDEA-460E-86A9-75729435F525"/>
+</c:Identifier.Attributes>
+</o:Identifier>
+</c:Identifiers>
+<c:PrimaryIdentifier>
+<o:Identifier Ref="E97D83B9-D85E-405D-A82A-2E995A53A6A3"/>
+</c:PrimaryIdentifier>
+<c:Attributes>
+<o:EntityAttribute Id="AFD8E4BE-DDEA-460E-86A9-75729435F525">
+<a:ObjectID>AFD8E4BE-DDEA-460E-86A9-75729435F525</a:ObjectID>
+<a:Name>SalesOrderID</a:Name>
+<a:Code>SALESORDERID</a:Code>
+<a:CreationDate>1587201222</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1587201253</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:DataType>I</a:DataType>
+<a:LogicalAttribute.Mandatory>1</a:LogicalAttribute.Mandatory>
+</o:EntityAttribute>
+<o:EntityAttribute Id="AE337A58-00CA-4332-8A99-B0B1E5D027E7">
+<a:ObjectID>AE337A58-00CA-4332-8A99-B0B1E5D027E7</a:ObjectID>
+<a:Name>CustomerID</a:Name>
+<a:Code>CUSTOMERID</a:Code>
+<a:CreationDate>1587201222</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1587201248</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:DataType>I</a:DataType>
+</o:EntityAttribute>
+<o:EntityAttribute Id="F3548243-2BB8-47B8-A837-DE25315D6FB9">
+<a:ObjectID>F3548243-2BB8-47B8-A837-DE25315D6FB9</a:ObjectID>
+<a:Name>DateOfSale</a:Name>
+<a:Code>DATEOFSALE</a:Code>
+<a:CreationDate>1587201222</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1587201235</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:DataType>D</a:DataType>
+</o:EntityAttribute>
+</c:Attributes>
+</o:Entity>

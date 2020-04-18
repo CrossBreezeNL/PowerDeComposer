@@ -4,7 +4,7 @@ On this wiki you will find all needed documentation to get started with PowerDeC
 [//]: #(test met comment)
 
 ## How to get PowerDeComposer
-PowerDeComposer is available as a [Maven package](https://repo1.maven.org/maven2/com/x-breeze/powerdecomposer/PowerDeComposer/1.0.0/). You can either download the latest jar from the Maven repository, or create a Maven pom.xml file to let the Maven utility download the latest jar.
+PowerDeComposer is available as a [Maven package](https://repo1.maven.org/maven2/com/x-breeze/powerdecomposer/PowerDeComposer/1.1.0/). You can either download the latest jar from the Maven repository, or create a Maven pom.xml file to let the Maven utility download the latest jar.
 
 ## How to use PowerDeComposer
 In order to use PowerDeComposer you need to call the utility using the command line.

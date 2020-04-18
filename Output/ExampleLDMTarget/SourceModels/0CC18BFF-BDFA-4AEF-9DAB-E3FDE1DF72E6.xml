@@ -1,0 +1,15 @@
+<o:Shortcut Id="0CC18BFF-BDFA-4AEF-9DAB-E3FDE1DF72E6">
+<a:ObjectID>0CC18BFF-BDFA-4AEF-9DAB-E3FDE1DF72E6</a:ObjectID>
+<a:Name>Source</a:Name>
+<a:Code>SOURCE</a:Code>
+<a:CreationDate>1587201179</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1587201194</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:TargetStereotype/>
+<a:TargetID>267CD695-BA81-416F-9803-07119CED9D21</a:TargetID>
+<a:TargetClassID>5F45F978-C4F3-4E35-A3FC-AF3318663A0F</a:TargetClassID>
+<c:FullShortcutReplica>
+<o:Replication Ref="11D94679-8908-4C6C-9A64-D3C88BBCFF8C"/>
+</c:FullShortcutReplica>
+</o:Shortcut>

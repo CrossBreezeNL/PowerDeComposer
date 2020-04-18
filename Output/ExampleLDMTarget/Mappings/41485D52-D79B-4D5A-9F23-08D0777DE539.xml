@@ -1,0 +1,59 @@
+<o:DefaultObjectMapping Id="41485D52-D79B-4D5A-9F23-08D0777DE539">
+<a:ObjectID>41485D52-D79B-4D5A-9F23-08D0777DE539</a:ObjectID>
+<a:Name>Customer_ExampleSource</a:Name>
+<a:Code>CUSTOMER_EXAMPLESOURCE</a:Code>
+<a:CreationDate>1587201179</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1587201208</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<c:Classifier>
+<o:Entity Ref="7DB08289-F667-4F0D-8768-BF68757A9505"/>
+</c:Classifier>
+<c:SourceClassifiers>
+<o:Shortcut Ref="2433197A-4C39-4FE1-B45F-8146169796FE"/>
+</c:SourceClassifiers>
+<c:StructuralFeatureMaps>
+<o:DefaultStructuralFeatureMapping Id="092D4DFB-94B4-472A-95B0-1C52330BEB63">
+<a:ObjectID>092D4DFB-94B4-472A-95B0-1C52330BEB63</a:ObjectID>
+<a:CreationDate>1587201194</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1587201208</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<c:SourceFeatures>
+<o:Shortcut Ref="FDDE4E79-53C9-40F7-8160-F66371E849B3"/>
+</c:SourceFeatures>
+<c:BaseStructuralFeatureMapping.Feature>
+<o:EntityAttribute Ref="08758950-C03D-4B25-8FF2-55D5368FBC90"/>
+</c:BaseStructuralFeatureMapping.Feature>
+</o:DefaultStructuralFeatureMapping>
+<o:DefaultStructuralFeatureMapping Id="2AAC7FAE-9224-4851-AF01-0C8116EB833D">
+<a:ObjectID>2AAC7FAE-9224-4851-AF01-0C8116EB833D</a:ObjectID>
+<a:CreationDate>1587201194</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1587201208</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<c:SourceFeatures>
+<o:Shortcut Ref="FC928100-226A-427A-9BFF-B0B1D9429A46"/>
+</c:SourceFeatures>
+<c:BaseStructuralFeatureMapping.Feature>
+<o:EntityAttribute Ref="345CA508-8574-4C02-A917-19BCAA514E12"/>
+</c:BaseStructuralFeatureMapping.Feature>
+</o:DefaultStructuralFeatureMapping>
+<o:DefaultStructuralFeatureMapping Id="ADAC7499-9A79-48B9-A268-AD770D07C106">
+<a:ObjectID>ADAC7499-9A79-48B9-A268-AD770D07C106</a:ObjectID>
+<a:CreationDate>1587201194</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1587201208</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<c:SourceFeatures>
+<o:Shortcut Ref="E42AA150-5571-4579-A263-2912A00314EB"/>
+</c:SourceFeatures>
+<c:BaseStructuralFeatureMapping.Feature>
+<o:EntityAttribute Ref="3A1BC812-A201-4D83-B8C5-6CED958DEA4A"/>
+</c:BaseStructuralFeatureMapping.Feature>
+</o:DefaultStructuralFeatureMapping>
+</c:StructuralFeatureMaps>
+<c:DataSource>
+<o:DefaultDataSource Ref="EEBE7F20-7670-486C-A399-AE20AD3CF1EF"/>
+</c:DataSource>
+</o:DefaultObjectMapping>

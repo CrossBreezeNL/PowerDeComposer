@@ -24,7 +24,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.x-breeze.powerdecomposer</groupId>
   <artifactId>PowerDeComposer</artifactId>
-  <version>1.0.0</version>
+  <version>1.1.0</version>
   <name>CrossBreeze PowerDeComposer</name>
   <description>PowerDeComposer is a utility that enables integrating PowerDesigner with the version control system of your choice.</description>
   <url>http://http://powerdecomposer.x-breeze.com</url>	
@@ -84,7 +84,22 @@
 		<profile>
 			<id>release</id>
 				<build>
-					<plugins>
+					<plugins>					
+					    <plugin>
+					      <!-- Build an executable JAR -->
+					      <groupId>org.apache.maven.plugins</groupId>
+					      <artifactId>maven-jar-plugin</artifactId>
+					      <version>3.1.0</version>
+					      <configuration>
+					        <archive>
+					          <manifest>
+					            <addClasspath>true</addClasspath>
+					            <classpathPrefix>lib/</classpathPrefix>
+					            <mainClass>com.xbreeze.xml.Executor</mainClass>
+					          </manifest>
+					        </archive>
+					      </configuration>
+					    </plugin>				  
 						<plugin>
 						<!--  build jar file with sources (Sonatype requirement) -->
 						  <groupId>org.apache.maven.plugins</groupId>
@@ -146,6 +161,21 @@
           <target>1.8</target>
         </configuration>
       </plugin>
+       <plugin>
+	      <!-- Build an executable JAR -->
+	      <groupId>org.apache.maven.plugins</groupId>
+	      <artifactId>maven-jar-plugin</artifactId>
+	      <version>3.1.0</version>
+	      <configuration>
+	        <archive>
+	          <manifest>
+	            <addClasspath>true</addClasspath>
+	            <classpathPrefix>lib/</classpathPrefix>
+	            <mainClass>com.xbreeze.xml.Executor</mainClass>
+	          </manifest>
+	        </archive>
+	      </configuration>
+	    </plugin>			
     </plugins>
   </build>
   

@@ -179,7 +179,7 @@ public class XmlDecomposer {
 		
 		// Create a list of collections which we want to extract.
 		// c:DBMS, c:ExtendedModelDefinitions, c:PhysicalDiagrams, c:DataSources, c:Packages, c:PhysicalDiagrams, c:Mappings, c:Tables, c:References, c:Reports, c:SourceModels, c:Users, c:TargetModels
-		List<String> collectionNodesToExtract = Arrays.asList(new String[] {"c:DBMS", "c:ExtendedModelDefinitions", "c:PhysicalDiagrams", "c:DataSources", "c:Packages", "c:PhysicalDiagrams", "c:Mappings", "c:Tables", "c:References", "c:Reports", "c:SourceModels", "c:Users", "c:TargetModels"});
+		List<String> collectionNodesToExtract = Arrays.asList(new String[] {"c:DBMS", "c:ExtendedModelDefinitions", "c:PhysicalDiagrams", "c:DataSources", "c:Packages", "c:Mappings", "c:Tables", "c:References", "c:Reports", "c:SourceModels", "c:Users", "c:TargetModels", "c:Entities", "c:Relationships", "c:LogicalDiagrams"});
 		
 		AutoPilot ap = new AutoPilot(nv);
 		// Select all elements which have an ObjectID.

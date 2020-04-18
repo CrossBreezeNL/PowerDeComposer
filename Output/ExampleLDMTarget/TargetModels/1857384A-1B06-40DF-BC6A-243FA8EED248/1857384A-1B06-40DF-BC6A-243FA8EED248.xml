@@ -1,0 +1,600 @@
+<o:TargetModel Id="1857384A-1B06-40DF-BC6A-243FA8EED248">
+<a:ObjectID>1857384A-1B06-40DF-BC6A-243FA8EED248</a:ObjectID>
+<a:Name>Source</a:Name>
+<a:Code>SOURCE</a:Code>
+<a:CreationDate>1587201191</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1587201235</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:TargetModelURL>file:///C|/GIT/Repos/CrossBreeze/PowerDeComposer_Public/Output/ExampleLDMSource.ldm</a:TargetModelURL>
+<a:TargetModelID>267CD695-BA81-416F-9803-07119CED9D21</a:TargetModelID>
+<a:TargetModelClassID>5F45F978-C4F3-4E35-A3FC-AF3318663A0F</a:TargetModelClassID>
+<a:TargetModelLastModificationDate>1587201032</a:TargetModelLastModificationDate>
+<c:SessionShortcuts>
+<o:Shortcut Ref="0CC18BFF-BDFA-4AEF-9DAB-E3FDE1DF72E6"/>
+<o:Shortcut Ref="2433197A-4C39-4FE1-B45F-8146169796FE"/>
+<o:Shortcut Ref="FDDE4E79-53C9-40F7-8160-F66371E849B3"/>
+<o:Shortcut Ref="FC928100-226A-427A-9BFF-B0B1D9429A46"/>
+<o:Shortcut Ref="E42AA150-5571-4579-A263-2912A00314EB"/>
+<o:Shortcut Ref="8AF67742-D9AA-48FF-9514-18521A790F20"/>
+<o:Shortcut Ref="676B35F3-E86B-4966-BC94-308876D888DA"/>
+<o:Shortcut Ref="59CFF4F5-CC43-4D55-9027-47411BFA1F2C"/>
+<o:Shortcut Ref="FA8C7AB4-C2A7-4B4F-8146-22992A1D4635"/>
+</c:SessionShortcuts>
+<c:SessionReplications>
+<o:Replication Ref="11D94679-8908-4C6C-9A64-D3C88BBCFF8C"/>
+<o:SubReplication Ref="905FF317-7671-483A-AC56-9A743AD5A739"/>
+<o:SubReplication Ref="2FCD9CA0-6237-42C6-A683-224A10285706"/>
+<o:SubReplication Ref="F88F815F-412A-4E0C-8555-332BD70C0DFF"/>
+<o:SubReplication Ref="0843411A-A9F1-4BDC-812E-41F21FC21622"/>
+<o:SubReplication Ref="573B6445-2390-44E6-96D6-DE7A46B4444A"/>
+<o:SubReplication Ref="5E6CE10C-DE25-45EA-BFF5-D81A9257D836"/>
+<o:SubReplication Ref="1FCA0E5D-2926-4BDB-AFB8-108EF165625D"/>
+<o:SubReplication Ref="0B3253AF-D1B3-40C1-B99E-EEB9881E6739"/>
+<o:SubReplication Ref="55F097E6-2BFA-4450-B546-B2C68E049420"/>
+<o:SubReplication Ref="1782A797-D337-476D-9C90-662D7FD736F5"/>
+</c:SessionReplications>
+<c:FullShortcutModel>
+<o:Model Id="9B492F86-486F-4193-AB0D-090E93FCBE8A">
+<a:ObjectID>9B492F86-486F-4193-AB0D-090E93FCBE8A</a:ObjectID>
+<a:Name>Source</a:Name>
+<a:Code>SOURCE</a:Code>
+<a:CreationDate>1587201179</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1587201222</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:PackageOptionsText>[FolderOptions]
+
+[FolderOptions\Common]
+GenerationCheckModel=Yes
+GenerationPath=
+GenerationOptions=
+GenerationTasks=
+GenerationTargets=
+GenerationSelections=</a:PackageOptionsText>
+<a:ModelOptionsText>[ModelOptions]
+
+[ModelOptions\Logical options]
+CaseSensitive=No
+DisplayName=Yes
+EnableTrans=No
+UseTerm=No
+EnableRequirements=No
+EnableFullShortcut=Yes
+SynchroCode=Yes
+Notation=0
+RlshUnique=Yes
+DefaultDttp=
+DomnCopyDttp=Yes
+DomnCopyChck=No
+DomnCopyRule=No
+DomnCopyExat=No
+DomnCopyMand=No
+DttpFullName=Yes
+RlshMigrateDomain=Yes
+RlshMigrateCheck=Yes
+RlshMigrateRule=Yes
+RlshMigrateExtd=Yes
+RlshAllowInhrDivr=No
+RlshAllowNN=No
+RlshGenNN=Yes
+FKNameTemplate=%.3:PARENT%_%ATTRIBUTE%
+FKNameTemplateUsage=No
+RlshAsstTmpl=Each %Entity1.Name%[CRLF].if %Entity1ToEntity2RoleMandatory%[CRLF] must[CRLF].else[CRLF] may[CRLF].endif[CRLF].if %Entity1ToEntity2Role%[CRLF] %.L:Entity1ToEntity2Role%[CRLF].else[CRLF] have[CRLF].endif[CRLF].if %Entity1ToEntity2RoleMaximumCardinality%==1[CRLF].if %Entity1ToEntity2RoleMandatory%[CRLF] one and only one[CRLF].else[CRLF] at most one[CRLF].endif[CRLF].else[CRLF] one or more[CRLF].endif[CRLF].if %Entity1%==%Entity2%[CRLF] other[CRLF].endif[CRLF] %Entity2.Name%.[CRLF]Each %Entity2.Name%[CRLF].if %Entity2ToEntity1RoleMandatory%[CRLF] must[CRLF].else[CRLF] may[CRLF].endif[CRLF].if %Entity2ToEntity1Role%[CRLF] %.L:Entity2ToEntity1Role%[CRLF].else[CRLF] have[CRLF].endif[CRLF].if %Entity2ToEntity1RoleMaximumCardinality%==1[CRLF].if %Entity2ToEntity1RoleMandatory%[CRLF] one and only one[CRLF].else[CRLF] at most one[CRLF].endif[CRLF].else[CRLF] one or more[CRLF].endif[CRLF].if %Entity1%==%Entity2%[CRLF] other[CRLF].endif[CRLF] %Entity1.Name%.
+RlshAsstExt=
+
+[ModelOptions\Logical options\NamingOptionsTemplates]
+
+[ModelOptions\Logical options\ClssNamingOptions]
+
+[ModelOptions\Logical options\ClssNamingOptions\FILO]
+
+[ModelOptions\Logical options\ClssNamingOptions\FILO\Name]
+Template=
+MaxLen=254
+Case=M
+ValidChar=
+InvldChar=&quot;\/:*?&lt;&gt;|&quot;
+AllValid=Yes
+NoAccent=No
+DefaultChar=_
+Script=.convert_name(%Name%,&quot;_&quot;)
+ConvTable=
+ConvTablePath=%_HOME%\Resource Files\Conversion Tables
+
+[ModelOptions\Logical options\ClssNamingOptions\FILO\Code]
+Template=
+MaxLen=254
+Case=U
+ValidChar=&#39;a&#39;-&#39;z&#39;,&#39;A&#39;-&#39;Z&#39;,&#39;0&#39;-&#39;9&#39;,&quot;_. &quot;
+InvldChar=
+AllValid=No
+NoAccent=Yes
+DefaultChar=_
+Script=.convert_code(%Code%,&quot; &quot;)
+ConvTable=
+ConvTablePath=%_HOME%\Resource Files\Conversion Tables
+
+[ModelOptions\Logical options\ClssNamingOptions\FRMEOBJ]
+
+[ModelOptions\Logical options\ClssNamingOptions\FRMEOBJ\Name]
+Template=
+MaxLen=254
+Case=M
+ValidChar=
+InvldChar=
+AllValid=Yes
+NoAccent=No
+DefaultChar=_
+Script=.convert_name(%Name%,&quot;_&quot;)
+ConvTable=
+ConvTablePath=%_HOME%\Resource Files\Conversion Tables
+
+[ModelOptions\Logical options\ClssNamingOptions\FRMEOBJ\Code]
+Template=
+MaxLen=254
+Case=U
+ValidChar=&#39;a&#39;-&#39;z&#39;,&#39;A&#39;-&#39;Z&#39;,&#39;0&#39;-&#39;9&#39;,&quot;_&quot;
+InvldChar=
+AllValid=No
+NoAccent=Yes
+DefaultChar=_
+Script=.convert_code(%Code%,&quot; &quot;)
+ConvTable=
+ConvTablePath=%_HOME%\Resource Files\Conversion Tables
+
+[ModelOptions\Logical options\ClssNamingOptions\FRMELNK]
+
+[ModelOptions\Logical options\ClssNamingOptions\FRMELNK\Name]
+Template=
+MaxLen=254
+Case=M
+ValidChar=
+InvldChar=
+AllValid=Yes
+NoAccent=No
+DefaultChar=_
+Script=.convert_name(%Name%,&quot;_&quot;)
+ConvTable=
+ConvTablePath=%_HOME%\Resource Files\Conversion Tables
+
+[ModelOptions\Logical options\ClssNamingOptions\FRMELNK\Code]
+Template=
+MaxLen=254
+Case=U
+ValidChar=&#39;a&#39;-&#39;z&#39;,&#39;A&#39;-&#39;Z&#39;,&#39;0&#39;-&#39;9&#39;,&quot;_&quot;
+InvldChar=
+AllValid=No
+NoAccent=Yes
+DefaultChar=_
+Script=.convert_code(%Code%,&quot; &quot;)
+ConvTable=
+ConvTablePath=%_HOME%\Resource Files\Conversion Tables
+
+[ModelOptions\Logical options\ClssNamingOptions\AREA]
+
+[ModelOptions\Logical options\ClssNamingOptions\AREA\Name]
+Template=
+MaxLen=254
+Case=M
+ValidChar=
+InvldChar=
+AllValid=Yes
+NoAccent=No
+DefaultChar=_
+Script=.convert_name(%Name%,&quot;_&quot;)
+ConvTable=
+ConvTablePath=%_HOME%\Resource Files\Conversion Tables
+
+[ModelOptions\Logical options\ClssNamingOptions\AREA\Code]
+Template=
+MaxLen=254
+Case=U
+ValidChar=&#39;a&#39;-&#39;z&#39;,&#39;A&#39;-&#39;Z&#39;,&#39;0&#39;-&#39;9&#39;,&quot;_&quot;
+InvldChar=
+AllValid=No
+NoAccent=Yes
+DefaultChar=_
+Script=.convert_code(%Code%,&quot; &quot;)
+ConvTable=
+ConvTablePath=%_HOME%\Resource Files\Conversion Tables
+
+[ModelOptions\Logical options\ClssNamingOptions\DefaultClass]
+
+[ModelOptions\Logical options\ClssNamingOptions\DefaultClass\Name]
+Template=
+MaxLen=254
+Case=M
+ValidChar=
+InvldChar=
+AllValid=Yes
+NoAccent=No
+DefaultChar=_
+Script=.convert_name(%Name%,&quot;_&quot;)
+ConvTable=
+ConvTablePath=%_HOME%\Resource Files\Conversion Tables
+
+[ModelOptions\Logical options\ClssNamingOptions\DefaultClass\Code]
+Template=
+MaxLen=254
+Case=U
+ValidChar=&#39;a&#39;-&#39;z&#39;,&#39;A&#39;-&#39;Z&#39;,&#39;0&#39;-&#39;9&#39;,&quot;_&quot;
+InvldChar=
+AllValid=No
+NoAccent=Yes
+DefaultChar=_
+Script=.convert_code(%Code%,&quot; &quot;)
+ConvTable=
+ConvTablePath=%_HOME%\Resource Files\Conversion Tables
+
+[ModelOptions\Logical options\ClssNamingOptions\LDMPCKG]
+
+[ModelOptions\Logical options\ClssNamingOptions\LDMPCKG\Name]
+Template=
+MaxLen=254
+Case=M
+ValidChar=
+InvldChar=
+AllValid=Yes
+NoAccent=No
+DefaultChar=_
+Script=.convert_name(%Name%,&quot;_&quot;)
+ConvTable=
+ConvTablePath=%_HOME%\Resource Files\Conversion Tables
+
+[ModelOptions\Logical options\ClssNamingOptions\LDMPCKG\Code]
+Template=
+MaxLen=254
+Case=U
+ValidChar=&#39;a&#39;-&#39;z&#39;,&#39;A&#39;-&#39;Z&#39;,&#39;0&#39;-&#39;9&#39;,&quot;_&quot;
+InvldChar=
+AllValid=No
+NoAccent=Yes
+DefaultChar=_
+Script=.convert_code(%Code%,&quot; &quot;)
+ConvTable=
+ConvTablePath=%_HOME%\Resource Files\Conversion Tables
+
+[ModelOptions\Logical options\ClssNamingOptions\LDMDOMN]
+
+[ModelOptions\Logical options\ClssNamingOptions\LDMDOMN\Name]
+Template=
+MaxLen=254
+Case=M
+ValidChar=
+InvldChar=
+AllValid=Yes
+NoAccent=No
+DefaultChar=_
+Script=.convert_name(%Name%,&quot;_&quot;)
+ConvTable=
+ConvTablePath=%_HOME%\Resource Files\Conversion Tables
+
+[ModelOptions\Logical options\ClssNamingOptions\LDMDOMN\Code]
+Template=
+MaxLen=254
+Case=U
+ValidChar=&#39;a&#39;-&#39;z&#39;,&#39;A&#39;-&#39;Z&#39;,&#39;0&#39;-&#39;9&#39;,&quot;_&quot;
+InvldChar=
+AllValid=No
+NoAccent=Yes
+DefaultChar=_
+Script=.convert_code(%Code%,&quot; &quot;)
+ConvTable=
+ConvTablePath=%_HOME%\Resource Files\Conversion Tables
+
+[ModelOptions\Logical options\ClssNamingOptions\LDMENTT]
+
+[ModelOptions\Logical options\ClssNamingOptions\LDMENTT\Name]
+Template=
+MaxLen=254
+Case=M
+ValidChar=
+InvldChar=
+AllValid=Yes
+NoAccent=No
+DefaultChar=_
+Script=.convert_name(%Name%,&quot;_&quot;)
+ConvTable=
+ConvTablePath=%_HOME%\Resource Files\Conversion Tables
+
+[ModelOptions\Logical options\ClssNamingOptions\LDMENTT\Code]
+Template=
+MaxLen=254
+Case=U
+ValidChar=&#39;a&#39;-&#39;z&#39;,&#39;A&#39;-&#39;Z&#39;,&#39;0&#39;-&#39;9&#39;,&quot;_&quot;
+InvldChar=
+AllValid=No
+NoAccent=Yes
+DefaultChar=_
+Script=.convert_code(%Code%,&quot; &quot;)
+ConvTable=
+ConvTablePath=%_HOME%\Resource Files\Conversion Tables
+
+[ModelOptions\Logical options\ClssNamingOptions\LDMPROP]
+
+[ModelOptions\Logical options\ClssNamingOptions\LDMPROP\Name]
+Template=
+MaxLen=254
+Case=M
+ValidChar=
+InvldChar=
+AllValid=Yes
+NoAccent=No
+DefaultChar=_
+Script=.convert_name(%Name%,&quot;_&quot;)
+ConvTable=
+ConvTablePath=%_HOME%\Resource Files\Conversion Tables
+
+[ModelOptions\Logical options\ClssNamingOptions\LDMPROP\Code]
+Template=
+MaxLen=254
+Case=U
+ValidChar=&#39;a&#39;-&#39;z&#39;,&#39;A&#39;-&#39;Z&#39;,&#39;0&#39;-&#39;9&#39;,&quot;_&quot;
+InvldChar=
+AllValid=No
+NoAccent=Yes
+DefaultChar=_
+Script=.convert_code(%Code%,&quot; &quot;)
+ConvTable=
+ConvTablePath=%_HOME%\Resource Files\Conversion Tables
+
+[ModelOptions\Logical options\ClssNamingOptions\LDMIDTF]
+
+[ModelOptions\Logical options\ClssNamingOptions\LDMIDTF\Name]
+Template=
+MaxLen=254
+Case=M
+ValidChar=
+InvldChar=
+AllValid=Yes
+NoAccent=No
+DefaultChar=_
+Script=.convert_name(%Name%,&quot;_&quot;)
+ConvTable=
+ConvTablePath=%_HOME%\Resource Files\Conversion Tables
+
+[ModelOptions\Logical options\ClssNamingOptions\LDMIDTF\Code]
+Template=
+MaxLen=254
+Case=U
+ValidChar=&#39;a&#39;-&#39;z&#39;,&#39;A&#39;-&#39;Z&#39;,&#39;0&#39;-&#39;9&#39;,&quot;_&quot;
+InvldChar=
+AllValid=No
+NoAccent=Yes
+DefaultChar=_
+Script=.convert_code(%Code%,&quot; &quot;)
+ConvTable=
+ConvTablePath=%_HOME%\Resource Files\Conversion Tables
+
+[ModelOptions\Logical options\ClssNamingOptions\LDMRLSH]
+
+[ModelOptions\Logical options\ClssNamingOptions\LDMRLSH\Name]
+Template=
+MaxLen=254
+Case=M
+ValidChar=
+InvldChar=
+AllValid=Yes
+NoAccent=No
+DefaultChar=_
+Script=.convert_name(%Name%,&quot;_&quot;)
+ConvTable=
+ConvTablePath=%_HOME%\Resource Files\Conversion Tables
+
+[ModelOptions\Logical options\ClssNamingOptions\LDMRLSH\Code]
+Template=
+MaxLen=254
+Case=U
+ValidChar=&#39;a&#39;-&#39;z&#39;,&#39;A&#39;-&#39;Z&#39;,&#39;0&#39;-&#39;9&#39;,&quot;_&quot;
+InvldChar=
+AllValid=No
+NoAccent=Yes
+DefaultChar=_
+Script=.convert_code(%Code%,&quot; &quot;)
+ConvTable=
+ConvTablePath=%_HOME%\Resource Files\Conversion Tables
+
+[ModelOptions\Logical options\ClssNamingOptions\LDMINHR]
+
+[ModelOptions\Logical options\ClssNamingOptions\LDMINHR\Name]
+Template=
+MaxLen=254
+Case=M
+ValidChar=
+InvldChar=
+AllValid=Yes
+NoAccent=No
+DefaultChar=_
+Script=.convert_name(%Name%,&quot;_&quot;)
+ConvTable=
+ConvTablePath=%_HOME%\Resource Files\Conversion Tables
+
+[ModelOptions\Logical options\ClssNamingOptions\LDMINHR\Code]
+Template=
+MaxLen=254
+Case=U
+ValidChar=&#39;a&#39;-&#39;z&#39;,&#39;A&#39;-&#39;Z&#39;,&#39;0&#39;-&#39;9&#39;,&quot;_&quot;
+InvldChar=
+AllValid=No
+NoAccent=Yes
+DefaultChar=_
+Script=.convert_code(%Code%,&quot; &quot;)
+ConvTable=
+ConvTablePath=%_HOME%\Resource Files\Conversion Tables
+
+[ModelOptions\Generate]
+
+[ModelOptions\Generate\Cdm]
+CheckModel=Yes
+SaveLinks=Yes
+NameToCode=No
+
+[ModelOptions\Generate\Pdm]
+CheckModel=Yes
+SaveLinks=Yes
+NameToCode=No
+BuildTrgr=No
+TablePrefix=
+IndxPKName=%TABLE%_PK
+IndxAKName=%TABLE%_AK
+IndxFKName=%REFR%_FK
+IndxThreshold=</a:ModelOptionsText>
+<a:RepositoryFilename>C:\GIT\Repos\CrossBreeze\PowerDeComposer_Public\Output\ExampleLDMTarget.ldm</a:RepositoryFilename>
+<c:Entities>
+<xi:include href=".\Entities\6E161055-B56B-4096-91F6-48FC9FDFD3D8.xml" type="Entity" name="Customer" />
+<xi:include href=".\Entities\94CBE5DF-6A0F-4CD2-8A71-9B66CE8F3197.xml" type="Entity" name="SalesOrder" />
+</c:Entities>
+<c:Replications>
+<o:Replication Id="11D94679-8908-4C6C-9A64-D3C88BBCFF8C">
+<a:ObjectID>11D94679-8908-4C6C-9A64-D3C88BBCFF8C</a:ObjectID>
+<a:CreationDate>1587201179</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1587201222</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:OriginalID>267CD695-BA81-416F-9803-07119CED9D21</a:OriginalID>
+<a:OriginalClassID>5F45F978-C4F3-4E35-A3FC-AF3318663A0F</a:OriginalClassID>
+<c:SubReplications>
+<o:SubReplication Id="905FF317-7671-483A-AC56-9A743AD5A739">
+<a:ObjectID>905FF317-7671-483A-AC56-9A743AD5A739</a:ObjectID>
+<a:CreationDate>1587201179</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1587201222</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:OriginalID>D16A96D9-2011-41D2-BDD8-0DD459A4F791</a:OriginalID>
+<a:OriginalClassID>D86B0751-A544-42AE-AAA6-6E32C602F706</a:OriginalClassID>
+<a:OriginalUOL>Entities::Entity &#39;CUSTOMER&#39;</a:OriginalUOL>
+<c:SubReplications>
+<o:SubReplication Id="2FCD9CA0-6237-42C6-A683-224A10285706">
+<a:ObjectID>2FCD9CA0-6237-42C6-A683-224A10285706</a:ObjectID>
+<a:CreationDate>1587201179</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1587201222</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:OriginalID>42CB050C-2C2D-4BAF-B33B-7AF6553DB5AF</a:OriginalID>
+<a:OriginalClassID>040810A2-4B62-45C1-9C8B-5EABC249838B</a:OriginalClassID>
+<a:OriginalUOL>Entities::Entity &#39;CUSTOMER&#39;::Identifiers::Identifier &#39;CUSTOMER.IDENTIFIER_1&#39;</a:OriginalUOL>
+<c:ReplicaObject>
+<o:Identifier Ref="51DD04CE-1A2A-4D49-809C-C1CF681AFCEC"/>
+</c:ReplicaObject>
+</o:SubReplication>
+<o:SubReplication Id="F88F815F-412A-4E0C-8555-332BD70C0DFF">
+<a:ObjectID>F88F815F-412A-4E0C-8555-332BD70C0DFF</a:ObjectID>
+<a:CreationDate>1587201179</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1587201222</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:OriginalID>A941AF16-E7E8-4A35-8ABE-B0E5C246B488</a:OriginalID>
+<a:OriginalClassID>E1690028-F3DD-4986-B6CB-1509A400BE2B</a:OriginalClassID>
+<a:OriginalUOL>Entities::Entity &#39;CUSTOMER&#39;::Attributes::Entity Attribute &#39;CUSTOMER.CUSTOMERID&#39;</a:OriginalUOL>
+<c:ReplicaObject>
+<o:EntityAttribute Ref="73E8B82D-9A6D-4F19-BDD3-CE89672B8D06"/>
+</c:ReplicaObject>
+</o:SubReplication>
+<o:SubReplication Id="0843411A-A9F1-4BDC-812E-41F21FC21622">
+<a:ObjectID>0843411A-A9F1-4BDC-812E-41F21FC21622</a:ObjectID>
+<a:CreationDate>1587201179</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1587201222</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:OriginalID>F170F682-DF52-47DF-AEB2-D69944472655</a:OriginalID>
+<a:OriginalClassID>E1690028-F3DD-4986-B6CB-1509A400BE2B</a:OriginalClassID>
+<a:OriginalUOL>Entities::Entity &#39;CUSTOMER&#39;::Attributes::Entity Attribute &#39;CUSTOMER.NAME&#39;</a:OriginalUOL>
+<c:ReplicaObject>
+<o:EntityAttribute Ref="8B09E518-B14F-4225-8F98-F7876EFA8E3C"/>
+</c:ReplicaObject>
+</o:SubReplication>
+<o:SubReplication Id="573B6445-2390-44E6-96D6-DE7A46B4444A">
+<a:ObjectID>573B6445-2390-44E6-96D6-DE7A46B4444A</a:ObjectID>
+<a:CreationDate>1587201179</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1587201222</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:OriginalID>F4F4C74F-22F4-4F55-8274-1D73887610A8</a:OriginalID>
+<a:OriginalClassID>E1690028-F3DD-4986-B6CB-1509A400BE2B</a:OriginalClassID>
+<a:OriginalUOL>Entities::Entity &#39;CUSTOMER&#39;::Attributes::Entity Attribute &#39;CUSTOMER.DATEOFBIRTH&#39;</a:OriginalUOL>
+<c:ReplicaObject>
+<o:EntityAttribute Ref="A3936F5B-7B06-45E5-9387-F9B7927C9469"/>
+</c:ReplicaObject>
+</o:SubReplication>
+</c:SubReplications>
+<c:ReplicaObject>
+<o:Entity Ref="6E161055-B56B-4096-91F6-48FC9FDFD3D8"/>
+</c:ReplicaObject>
+</o:SubReplication>
+<o:SubReplication Id="5E6CE10C-DE25-45EA-BFF5-D81A9257D836">
+<a:ObjectID>5E6CE10C-DE25-45EA-BFF5-D81A9257D836</a:ObjectID>
+<a:CreationDate>1587201219</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1587201222</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:OriginalID>8B4BE9EA-92E6-4863-A71B-00CD678C51B2</a:OriginalID>
+<a:OriginalClassID>D86B0751-A544-42AE-AAA6-6E32C602F706</a:OriginalClassID>
+<a:OriginalUOL>Entities::Entity &#39;SALESORDER&#39;</a:OriginalUOL>
+<c:SubReplications>
+<o:SubReplication Id="1FCA0E5D-2926-4BDB-AFB8-108EF165625D">
+<a:ObjectID>1FCA0E5D-2926-4BDB-AFB8-108EF165625D</a:ObjectID>
+<a:CreationDate>1587201219</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1587201222</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:OriginalID>0F4DE042-16F5-4257-950C-06E5E40F0B26</a:OriginalID>
+<a:OriginalClassID>040810A2-4B62-45C1-9C8B-5EABC249838B</a:OriginalClassID>
+<a:OriginalUOL>Entities::Entity &#39;SALESORDER&#39;::Identifiers::Identifier &#39;SALESORDER.IDENTIFIER_1&#39;</a:OriginalUOL>
+<c:ReplicaObject>
+<o:Identifier Ref="BBA9B884-8018-4E14-9369-E41AC966232A"/>
+</c:ReplicaObject>
+</o:SubReplication>
+<o:SubReplication Id="0B3253AF-D1B3-40C1-B99E-EEB9881E6739">
+<a:ObjectID>0B3253AF-D1B3-40C1-B99E-EEB9881E6739</a:ObjectID>
+<a:CreationDate>1587201219</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1587201235</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:OriginalID>9A05436D-99B0-4332-97BB-FB0B54EEDEBA</a:OriginalID>
+<a:OriginalClassID>E1690028-F3DD-4986-B6CB-1509A400BE2B</a:OriginalClassID>
+<a:OriginalUOL>Entities::Entity &#39;SALESORDER&#39;::Attributes::Entity Attribute &#39;SALESORDER.SALESORDERID&#39;</a:OriginalUOL>
+<c:ReplicaObject>
+<o:EntityAttribute Ref="E7922907-E25F-45D7-96E6-234BBD0C4AE6"/>
+</c:ReplicaObject>
+</o:SubReplication>
+<o:SubReplication Id="55F097E6-2BFA-4450-B546-B2C68E049420">
+<a:ObjectID>55F097E6-2BFA-4450-B546-B2C68E049420</a:ObjectID>
+<a:CreationDate>1587201219</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1587201235</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:OriginalID>4D0B931E-98D2-44C8-8877-240C2A031363</a:OriginalID>
+<a:OriginalClassID>E1690028-F3DD-4986-B6CB-1509A400BE2B</a:OriginalClassID>
+<a:OriginalUOL>Entities::Entity &#39;SALESORDER&#39;::Attributes::Entity Attribute &#39;SALESORDER.CUSTOMERID&#39;</a:OriginalUOL>
+<c:ReplicaObject>
+<o:EntityAttribute Ref="8042AE09-76B4-4B11-B855-44661F78FEAE"/>
+</c:ReplicaObject>
+</o:SubReplication>
+<o:SubReplication Id="1782A797-D337-476D-9C90-662D7FD736F5">
+<a:ObjectID>1782A797-D337-476D-9C90-662D7FD736F5</a:ObjectID>
+<a:CreationDate>1587201219</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1587201235</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:OriginalID>E1A32D97-8982-4BD5-96FA-AE568E5D63E7</a:OriginalID>
+<a:OriginalClassID>E1690028-F3DD-4986-B6CB-1509A400BE2B</a:OriginalClassID>
+<a:OriginalUOL>Entities::Entity &#39;SALESORDER&#39;::Attributes::Entity Attribute &#39;SALESORDER.DATEOFSALE&#39;</a:OriginalUOL>
+<c:ReplicaObject>
+<o:EntityAttribute Ref="4E2EEC02-ECAB-41B0-8123-D650E3F79A82"/>
+</c:ReplicaObject>
+</o:SubReplication>
+</c:SubReplications>
+<c:ReplicaObject>
+<o:Entity Ref="94CBE5DF-6A0F-4CD2-8A71-9B66CE8F3197"/>
+</c:ReplicaObject>
+</o:SubReplication>
+</c:SubReplications>
+<c:ReplicaObject>
+<o:Model Ref="9B492F86-486F-4193-AB0D-090E93FCBE8A"/>
+</c:ReplicaObject>
+</o:Replication>
+</c:Replications>
+</o:Model>
+</c:FullShortcutModel>
+</o:TargetModel>

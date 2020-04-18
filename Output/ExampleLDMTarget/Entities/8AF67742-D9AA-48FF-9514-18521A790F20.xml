@@ -1,0 +1,66 @@
+<o:Shortcut Id="8AF67742-D9AA-48FF-9514-18521A790F20">
+<a:ObjectID>8AF67742-D9AA-48FF-9514-18521A790F20</a:ObjectID>
+<a:Name>SalesOrder</a:Name>
+<a:Code>SALESORDER</a:Code>
+<a:CreationDate>1587201219</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1587201235</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:TargetStereotype/>
+<a:TargetID>8B4BE9EA-92E6-4863-A71B-00CD678C51B2</a:TargetID>
+<a:TargetClassID>D86B0751-A544-42AE-AAA6-6E32C602F706</a:TargetClassID>
+<a:TargetPackagePath>&lt;Model&gt;</a:TargetPackagePath>
+<c:SubShortcuts>
+<o:Shortcut Id="676B35F3-E86B-4966-BC94-308876D888DA">
+<a:ObjectID>676B35F3-E86B-4966-BC94-308876D888DA</a:ObjectID>
+<a:Name>SalesOrderID</a:Name>
+<a:Code>SALESORDERID</a:Code>
+<a:CreationDate>1587201222</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1587201235</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:TargetStereotype/>
+<a:TargetID>9A05436D-99B0-4332-97BB-FB0B54EEDEBA</a:TargetID>
+<a:TargetClassID>E1690028-F3DD-4986-B6CB-1509A400BE2B</a:TargetClassID>
+<a:TargetPackagePath>&lt;Model&gt;::SalesOrder</a:TargetPackagePath>
+<c:FullShortcutReplica>
+<o:SubReplication Ref="0B3253AF-D1B3-40C1-B99E-EEB9881E6739"/>
+</c:FullShortcutReplica>
+</o:Shortcut>
+<o:Shortcut Id="59CFF4F5-CC43-4D55-9027-47411BFA1F2C">
+<a:ObjectID>59CFF4F5-CC43-4D55-9027-47411BFA1F2C</a:ObjectID>
+<a:Name>CustomerID</a:Name>
+<a:Code>CUSTOMERID</a:Code>
+<a:CreationDate>1587201222</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1587201235</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:TargetStereotype/>
+<a:TargetID>4D0B931E-98D2-44C8-8877-240C2A031363</a:TargetID>
+<a:TargetClassID>E1690028-F3DD-4986-B6CB-1509A400BE2B</a:TargetClassID>
+<a:TargetPackagePath>&lt;Model&gt;::SalesOrder</a:TargetPackagePath>
+<c:FullShortcutReplica>
+<o:SubReplication Ref="55F097E6-2BFA-4450-B546-B2C68E049420"/>
+</c:FullShortcutReplica>
+</o:Shortcut>
+<o:Shortcut Id="FA8C7AB4-C2A7-4B4F-8146-22992A1D4635">
+<a:ObjectID>FA8C7AB4-C2A7-4B4F-8146-22992A1D4635</a:ObjectID>
+<a:Name>DateOfSale</a:Name>
+<a:Code>DATEOFSALE</a:Code>
+<a:CreationDate>1587201222</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1587201235</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:TargetStereotype/>
+<a:TargetID>E1A32D97-8982-4BD5-96FA-AE568E5D63E7</a:TargetID>
+<a:TargetClassID>E1690028-F3DD-4986-B6CB-1509A400BE2B</a:TargetClassID>
+<a:TargetPackagePath>&lt;Model&gt;::SalesOrder</a:TargetPackagePath>
+<c:FullShortcutReplica>
+<o:SubReplication Ref="1782A797-D337-476D-9C90-662D7FD736F5"/>
+</c:FullShortcutReplica>
+</o:Shortcut>
+</c:SubShortcuts>
+<c:FullShortcutReplica>
+<o:SubReplication Ref="5E6CE10C-DE25-45EA-BFF5-D81A9257D836"/>
+</c:FullShortcutReplica>
+</o:Shortcut>
