@@ -20,6 +20,21 @@ Click on the header of a version number to go to the documentation of that speci
 [//]: # (>     * [ ] Binding)
 [//]: # (>         * [X] Some issue...)
 
+## Version 1.1
+
+- [ ] 1.1 <sup>18-04-2020</sup>
+
+> !!! success "Enhanced features"
+>     * [ ] Decompose model
+>         - [X] Decompose entities and relationships of logical models into separate files
+>     * [ ] Documentation
+>         - [X] Added Maven run example to getting started
+>
+> !!! warning "Bug fixes"
+>     * [ ] Documentation and downloads
+>         - [X] Fixed jar in Maven repository so it is executable        
+>         - [X] Added standalone download
+
 ## Version 1.0
 
 - [ ] 1.0 <sup>06-03-2020</sup>
