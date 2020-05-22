@@ -42,6 +42,7 @@ public class FileUtils {
 		BOMInputStream bomInputStream = new BOMInputStream(fis);
 		// Get the charset from the bom of the input stream.
 		String bomCharsetName = bomInputStream.getBOMCharsetName();
+		logger.fine(String.format("Get file contents using charset %s", bomCharsetName));
 		// Create a String using the BOMInputStream and the charset.
 		// The charset can be null, this gives no errors.
 		return IOUtils.toString(bomInputStream, bomCharsetName);

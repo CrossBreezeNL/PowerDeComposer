@@ -40,7 +40,7 @@ import com.ximpleware.XMLModifier;
 import com.ximpleware.XPathParseException;
 
 public class XmlDecomposer {
-	private static final Logger logger = Logger.getLogger("");
+	private static final Logger logger = Logger.getLogger(XmlDecomposer.class.getName());
 	
 	private static final String STR_PREFIX_SPACER = "  ";
 	
@@ -62,6 +62,11 @@ public class XmlDecomposer {
 		// Read the xml file into a string.
 		logger.fine("Getting file contents...");
 		String xmlFileContents = FileUtils.getFileContent(xmlFile.toURI());
+		//logger.fine("Start of file contents:");
+		//logger.fine("--------------------------------------------------");
+		//logger.fine(xmlFileContents);
+		//logger.fine("--------------------------------------------------");
+		//logger.fine("End of file contents:");
 		
 		// Create a VTDNav for navigating the document.
 		VTDNav nv;

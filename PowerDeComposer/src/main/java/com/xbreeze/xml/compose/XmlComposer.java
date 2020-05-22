@@ -26,7 +26,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
@@ -68,7 +67,7 @@ public class XmlComposer {
 		String resolvedXmlFileContents = this.resolveIncludes(xmlFileContents, xmlFile.toURI(), 0, resolvedIncludes);
 
 		try {
-			Files.write(Paths.get(xmlTargetFilePath), resolvedXmlFileContents.getBytes(StandardCharsets.UTF_8),
+			Files.write(Paths.get(xmlTargetFilePath), resolvedXmlFileContents.getBytes(),
 					StandardOpenOption.CREATE,StandardOpenOption.TRUNCATE_EXISTING);
 
 			// extra options

@@ -24,7 +24,6 @@ package com.xbreeze.xml.utils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.logging.Logger;
 
 import com.ximpleware.AutoPilot;
@@ -80,7 +79,9 @@ public class XMLUtils {
 		// Currently the encoding is set to US_ASCII, cause this solves the issue for special characters and doesn't seem to break anything.
 		// Question is asked to the vtd-gen developer if this is a bug in vtg-gen.
 		// https://stackoverflow.com/questions/51507388/vtd-xml-element-fragment-incorrect
-		vg.setDoc(xmlDocument.getBytes(StandardCharsets.US_ASCII));
+		//vg.setDoc(xmlDocument.getBytes(StandardCharsets.US_ASCII));
+		// Disabled the bytes retrieval using a specific charset, because this breaks the PowerDesigner special characters.
+		vg.setDoc(xmlDocument.getBytes());
 		
 		// When enabling namespace awareness, you must map the URLs of all used namespaces here.
 		try {

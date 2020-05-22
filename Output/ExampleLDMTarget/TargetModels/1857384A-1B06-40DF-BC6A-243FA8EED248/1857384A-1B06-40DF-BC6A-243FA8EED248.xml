@@ -442,8 +442,8 @@ IndxFKName=%REFR%_FK
 IndxThreshold=</a:ModelOptionsText>
 <a:RepositoryFilename>C:\GIT\Repos\CrossBreeze\PowerDeComposer_Public\Output\ExampleLDMTarget.ldm</a:RepositoryFilename>
 <c:Entities>
-<xi:include href=".\Entities\6E161055-B56B-4096-91F6-48FC9FDFD3D8.xml" type="Entity" name="Customer" />
-<xi:include href=".\Entities\94CBE5DF-6A0F-4CD2-8A71-9B66CE8F3197.xml" type="Entity" name="SalesOrder" />
+<xi:include href="Entities\6E161055-B56B-4096-91F6-48FC9FDFD3D8.xml" type="Entity" name="Customer" />
+<xi:include href="Entities\94CBE5DF-6A0F-4CD2-8A71-9B66CE8F3197.xml" type="Entity" name="SalesOrder" />
 </c:Entities>
 <c:Replications>
 <o:Replication Id="11D94679-8908-4C6C-9A64-D3C88BBCFF8C">
