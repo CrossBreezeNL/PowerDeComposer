@@ -20,10 +20,18 @@ Click on the header of a version number to go to the documentation of that speci
 [//]: # (>     * [ ] Binding)
 [//]: # (>         * [X] Some issue...)
 
+## Version 1.1.1
+
+- [ ] 1.1.1 <sup>22-05-2020</sup>
+> !!! warning "Bug fixes"
+>     * [ ] Decompose model
+>         - [X] Fixed encoding of file so special characters are handled correctly.
+>     * [ ] Compose model
+>         - [X] Fixed encoding of file so special characters are handled correctly.
+
 ## Version 1.1
 
 - [ ] 1.1 <sup>18-04-2020</sup>
-
 > !!! success "Enhanced features"
 >     * [ ] Decompose model
 >         - [X] Decompose entities and relationships of logical models into separate files

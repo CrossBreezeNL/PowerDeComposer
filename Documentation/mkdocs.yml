@@ -14,7 +14,7 @@ theme:
   palette:
     primary: 'blue grey'
     accent: 'green'
-  feature:
+  features:
     tabs: true
 
 # Pages
