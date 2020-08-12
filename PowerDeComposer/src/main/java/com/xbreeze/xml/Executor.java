@@ -32,6 +32,7 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 import com.xbreeze.xml.compose.XmlComposer;
+import com.xbreeze.xml.config.PowerDeComposerConfig;
 import com.xbreeze.xml.decompose.XmlDecomposer;
 
 public class Executor {
@@ -74,11 +75,18 @@ public class Executor {
 		logger.setLevel((consoleLogLevel.intValue() < logger.getLevel().intValue()) ? consoleLogLevel : logger.getLevel());
 		logger.addHandler(outputConsoleHandler);
 		if (args.length == 3) {
-			if (args[0].equalsIgnoreCase("decompose")) {
-				new XmlDecomposer(args[1].trim(), args[2].trim());
+			String operationType = args[0];
+			// Create the PowerDeComposerConfig.
+			PowerDeComposerConfig pdcConfig = new PowerDeComposerConfig();
+			if (operationType.equalsIgnoreCase("decompose")) {
+				String xmlFilePath = args[1].trim();
+				String targetDirectory = args[2].trim();
+				new XmlDecomposer(xmlFilePath, targetDirectory, pdcConfig);
 			} else
-				if (args[0].equalsIgnoreCase("compose")) {
-					new XmlComposer(args[1].trim(), args[2].trim());
+				if (operationType.equalsIgnoreCase("compose")) {
+					String xmlSourceFile = args[1].trim();
+					String xmlTargetFile = args[2].trim();
+					new XmlComposer(xmlSourceFile, xmlTargetFile, pdcConfig);
 				} else {
 					throw new Exception("First argument should be compose or decompose");
 				}

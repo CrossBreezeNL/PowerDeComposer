@@ -34,6 +34,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
+import com.xbreeze.xml.config.PowerDeComposerConfig;
 import com.xbreeze.xml.utils.FileUtils;
 import com.xbreeze.xml.utils.XMLUtils;
 import com.ximpleware.AutoPilot;
@@ -47,11 +48,11 @@ import com.ximpleware.XPathParseException;
 public class XmlComposer {
 	private static final Logger logger = Logger.getLogger("");
 
-	public XmlComposer(String xmlFilePath, String xmlTargetFilePath) throws Exception {
-		composeXml(xmlFilePath, xmlTargetFilePath);
+	public XmlComposer(String xmlFilePath, String xmlTargetFilePath, PowerDeComposerConfig pdcConfig) throws Exception {
+		composeXml(xmlFilePath, xmlTargetFilePath, pdcConfig);
 	}
 
-	private void composeXml(String xmlFilePath, String xmlTargetFilePath) throws Exception {
+	private void composeXml(String xmlFilePath, String xmlTargetFilePath, PowerDeComposerConfig pdcConfig) throws Exception {
 
 		logger.info(String.format("Starting Xml Composer for '%s'", xmlFilePath));
 

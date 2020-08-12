@@ -26,12 +26,12 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
 
+import com.xbreeze.xml.config.PowerDeComposerConfig;
 import com.xbreeze.xml.utils.FileUtils;
 import com.xbreeze.xml.utils.XMLUtils;
 import com.ximpleware.AutoPilot;
@@ -44,11 +44,11 @@ public class XmlDecomposer {
 	
 	private static final String STR_PREFIX_SPACER = "  ";
 	
-	public XmlDecomposer(String xmlFilePath, String targetDirectory) throws Exception {
-		decomposeXml(xmlFilePath, targetDirectory);
+	public XmlDecomposer(String xmlFilePath, String targetDirectory, PowerDeComposerConfig pdcConfig) throws Exception {
+		decomposeXml(xmlFilePath, targetDirectory, pdcConfig);
 	}
 	
-	private void decomposeXml(String xmlFilePath, String targetDirectory) throws Exception {
+	private void decomposeXml(String xmlFilePath, String targetDirectory, PowerDeComposerConfig pdcConfig) throws Exception {
 		
 		logger.info(String.format("Starting Xml Decomposer for '%s'", xmlFilePath));
 		
@@ -83,7 +83,7 @@ public class XmlDecomposer {
 		
 		// Parse and write document parts.
 		logger.info("Parsing and writing document parts...");
-		parseAndWriteDocumentParts(preparedNv, null, xmlFile.getName(), targetDirectoryPath, 0);
+		parseAndWriteDocumentParts(preparedNv, null, xmlFile.getName(), targetDirectoryPath, 0, pdcConfig);
 		logger.info("Done parsing and writing document parts.");
 		
 		// Done
@@ -169,7 +169,7 @@ public class XmlDecomposer {
 	 * @param currentPartIsRoot
 	 * @throws Exception
 	 */
-	private static Path parseAndWriteDocumentParts(VTDNav nv, String currentObjectName, String targetFileName, Path targetDirectoryPath, int depth) throws Exception {
+	private static Path parseAndWriteDocumentParts(VTDNav nv, String currentObjectName, String targetFileName, Path targetDirectoryPath, int depth, PowerDeComposerConfig pdcConfig) throws Exception {
 		
 		String prefix = String.join("", Collections.nCopies(depth, STR_PREFIX_SPACER));
 		logger.fine(String.format("%s> %s", prefix, targetDirectoryPath));
@@ -183,12 +183,11 @@ public class XmlDecomposer {
 		}
 		
 		// Create a list of collections which we want to extract.
-		// c:DBMS, c:ExtendedModelDefinitions, c:PhysicalDiagrams, c:DataSources, c:Packages, c:PhysicalDiagrams, c:Mappings, c:Tables, c:References, c:Reports, c:SourceModels, c:Users, c:TargetModels
-		List<String> collectionNodesToExtract = Arrays.asList(new String[] {"c:DBMS", "c:ExtendedModelDefinitions", "c:PhysicalDiagrams", "c:DataSources", "c:Packages", "c:Mappings", "c:Tables", "c:References", "c:Reports", "c:SourceModels", "c:Users", "c:TargetModels", "c:Entities", "c:Relationships", "c:LogicalDiagrams"});
+		List<String> collectionNodesToExtract = pdcConfig.getElementsToExtract();
 		
 		AutoPilot ap = new AutoPilot(nv);
-		// Select all elements which have an ObjectID.
-		ap.selectXPath("//*[./ObjectID and ./Name]");
+		// Select all elements which have an ObjectID and a Code.
+		ap.selectXPath("//*[./ObjectID and ./Code]");
 		int minimumNextOffset = 0;
 		int extractedChildCount = 0;
 		// Loop through the found elements.
@@ -219,19 +218,21 @@ public class XmlDecomposer {
 	    	// Make sure the next index found by the AutoPilot is after the current fragment (used in the previous if condition).
 	    	minimumNextOffset = elementOffset + elementLength;
 	    	
-	    	// Get the object id and name.
-	    	String objectId = XMLUtils.getSubElementText(nv, "ObjectID");
-	    	String name = XMLUtils.getSubElementText(nv, "Name");
+	    	// Get the sub element contents to use as the child object name (and thus for the file name).
+	    	String childObjectName = XMLUtils.getSubElementText(nv, pdcConfig.getTargetFileNameSubElement());
+			HashMap<String, String> includeAttributesWithValues = new HashMap<String, String>();
+			// Loop over the sub elements to include to fill the hashmap.
+			// We have to do this loop here, and can't do it later in the code, since the pointer is now on the right spot in the model file.
+			for (String includeSubElement : pdcConfig.getIncludeSubElements()) {
+				String subElementText = XMLUtils.getSubElementText(nv, includeSubElement);
+				// Only include the attribute if it contains a value.
+				if (subElementText.length() > 0)
+					includeAttributesWithValues.put(includeSubElement, subElementText);
+			}
 	    	
 	    	if (parentElementName == null)
-	    		logger.info(String.format("The parent element name is not found for ObjectID: %s.", objectId));
+	    		logger.info(String.format("The parent element name is not found for %s: %s.", pdcConfig.getTargetFileNameSubElement(), childObjectName));
 			
-	    	//logger.fine(String.format("Found element with ObjectID: %s; Element: %s; Name: %s; ParentElementName: %s (start=%d; length=%d)", objectId, elementName, name, parentElementName, elementOffset, elementLength));
-	    	
-	    	// Create a separate file for the element (replace the semi-colon of the namespace to be able to create the folders).
-	    	//String objectName = String.format("%s_%s", elementName.replace(':', '_'), objectId);
-	    	// Set the object name to the object id.
-	    	String childObjectName = objectId;
 	    	// Get the contents of the XML Fragment.
 	    	String objectXmlPart = nv.toRawString(elementOffset, elementLength);
 	    	// Parse the XML Fragment and write it to its own file.
@@ -255,13 +256,25 @@ public class XmlDecomposer {
 			Path childTargetDirectory = targetDirectoryPath.resolve(relativePath);
 			// Derive the object file name.
 			String childObjectFileName = String.format("%s.xml", childObjectName);
-			Path childFileLocation = parseAndWriteDocumentParts(partNv, childObjectName, childObjectFileName, childTargetDirectory, depth + 1);
+			Path childFileLocation = parseAndWriteDocumentParts(partNv, childObjectName, childObjectFileName, childTargetDirectory, depth + 1, pdcConfig);
 			
 			// Insert the include tag for the found object.
 			String actualRelativePath = targetDirectoryPath.relativize(childFileLocation).toString();
-	    	xm.insertBeforeElement(String.format("<xi:include href=\"%s\" type=\"%s\" name=\"%s\" />", actualRelativePath, elementName, XMLUtils.excapeXMLChars(name)));
 			
-			// Increate the extracted child count.
+			// Construct the include tag contents.
+			StringBuffer includeElementStringBuffer = new StringBuffer();
+			includeElementStringBuffer.append(String.format("<xi:include href=\"%s\" type=\"%s\"", actualRelativePath, elementName));
+			// Loop through the include attributes to add the min the include tag.
+			for (String includeAttributeName : includeAttributesWithValues.keySet()) {
+				// Insert the include sub element in the include tag.
+				includeElementStringBuffer.append(String.format(" %s=\"%s\"", includeAttributeName, XMLUtils.excapeXMLChars(includeAttributesWithValues.get(includeAttributeName))));				
+			}
+			includeElementStringBuffer.append(" />");
+			
+			// Insert the full include element.
+	    	xm.insertBeforeElement(includeElementStringBuffer.toString());
+			
+			// Increase the extracted child count.
 			extractedChildCount++;
 		}
 		
