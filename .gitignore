@@ -1,3 +1,7 @@
 .metadata
 .settings
 .vs
+.m2
+target
+/bin/
+/target/

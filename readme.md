@@ -14,4 +14,8 @@ The source code and executable Jar file can be found in this repository and in t
 Information about PowerDeComposer can also be found on the [website](http://powerdecomposer.x-breeze.com/)
 
 
+# How to publish to sonatype nexus using Maven
 
+For this we use a docker image for maven
+- https://hub.docker.com/_/maven
+    -> docker pull maven
