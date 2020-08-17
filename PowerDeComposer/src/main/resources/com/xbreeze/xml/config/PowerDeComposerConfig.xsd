@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:pdc="https://x-breeze.com/PowerDeComposer/config" targetNamespace="https://x-breeze.com/PowerDeComposer/config" version="1.0">
+        
+  
+  
+  <xs:element name="PowerDeComposerConfig" type="pdc:powerDeComposerConfig"/>
+        
+  
+  
+  <xs:complexType name="powerDeComposerConfig">
+                
+    
+    
+    <xs:sequence>
+                        
+      
+      
+      <xs:element minOccurs="0" name="ElementsToExtract">
+                                
+        
+        
+        <xs:complexType>
+                                        
+          
+          
+          <xs:sequence>
+                                                
+            
+            
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="Element" type="xs:string"/>
+                                              
+          
+          
+          </xs:sequence>
+                                      
+        
+        
+        </xs:complexType>
+                              
+      
+      
+      </xs:element>
+                        
+      
+      
+      <xs:element minOccurs="0" name="IncludeSubElements">
+                                
+        
+        
+        <xs:complexType>
+                                        
+          
+          
+          <xs:sequence>
+                                                
+            
+            
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="SubElement" type="xs:string"/>
+                                              
+          
+          
+          </xs:sequence>
+                                      
+        
+        
+        </xs:complexType>
+                              
+      
+      
+      </xs:element>
+                        
+      
+      
+      <xs:element minOccurs="0" name="TargetFileNameSubElement" type="xs:string"/>
+                      
+    
+    
+    </xs:sequence>
+              
+  
+  
+  </xs:complexType>
+      
+
+
+</xs:schema>

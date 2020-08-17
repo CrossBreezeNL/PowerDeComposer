@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pdc:PowerDeComposerConfig xmlns:pdc="https://x-breeze.com/PowerDeComposer/config">
+	<ElementsToExtract>
+		<Element>c:DBMS</Element>
+		<Element>c:ExtendedModelDefinitions</Element>
+		<Element>c:PhysicalDiagrams</Element>
+		<Element>c:DataSources</Element>
+		<Element>c:Packages</Element>
+		<Element>c:Mappings</Element>
+		<Element>c:Tables</Element>
+		<Element>c:References</Element>
+		<Element>c:Reports</Element>
+		<Element>c:SourceModels</Element>
+		<Element>c:Users</Element>
+		<Element>c:TargetModels</Element>
+		<Element>c:Entities</Element>
+		<Element>c:Relationships</Element>
+		<Element>c:LogicalDiagrams</Element>
+	</ElementsToExtract>
+	<TargetFileNameSubElement>ObjectID</TargetFileNameSubElement>
+	<IncludeSubElements>
+		<SubElement>Name</SubElement>
+	</IncludeSubElements>
+</pdc:PowerDeComposerConfig>

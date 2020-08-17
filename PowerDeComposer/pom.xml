@@ -54,6 +54,7 @@
 	  <url>https://dev.azure.com/x-breeze/_git/CrossTest_Public</url>
 	</scm>
 	<properties>
+		<java.version>1.8</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>	
 	<distributionManagement>
@@ -85,6 +86,16 @@
 	    <artifactId>jaxb-api</artifactId>
 	    <version>2.3.1</version>
 	</dependency>
+	<dependency>
+	    <groupId>com.sun.xml.bind</groupId>
+	    <artifactId>jaxb-core</artifactId>
+	    <version>2.3.0.1</version>
+	</dependency>
+	<dependency>
+	    <groupId>com.sun.xml.bind</groupId>
+	    <artifactId>jaxb-impl</artifactId>
+	    <version>2.3.1</version>
+	</dependency>
   </dependencies>
   <profiles>
 		<profile>
@@ -92,52 +103,52 @@
 				<build>
 					<plugins>					
 					    <plugin>
-					      <!-- Build an executable JAR -->
-					      <groupId>org.apache.maven.plugins</groupId>
-					      <artifactId>maven-jar-plugin</artifactId>
-					      <version>3.1.0</version>
-					      <configuration>
-					        <archive>
-					          <manifest>
-					            <addClasspath>true</addClasspath>
-					            <classpathPrefix>lib/</classpathPrefix>
-					            <mainClass>com.xbreeze.xml.Executor</mainClass>
-					          </manifest>
-					        </archive>
-					      </configuration>
-					    </plugin>				  
+						      <!-- Build an executable JAR -->
+						      <groupId>org.apache.maven.plugins</groupId>
+						      <artifactId>maven-jar-plugin</artifactId>
+						      <version>3.1.0</version>
+						      <configuration>
+						        <archive>
+						          <manifest>
+						            <addClasspath>true</addClasspath>
+						            <classpathPrefix>lib/</classpathPrefix>
+						            <mainClass>com.xbreeze.xml.Executor</mainClass>
+						          </manifest>
+						        </archive>
+						      </configuration>
+						    </plugin>				  
 						<plugin>
-						<!--  build jar file with sources (Sonatype requirement) -->
+							<!--  build jar file with sources (Sonatype requirement) -->
+							  <groupId>org.apache.maven.plugins</groupId>
+							  <artifactId>maven-source-plugin</artifactId>
+							  <executions>
+							    <execution>
+							      <id>attach-sources</id>
+							      <goals>
+							        <goal>jar</goal>
+							      </goals>
+							    </execution>
+							  </executions>
+							</plugin>
+						<plugin>
+							<!--  Build jar file with javadocs (Sonatype requirement) -->
 						  <groupId>org.apache.maven.plugins</groupId>
-						  <artifactId>maven-source-plugin</artifactId>
+						  <artifactId>maven-javadoc-plugin</artifactId>
+						  <configuration>
+					          <show>protected</show>
+					          <failOnError>false</failOnError>
+					          <source>1.8</source>
+				          </configuration>
 						  <executions>
 						    <execution>
-						      <id>attach-sources</id>
+						      <id>attach-javadocs</id>
 						      <goals>
 						        <goal>jar</goal>
 						      </goals>
 						    </execution>
 						  </executions>
-						</plugin>
-					<plugin>
-						<!--  Build jar file with javadocs (Sonatype requirement) -->
-					  <groupId>org.apache.maven.plugins</groupId>
-					  <artifactId>maven-javadoc-plugin</artifactId>
-					  <configuration>
-				          <show>protected</show>
-				          <failOnError>false</failOnError>
-				          <source>1.8</source>
-			          </configuration>
-					  <executions>
-					    <execution>
-					      <id>attach-javadocs</id>
-					      <goals>
-					        <goal>jar</goal>
-					      </goals>
-					    </execution>
-					  </executions>
-					</plugin>		 
-				    <plugin>
+						</plugin>		 
+					    <plugin>
 				    	<!--  Sign artifacts with gpg (Sonatype requirement) -->
 				      <groupId>org.apache.maven.plugins</groupId>
 				      <artifactId>maven-gpg-plugin</artifactId>
@@ -181,7 +192,36 @@
 	          </manifest>
 	        </archive>
 	      </configuration>
-	    </plugin>			
+	    </plugin>
+	    <!-- Generate JAX-B schema file -->
+        <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>jaxb2-maven-plugin</artifactId>
+            <version>2.5.0</version>
+            <executions>
+                <execution>
+                    <id>schemagen</id>
+                    <goals>
+                        <goal>schemagen</goal>
+                    </goals>
+                </execution>
+            </executions>
+            <configuration>
+            	<outputDirectory>${basedir}/src/main/resources/com/xbreeze/xml/config/</outputDirectory>
+            	<clearOutputDir>true</clearOutputDir>
+            	<generateEpisode>false</generateEpisode>
+				<sources>
+					<source>src/main/java/com/xbreeze/xml/config/PowerDeComposerConfig.java</source>
+				</sources>
+				<transformSchemas>
+					<transformSchema>
+						<uri>https://x-breeze.com/PowerDeComposer/config</uri>
+						<toPrefix>pdc</toPrefix>
+						<toFile>PowerDeComposerConfig.xsd</toFile>
+					</transformSchema>
+				</transformSchemas>
+            </configuration>
+        </plugin>
     </plugins>
   </build>
   

@@ -24,6 +24,7 @@ package com.xbreeze.xml;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Paths;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Filter;
 import java.util.logging.Level;
@@ -74,10 +75,16 @@ public class Executor {
 		// Update the log level to the lowest level.
 		logger.setLevel((consoleLogLevel.intValue() < logger.getLevel().intValue()) ? consoleLogLevel : logger.getLevel());
 		logger.addHandler(outputConsoleHandler);
-		if (args.length == 3) {
+		if (args.length == 3 || args.length == 4) {
 			String operationType = args[0];
-			// Create the PowerDeComposerConfig.
-			PowerDeComposerConfig pdcConfig = new PowerDeComposerConfig();
+			PowerDeComposerConfig pdcConfig;
+			if (args.length == 4) {
+				pdcConfig = PowerDeComposerConfig.fromFile(Paths.get(args[3]).toUri());
+			}
+			else {
+				// Create the default PowerDeComposerConfig.
+				pdcConfig = new PowerDeComposerConfig();
+			}
 			if (operationType.equalsIgnoreCase("decompose")) {
 				String xmlFilePath = args[1].trim();
 				String targetDirectory = args[2].trim();
@@ -91,7 +98,7 @@ public class Executor {
 					throw new Exception("First argument should be compose or decompose");
 				}
 		} else {
-			throw new Exception("Expecting exactly 3 arguments: (decompose, xml-file-path, target-directory) or (compose, xml-source-file, xml-target-file).");
+			throw new Exception("Expecting exactly 3 or 4 arguments: (decompose, xml-file-path, target-directory[, config-file-location]) or (compose, xml-source-file, xml-target-file[, config-file-location]).");
 		}
 	}
 	/**
