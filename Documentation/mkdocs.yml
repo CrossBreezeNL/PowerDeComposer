@@ -1,5 +1,5 @@
 # Project information
-site_name: 'PowerDeComposer v1.1'
+site_name: 'PowerDeComposer v1.1.2'
 
 # Copyright
 copyright: 'Copyright &copy; 2020 - CrossBreeze'
@@ -21,7 +21,8 @@ theme:
 nav:
 - Home:
     - 'Introduction'    : 'index.md'
-    - 'Getting started' : 'GettingStarted.md'   
+    - 'Getting started' : 'GettingStarted.md'
+    - 'Configuration'   : 'Configuration.md'
     - 'Release notes'   : 'ReleaseNotes.md'
 
 

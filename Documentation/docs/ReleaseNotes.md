@@ -20,6 +20,13 @@ Click on the header of a version number to go to the documentation of that speci
 [//]: # (>     * [ ] Binding)
 [//]: # (>         * [X] Some issue...)
 
+## Version 1.1.2
+
+- [ ] 1.1.2 <sup>25-08-2020</sup>
+> !!! success "Enhanced features"
+>     * [ ] Configuration
+>         - [X] Added configuration of decompose using config file. (See [Configuration](Configuration.md))
+
 ## Version 1.1.1
 
 - [ ] 1.1.1 <sup>22-05-2020</sup>

@@ -10,17 +10,45 @@ PowerDeComposer is available as a [standalone download](https://dev.azure.com/x-
 In order to use PowerDeComposer you need to call the utility using the command line.
 
 ### Decompose a model
-Example command line call to decompose a PowerDesigner model file into a decomposed model:
+The decompose command consist of the following parts:
 
+``` xml
+decompose <ModelFileLocation> <TargetFolderLocation> [<ConfigFileLocation>]
+```
+
+#### Parameters
+| Config element           | Required | Description |
+|:---                      |:---      |:---         |
+| ModelFileLocation        | Yes      | The file location of the model to decompose. |
+| TargetFolderLocation     | Yes      | The folder location to write the decomposed model to. |
+| ConfigFileLocation       | No       | The file location of the configuration file. See [Configuration](Configuration.md). |
+
+#### Example
+
+Example command line call to decompose a PowerDesigner model file into a decomposed model:
 ``` xml
 java -jar XmlDeComposer.jar decompose "C:\Path\To\ExamplePowerDesignerModelFile.ldm" "C:\Path\To\Decomposed\Output"
 ```
 
 ### Compose a model
+The compose command consist of the following parts:
+
+``` xml
+compose <ModelFileLocation> <TargetFileLocation> [<ConfigFileLocation>]
+```
+
+#### Parameters
+| Config element           | Required | Description |
+|:---                      |:---      |:---         |
+| ModelFileLocation        | Yes      | The file location of the model to compose. |
+| TargetFileLocation       | Yes      | The file location to write the composed model to. |
+| ConfigFileLocation       | No       | The file location of the configuration file. See [Configuration](Configuration.md). |
+
+#### Example
 Example command line call to compose a PowerDesigner model file based on the decomposed model:
 
 ``` xml
-java -jar XmlDeComposer.jar compose "C:\Path\To\Decomposed\Output" "C:\Path\To\ExamplePowerDesignerModelFile.ldm"
+java -jar XmlDeComposer.jar compose "C:\Path\To\Decomposed\Output\DecomposedModelFile.ldm" "C:\Path\To\ExamplePowerDesignerModelFile.ldm"
 ```
 
 ## How to use PowerDeComposer with Maven

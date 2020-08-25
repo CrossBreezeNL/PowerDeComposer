@@ -17,8 +17,8 @@
 		<Element>c:Relationships</Element>
 		<Element>c:LogicalDiagrams</Element>
 	</ElementsToExtract>	
+	<TargetFileNameSubElement>ObjectID</TargetFileNameSubElement>
 	<IncludeSubElements>
 		<SubElement>Name</SubElement>
 	</IncludeSubElements>
-	<TargetFileNameSubElement>ObjectID</TargetFileNameSubElement>
 </PowerDeComposerConfig>
