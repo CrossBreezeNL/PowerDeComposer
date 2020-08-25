@@ -60,21 +60,21 @@ public class PowerDeComposerConfig {
 	 * The default list of elements to extract are:
 	 *  - c:DBMS, c:ExtendedModelDefinitions, c:PhysicalDiagrams, c:DataSources, c:Packages, c:Mappings, c:Tables, c:References, c:Reports, c:SourceModels, c:Users, c:TargetModels, c:Entities, c:Relationships, c:LogicalDiagrams
 	 */
-	private List<String> _elementsToExtract = Arrays.asList(new String[] { "c:DBMS", "c:ExtendedModelDefinitions", "c:PhysicalDiagrams", "c:DataSources", "c:Packages", "c:Mappings", "c:Tables", "c:References", "c:Reports", "c:SourceModels", "c:Users", "c:TargetModels", "c:Entities", "c:Relationships", "c:LogicalDiagrams" });
+	private List<String> _elementsToExtract;// = Arrays.asList(new String[] { "c:DBMS", "c:ExtendedModelDefinitions", "c:PhysicalDiagrams", "c:DataSources", "c:Packages", "c:Mappings", "c:Tables", "c:References", "c:Reports", "c:SourceModels", "c:Users", "c:TargetModels", "c:Entities", "c:Relationships", "c:LogicalDiagrams" });
 	
 	/**
 	 * The sub element contents to use as the filename (without extension) for the extracted elements.
 	 * The default value is ObjectID (so it will use the ObjectID of any extracted element as it's file name).
 	 * Possible options are: ObjectID, Code & Name.
 	 */
-	private String _targetFileNameSubElement = "ObjectID";
+	private String _targetFileNameSubElement;// = "ObjectID";
 	
 	/**
 	 * List of sub elements to include as an attribute on the include instruction.
 	 * The default value is Name.
 	 * Possible options are: ObjectID, Code & Name.
 	 */
-	private List<String> _includeSubElements = Arrays.asList(new String[] { "Name" });
+	private List<String> _includeSubElements;// = Arrays.asList(new String[] { "Name" });
 
 	@XmlElement(name = "Element")
 	@XmlElementWrapper(name = "ElementsToExtract")
@@ -91,6 +91,19 @@ public class PowerDeComposerConfig {
 	@XmlElementWrapper(name = "IncludeSubElements")
 	public List<String> getIncludeSubElements() {
 		return _includeSubElements;
+	}
+	
+
+	public void setElementsToExtract(List<String> elementsToExtract) {
+		this._elementsToExtract = elementsToExtract;
+	}
+
+	public void setTargetFileNameSubElement(String targetFileNameSubElement) {
+		this._targetFileNameSubElement = targetFileNameSubElement;
+	}
+
+	public void setIncludeSubElements(List<String> includeSubElements) {
+		this._includeSubElements = includeSubElements;
 	}
 
 	/**
@@ -176,4 +189,9 @@ public class PowerDeComposerConfig {
 		// Return the pdc config.
 		return pdcConfig;
 	}
+	
+	public PowerDeComposerConfig() {
+		//this._elementsToExtract = Arrays.asList(new String[] { "c:DBMS", "c:ExtendedModelDefinitions", "c:PhysicalDiagrams", "c:DataSources", "c:Packages", "c:Mappings", "c:Tables", "c:References", "c:Reports", "c:SourceModels", "c:Users", "c:TargetModels", "c:Entities", "c:Relationships", "c:LogicalDiagrams" });		
+	}
+	
 }
