@@ -83,7 +83,7 @@ public class Executor {
 			}
 			else {
 				// Create the default PowerDeComposerConfig.
-				pdcConfig = new PowerDeComposerConfig();
+				pdcConfig = PowerDeComposerConfig.GetDefaultConfig();
 			}
 			if (operationType.equalsIgnoreCase("decompose")) {
 				String xmlFilePath = args[1].trim();

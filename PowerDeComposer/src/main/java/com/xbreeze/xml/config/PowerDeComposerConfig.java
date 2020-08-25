@@ -25,10 +25,10 @@ package com.xbreeze.xml.config;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.net.URI;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -37,7 +37,9 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.UnmarshalException;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.annotation.XmlAccessOrder;
 import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorOrder;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -51,59 +53,105 @@ import org.xml.sax.SAXParseException;
 
 @XmlRootElement(name = "PowerDeComposerConfig")
 @XmlAccessorType(XmlAccessType.NONE)
+@XmlAccessorOrder(XmlAccessOrder.UNDEFINED)
 public class PowerDeComposerConfig {
 	// The logger for this class.
 	private static final Logger logger = Logger.getLogger(PowerDeComposerConfig.class.getName());
+	
+	// The namespace URI.
+	public static final String NAMESPACE_URI = "https://x-breeze.com/PowerDeComposer/config";
+
+	/**
+	 * @see #getElementsToExtract()
+	 */
+	private List<String> _elementsToExtract;
+	
+	/**
+	 * @see #getTargetFileNameSubElement()
+	 */
+	private String _targetFileNameSubElement;
+	
+	/**
+	 * @see #getIncludeSubElements()
+	 */
+	private List<String> _includeSubElements;
 
 	/**
 	 * List of document nodes to extract (XPath expression per node).
 	 * The default list of elements to extract are:
 	 *  - c:DBMS, c:ExtendedModelDefinitions, c:PhysicalDiagrams, c:DataSources, c:Packages, c:Mappings, c:Tables, c:References, c:Reports, c:SourceModels, c:Users, c:TargetModels, c:Entities, c:Relationships, c:LogicalDiagrams
+	 * @return the ElementsToExtract
 	 */
-	private List<String> _elementsToExtract;// = Arrays.asList(new String[] { "c:DBMS", "c:ExtendedModelDefinitions", "c:PhysicalDiagrams", "c:DataSources", "c:Packages", "c:Mappings", "c:Tables", "c:References", "c:Reports", "c:SourceModels", "c:Users", "c:TargetModels", "c:Entities", "c:Relationships", "c:LogicalDiagrams" });
+	@XmlElement(name = "Element")
+	@XmlElementWrapper(name = "ElementsToExtract")
+	public List<String> getElementsToExtract() {
+		return this._elementsToExtract;
+	}
 	
 	/**
 	 * The sub element contents to use as the filename (without extension) for the extracted elements.
 	 * The default value is ObjectID (so it will use the ObjectID of any extracted element as it's file name).
 	 * Possible options are: ObjectID, Code & Name.
+	 * @return the TargetFileNameSubElement
 	 */
-	private String _targetFileNameSubElement;// = "ObjectID";
+	@XmlElement(name = "TargetFileNameSubElement")
+	public String getTargetFileNameSubElement() {
+		return this._targetFileNameSubElement;
+	}
 	
 	/**
 	 * List of sub elements to include as an attribute on the include instruction.
 	 * The default value is Name.
 	 * Possible options are: ObjectID, Code & Name.
+	 * @return The IncludeSubElements
 	 */
-	private List<String> _includeSubElements;// = Arrays.asList(new String[] { "Name" });
-
-	@XmlElement(name = "Element")
-	@XmlElementWrapper(name = "ElementsToExtract")
-	public List<String> getElementsToExtract() {
-		return _elementsToExtract;
-	}
-	
-	@XmlElement(name = "TargetFileNameSubElement")
-	public String getTargetFileNameSubElement() {
-		return _targetFileNameSubElement;
-	}
-	
 	@XmlElement(name = "SubElement")
 	@XmlElementWrapper(name = "IncludeSubElements")
 	public List<String> getIncludeSubElements() {
-		return _includeSubElements;
+		return this._includeSubElements;
 	}
 	
-
+	/**
+	 * Setter for ElementsToExtract.
+	 * @param elementsToExtract
+	 */
 	public void setElementsToExtract(List<String> elementsToExtract) {
 		this._elementsToExtract = elementsToExtract;
 	}
 
+	/**
+	 * Setter for TargetFileNameSubElement.
+	 * @param targetFileNameSubElement
+	 */
 	public void setTargetFileNameSubElement(String targetFileNameSubElement) {
 		this._targetFileNameSubElement = targetFileNameSubElement;
 	}
 
+	/**
+	 * Setter for IncludeSubElements.
+	 * @param includeSubElements
+	 */
 	public void setIncludeSubElements(List<String> includeSubElements) {
 		this._includeSubElements = includeSubElements;
+	}
+	
+	/**
+	 * Default constructor.
+	 */
+	public PowerDeComposerConfig() { }
+	
+	/**
+	 * Create the default config object for user which execute PowerDeComposer without a config file.
+	 * @throws ConfigException 
+	 */
+	public static PowerDeComposerConfig GetDefaultConfig() throws ConfigException {
+		String defaultConfigFile = String.format("Default%s.xml", PowerDeComposerConfig.class.getSimpleName());
+		// Get an stream on the default config file.
+		InputStream defaultConfigStream = PowerDeComposerConfig.class.getResourceAsStream(defaultConfigFile);
+		// Create the config object based on the default config file.
+		PowerDeComposerConfig config = PowerDeComposerConfig.fromInputSource(new InputSource(defaultConfigStream));
+		// Return the config.
+		return config;
 	}
 
 	/**
@@ -178,9 +226,9 @@ public class PowerDeComposerConfig {
 		} catch (UnmarshalException e) {
 			// If the linked exception is a sax parse exception, it contains the error in the config file.
 			if (e.getLinkedException() instanceof SAXParseException) {
-				throw new ConfigException(String.format("Error in app config file: %s", e.getLinkedException().getMessage()), e);
+				throw new ConfigException(String.format("Error in config file: %s", e.getLinkedException().getMessage()), e);
 			} else {
-				throw new ConfigException(String.format("Error in app config file: %s", e.getMessage()), e);
+				throw new ConfigException(String.format("Error in config file: %s", e.getMessage()), e);
 			}
 		} catch (JAXBException e) {
 			throw new ConfigException(String.format("Couldn't read the config file"), e);
@@ -188,10 +236,6 @@ public class PowerDeComposerConfig {
 		
 		// Return the pdc config.
 		return pdcConfig;
-	}
-	
-	public PowerDeComposerConfig() {
-		//this._elementsToExtract = Arrays.asList(new String[] { "c:DBMS", "c:ExtendedModelDefinitions", "c:PhysicalDiagrams", "c:DataSources", "c:Packages", "c:Mappings", "c:Tables", "c:References", "c:Reports", "c:SourceModels", "c:Users", "c:TargetModels", "c:Entities", "c:Relationships", "c:LogicalDiagrams" });		
 	}
 	
 }

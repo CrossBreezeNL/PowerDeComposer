@@ -1,86 +1,66 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:pdc="https://x-breeze.com/PowerDeComposer/config" targetNamespace="https://x-breeze.com/PowerDeComposer/config" version="1.0">
-        
-  
-  
-  <xs:element name="PowerDeComposerConfig" type="pdc:powerDeComposerConfig"/>
-        
-  
-  
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0">
+    
+  <xs:element name="PowerDeComposerConfig" type="powerDeComposerConfig"/>
+    
   <xs:complexType name="powerDeComposerConfig">
-                
-    
-    
-    <xs:sequence>
-                        
-      
-      
+        
+    <xs:all>
+            
       <xs:element minOccurs="0" name="ElementsToExtract">
-                                
-        
-        
+        <xs:annotation>
+          <xs:documentation><![CDATA[List of document nodes to extract (XPath expression per node).
+The default list of elements to extract are:
+ - c:DBMS, c:ExtendedModelDefinitions, c:PhysicalDiagrams, c:DataSources, c:Packages, c:Mappings, c:Tables, c:References, c:Reports, c:SourceModels, c:Users, c:TargetModels, c:Entities, c:Relationships, c:LogicalDiagrams
+
+(return): the ElementsToExtract]]></xs:documentation>
+        </xs:annotation>
+                
         <xs:complexType>
-                                        
-          
-          
+                    
           <xs:sequence>
-                                                
-            
-            
+                        
             <xs:element maxOccurs="unbounded" minOccurs="0" name="Element" type="xs:string"/>
-                                              
-          
-          
-          </xs:sequence>
-                                      
-        
-        
-        </xs:complexType>
-                              
-      
-      
-      </xs:element>
-                        
-      
-      
-      <xs:element minOccurs="0" name="IncludeSubElements">
-                                
-        
-        
-        <xs:complexType>
-                                        
-          
-          
-          <xs:sequence>
-                                                
-            
-            
-            <xs:element maxOccurs="unbounded" minOccurs="0" name="SubElement" type="xs:string"/>
-                                              
-          
-          
-          </xs:sequence>
-                                      
-        
-        
-        </xs:complexType>
-                              
-      
-      
-      </xs:element>
-                        
-      
-      
-      <xs:element minOccurs="0" name="TargetFileNameSubElement" type="xs:string"/>
                       
-    
-    
-    </xs:sequence>
+          </xs:sequence>
+                  
+        </xs:complexType>
               
-  
-  
-  </xs:complexType>
+      </xs:element>
+            
+      <xs:element minOccurs="0" name="IncludeSubElements">
+        <xs:annotation>
+          <xs:documentation><![CDATA[List of sub elements to include as an attribute on the include instruction.
+The default value is Name.
+Possible options are: ObjectID, Code & Name.
+
+(return): The IncludeSubElements]]></xs:documentation>
+        </xs:annotation>
+                
+        <xs:complexType>
+                    
+          <xs:sequence>
+                        
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="SubElement" type="xs:string"/>
+                      
+          </xs:sequence>
+                  
+        </xs:complexType>
+              
+      </xs:element>
+            
+      <xs:element minOccurs="0" name="TargetFileNameSubElement" type="xs:string">
+        <xs:annotation>
+          <xs:documentation><![CDATA[The sub element contents to use as the filename (without extension) for the extracted elements.
+The default value is ObjectID (so it will use the ObjectID of any extracted element as it's file name).
+Possible options are: ObjectID, Code & Name.
+
+(return): the TargetFileNameSubElement]]></xs:documentation>
+        </xs:annotation>
+      </xs:element>
+          
+    </xs:all>
       
-
-
+  </xs:complexType>
+  
 </xs:schema>

@@ -213,18 +213,11 @@
             </executions>
             <configuration>
             	<outputDirectory>${basedir}/src/main/resources/com/xbreeze/xml/config/</outputDirectory>
-            	<clearOutputDir>true</clearOutputDir>
+            	<clearOutputDir>false</clearOutputDir>
             	<generateEpisode>false</generateEpisode>
 				<sources>
 					<source>src/main/java/com/xbreeze/xml/config/PowerDeComposerConfig.java</source>
 				</sources>
-				<transformSchemas>
-					<transformSchema>
-						<uri>https://x-breeze.com/PowerDeComposer/config</uri>
-						<toPrefix>pdc</toPrefix>
-						<toFile>PowerDeComposerConfig.xsd</toFile>
-					</transformSchema>
-				</transformSchemas>
             </configuration>
         </plugin>
     </plugins>
