@@ -5,61 +5,119 @@
     
   <xs:complexType name="powerDeComposerConfig">
         
-    <xs:all>
+    <xs:sequence>
             
-      <xs:element minOccurs="0" name="ElementsToExtract">
-        <xs:annotation>
-          <xs:documentation><![CDATA[List of document nodes to extract (XPath expression per node).
-The default list of elements to extract are:
- - c:DBMS, c:ExtendedModelDefinitions, c:PhysicalDiagrams, c:DataSources, c:Packages, c:Mappings, c:Tables, c:References, c:Reports, c:SourceModels, c:Users, c:TargetModels, c:Entities, c:Relationships, c:LogicalDiagrams
-
-(return): the ElementsToExtract]]></xs:documentation>
-        </xs:annotation>
-                
-        <xs:complexType>
-                    
-          <xs:sequence>
-                        
-            <xs:element maxOccurs="unbounded" minOccurs="0" name="Element" type="xs:string"/>
-                      
-          </xs:sequence>
-                  
-        </xs:complexType>
-              
-      </xs:element>
-            
-      <xs:element minOccurs="0" name="IncludeSubElements">
-        <xs:annotation>
-          <xs:documentation><![CDATA[List of sub elements to include as an attribute on the include instruction.
-The default value is Name.
-Possible options are: ObjectID, Code & Name.
-
-(return): The IncludeSubElements]]></xs:documentation>
-        </xs:annotation>
-                
-        <xs:complexType>
-                    
-          <xs:sequence>
-                        
-            <xs:element maxOccurs="unbounded" minOccurs="0" name="SubElement" type="xs:string"/>
-                      
-          </xs:sequence>
-                  
-        </xs:complexType>
-              
-      </xs:element>
-            
-      <xs:element minOccurs="0" name="TargetFileNameSubElement" type="xs:string">
-        <xs:annotation>
-          <xs:documentation><![CDATA[The sub element contents to use as the filename (without extension) for the extracted elements.
-The default value is ObjectID (so it will use the ObjectID of any extracted element as it's file name).
-Possible options are: ObjectID, Code & Name.
-
-(return): the TargetFileNameSubElement]]></xs:documentation>
-        </xs:annotation>
-      </xs:element>
+      <xs:element minOccurs="0" name="Decompose" type="decomposeConfig"/>
           
-    </xs:all>
+    </xs:sequence>
+      
+  </xs:complexType>
+    
+  <xs:complexType name="decomposeConfig">
+        
+    <xs:sequence>
+            
+      <xs:element minOccurs="0" name="DecomposableElement" type="decomposableElementConfig"/>
+          
+    </xs:sequence>
+      
+  </xs:complexType>
+    
+  <xs:complexType name="decomposableElementConfig">
+        
+    <xs:complexContent>
+            
+      <xs:extension base="allConditionGroup">
+                
+        <xs:sequence>
+                    
+          <xs:element minOccurs="0" name="IncludeAttributes">
+                        
+            <xs:complexType>
+                            
+              <xs:sequence>
+                                
+                <xs:element maxOccurs="unbounded" minOccurs="0" name="IncludeAttribute" type="includeAttributeConfig"/>
+                              
+              </xs:sequence>
+                          
+            </xs:complexType>
+                      
+          </xs:element>
+                    
+          <xs:element minOccurs="0" name="TargetFileName" type="targetFileNameConfig"/>
+                  
+        </xs:sequence>
+              
+      </xs:extension>
+          
+    </xs:complexContent>
+      
+  </xs:complexType>
+    
+  <xs:complexType name="allConditionGroup">
+        
+    <xs:sequence>
+            
+      <xs:choice maxOccurs="unbounded" minOccurs="0">
+                
+        <xs:element name="AllConditions" type="allConditionGroup"/>
+                
+        <xs:element name="OneOffConditions" type="oneOffConditionGroup"/>
+                
+        <xs:element name="ElementCondition" type="elementCondition"/>
+              
+      </xs:choice>
+            
+      <xs:element maxOccurs="unbounded" minOccurs="0" name="elementConditionsAndGroups" nillable="true" type="xs:anyType"/>
+          
+    </xs:sequence>
+      
+  </xs:complexType>
+    
+  <xs:complexType name="includeAttributeConfig">
+        
+    <xs:sequence/>
+        
+    <xs:attribute name="name" type="xs:string"/>
+        
+    <xs:attribute name="xpath" type="xs:string"/>
+      
+  </xs:complexType>
+    
+  <xs:complexType name="targetFileNameConfig">
+        
+    <xs:sequence/>
+        
+    <xs:attribute name="xpath" type="xs:string"/>
+      
+  </xs:complexType>
+    
+  <xs:complexType name="oneOffConditionGroup">
+        
+    <xs:sequence>
+            
+      <xs:choice maxOccurs="unbounded" minOccurs="0">
+                
+        <xs:element name="AllConditions" type="allConditionGroup"/>
+                
+        <xs:element name="OneOffConditions" type="oneOffConditionGroup"/>
+                
+        <xs:element name="ElementCondition" type="elementCondition"/>
+              
+      </xs:choice>
+            
+      <xs:element maxOccurs="unbounded" minOccurs="0" name="elementConditionsAndGroups" nillable="true" type="xs:anyType"/>
+          
+    </xs:sequence>
+      
+  </xs:complexType>
+    
+  <xs:complexType name="elementCondition">
+        
+    <xs:sequence/>
+        
+    <xs:attribute name="xpath" type="xs:string"/>
       
   </xs:complexType>
   

@@ -88,12 +88,12 @@ public class Executor {
 			if (operationType.equalsIgnoreCase("decompose")) {
 				String xmlFilePath = args[1].trim();
 				String targetDirectory = args[2].trim();
-				new XmlDecomposer(xmlFilePath, targetDirectory, pdcConfig);
+				new XmlDecomposer(xmlFilePath, targetDirectory, pdcConfig.getDecomposeConfig());
 			} else
 				if (operationType.equalsIgnoreCase("compose")) {
 					String xmlSourceFile = args[1].trim();
 					String xmlTargetFile = args[2].trim();
-					new XmlComposer(xmlSourceFile, xmlTargetFile, pdcConfig);
+					new XmlComposer(xmlSourceFile, xmlTargetFile);
 				} else {
 					throw new Exception("First argument should be compose or decompose");
 				}

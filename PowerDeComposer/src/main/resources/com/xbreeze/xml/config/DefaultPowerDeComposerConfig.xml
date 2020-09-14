@@ -1,24 +1,41 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <PowerDeComposerConfig>
-	<ElementsToExtract>
-		<Element>c:DBMS</Element>
-		<Element>c:ExtendedModelDefinitions</Element>
-		<Element>c:PhysicalDiagrams</Element>
-		<Element>c:DataSources</Element>
-		<Element>c:Packages</Element>
-		<Element>c:Mappings</Element>
-		<Element>c:Tables</Element>
-		<Element>c:References</Element>
-		<Element>c:Reports</Element>
-		<Element>c:SourceModels</Element>
-		<Element>c:Users</Element>
-		<Element>c:TargetModels</Element>
-		<Element>c:Entities</Element>
-		<Element>c:Relationships</Element>
-		<Element>c:LogicalDiagrams</Element>
-	</ElementsToExtract>	
-	<TargetFileNameSubElement>ObjectID</TargetFileNameSubElement>
-	<IncludeSubElements>
-		<SubElement>Name</SubElement>
-	</IncludeSubElements>
+	<Decompose>
+		<!-- The DecomposableElement is implicitly a AllConditions group. -->
+		<DecomposableElement>
+			<!-- The element must have a ObjectID and a Code element as childs. -->
+			<ElementCondition xpath="./ObjectID and ./Code" />
+			<!-- Use the parent axis on the current node to set a predicate on the parent. -->
+			<!-- Decompose all elements where the parent name starts with 'c:' (these are the collections in PowerDesigner). -->
+			<ElementCondition xpath="parent::node()[starts-with(name(), 'c:')]" />
+			<!-- Don't decompose the Children, Attributes and Identifiers collection. -->
+			<ElementCondition xpath="parent::node()[name() != 'c:Children']" />
+			<ElementCondition xpath="parent::node()[name() != 'c:Attributes']" />
+			<ElementCondition xpath="parent::node()[name() != 'c:Identifiers']" />
+			
+			<!-- Example for comparing on the element name. -->
+			<!-- <ElementCondition xpath="name() = 'o:Entity'" /> -->
+			<!-- Example for using starts-with with the name() function. -->
+			<!-- <ElementCondition xpath="starts-with(name(), 'o:')" /> -->
+			
+			<!-- You can nest conditions groups (OneOfConditions and AllConditions). See the example below. -->
+			<!--
+			<OneOffConditions>
+				<ElementCondition xpath="name() = 'SomeElementName'" />
+				<ElementCondition xpath="name() = 'SomeOtherElementName'" />
+				<AllConditions>
+					<ElementCondition xpath="parent::node()[name() = 'c:Entities'" />
+					<ElementCondition xpath="starts-with(./Code, 'ENT')" />
+				</AllConditions>
+			</OneOffConditions>
+			 -->
+			 
+			<!-- Here we specify which information to include as an attribute on the XInclude tag. -->
+			<IncludeAttributes>
+				<IncludeAttribute name="name" xpath="./Name" />
+			</IncludeAttributes>
+			<!-- Here we specify the xpath to execute on a decomposable element to get the file name (without .xml). -->
+			<TargetFileName xpath="./ObjectID" />
+		</DecomposableElement>
+	</Decompose>
 </PowerDeComposerConfig>

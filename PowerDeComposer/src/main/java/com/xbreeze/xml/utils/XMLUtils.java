@@ -158,6 +158,19 @@ public class XMLUtils {
 	 * @param subElementName
 	 * @return
 	 * @throws XPathParseException
+	 */
+	public static String getXPathText(VTDNav nv, String xpath) throws XPathParseException {
+		AutoPilot sap = new AutoPilot(nv);
+		sap.selectXPath(xpath);
+		return sap.evalXPathToString();
+	}
+	
+	/**
+	 * Get the text value of a sub element.
+	 * @param nv
+	 * @param subElementName
+	 * @return
+	 * @throws XPathParseException
 	 * @throws XPathEvalException 
 	 * @throws NavException 
 	 */

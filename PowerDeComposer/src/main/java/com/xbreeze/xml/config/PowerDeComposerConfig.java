@@ -29,7 +29,6 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.net.URI;
 import java.net.URL;
-import java.util.List;
 import java.util.logging.Logger;
 
 import javax.xml.XMLConstants;
@@ -42,7 +41,6 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorOrder;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
@@ -58,81 +56,15 @@ public class PowerDeComposerConfig {
 	// The logger for this class.
 	private static final Logger logger = Logger.getLogger(PowerDeComposerConfig.class.getName());
 	
-	// The namespace URI.
-	public static final String NAMESPACE_URI = "https://x-breeze.com/PowerDeComposer/config";
-
-	/**
-	 * @see #getElementsToExtract()
-	 */
-	private List<String> _elementsToExtract;
+	private DecomposeConfig _decomposeConfig;
 	
-	/**
-	 * @see #getTargetFileNameSubElement()
-	 */
-	private String _targetFileNameSubElement;
-	
-	/**
-	 * @see #getIncludeSubElements()
-	 */
-	private List<String> _includeSubElements;
-
-	/**
-	 * List of document nodes to extract (XPath expression per node).
-	 * The default list of elements to extract are:
-	 *  - c:DBMS, c:ExtendedModelDefinitions, c:PhysicalDiagrams, c:DataSources, c:Packages, c:Mappings, c:Tables, c:References, c:Reports, c:SourceModels, c:Users, c:TargetModels, c:Entities, c:Relationships, c:LogicalDiagrams
-	 * @return the ElementsToExtract
-	 */
-	@XmlElement(name = "Element")
-	@XmlElementWrapper(name = "ElementsToExtract")
-	public List<String> getElementsToExtract() {
-		return this._elementsToExtract;
-	}
-	
-	/**
-	 * The sub element contents to use as the filename (without extension) for the extracted elements.
-	 * The default value is ObjectID (so it will use the ObjectID of any extracted element as it's file name).
-	 * Possible options are: ObjectID, Code & Name.
-	 * @return the TargetFileNameSubElement
-	 */
-	@XmlElement(name = "TargetFileNameSubElement")
-	public String getTargetFileNameSubElement() {
-		return this._targetFileNameSubElement;
-	}
-	
-	/**
-	 * List of sub elements to include as an attribute on the include instruction.
-	 * The default value is Name.
-	 * Possible options are: ObjectID, Code & Name.
-	 * @return The IncludeSubElements
-	 */
-	@XmlElement(name = "SubElement")
-	@XmlElementWrapper(name = "IncludeSubElements")
-	public List<String> getIncludeSubElements() {
-		return this._includeSubElements;
-	}
-	
-	/**
-	 * Setter for ElementsToExtract.
-	 * @param elementsToExtract
-	 */
-	public void setElementsToExtract(List<String> elementsToExtract) {
-		this._elementsToExtract = elementsToExtract;
+	@XmlElement(name = "Decompose")
+	public DecomposeConfig getDecomposeConfig() {
+		return _decomposeConfig;
 	}
 
-	/**
-	 * Setter for TargetFileNameSubElement.
-	 * @param targetFileNameSubElement
-	 */
-	public void setTargetFileNameSubElement(String targetFileNameSubElement) {
-		this._targetFileNameSubElement = targetFileNameSubElement;
-	}
-
-	/**
-	 * Setter for IncludeSubElements.
-	 * @param includeSubElements
-	 */
-	public void setIncludeSubElements(List<String> includeSubElements) {
-		this._includeSubElements = includeSubElements;
+	public void setDecomposeConfig(DecomposeConfig decomposeConfig) {
+		this._decomposeConfig = decomposeConfig;
 	}
 	
 	/**
