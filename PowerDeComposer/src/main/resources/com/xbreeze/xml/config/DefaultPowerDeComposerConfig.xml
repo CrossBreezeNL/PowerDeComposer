@@ -1,6 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <PowerDeComposerConfig>
 	<Decompose>
+	
+		<!-- Specify the nodes to remove before decomposing. -->
+		<NodeRemovals>
+			<!-- Remove the object count on the PowerDesigner processing instruction. -->
+			<NodeRemoval xpath="/processing-instruction('PowerDesigner')/@Objects" />
+			<!-- <NodeRemoval xpath="//processing-instruction('PowerDesigner')/@Objects" /> -->
+			<!-- Remove the symbols count on the PowerDesigner processing instruction. -->
+			<!-- <NodeRemoval xpath="//processing-instruction('PowerDesigner')/@Symbols" />  -->
+			<!-- Remove the CreationDate, Creator, ModificationDate & Modifier from all Shortcuts. -->
+			<!-- <NodeRemoval xpath="//o:Shortcut/a:CreationDate" />
+			<NodeRemoval xpath="//o:Shortcut/a:Creator" />
+			<NodeRemoval xpath="//o:Shortcut/a:ModificationDate" />
+			<NodeRemoval xpath="//o:Shortcut/a:Modifier" /> -->
+			<!-- Remove the TargetModelLastModificationDate from all TargetModels. -->
+			<!-- <NodeRemoval xpath="//o:TargetModel/a:TargetModelLastModificationDate" />  -->
+		</NodeRemovals>
+		
+		<!-- Specify which elements should be decomposed. -->
 		<!-- The DecomposableElement is implicitly a AllConditions group. -->
 		<DecomposableElement>
 			<!-- The element must have a ObjectID and a Code element as childs. -->
@@ -37,5 +55,6 @@
 			<!-- Here we specify the xpath to execute on a decomposable element to get the file name (without .xml). -->
 			<TargetFileName xpath="./ObjectID" />
 		</DecomposableElement>
+
 	</Decompose>
 </PowerDeComposerConfig>

@@ -17,9 +17,31 @@
         
     <xs:sequence>
             
+      <xs:element minOccurs="0" name="NodeRemovals">
+                
+        <xs:complexType>
+                    
+          <xs:sequence>
+                        
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="NodeRemoval" type="nodeRemovalConfig"/>
+                      
+          </xs:sequence>
+                  
+        </xs:complexType>
+              
+      </xs:element>
+            
       <xs:element minOccurs="0" name="DecomposableElement" type="decomposableElementConfig"/>
           
     </xs:sequence>
+      
+  </xs:complexType>
+    
+  <xs:complexType name="nodeRemovalConfig">
+        
+    <xs:sequence/>
+        
+    <xs:attribute name="xpath" type="xs:string"/>
       
   </xs:complexType>
     

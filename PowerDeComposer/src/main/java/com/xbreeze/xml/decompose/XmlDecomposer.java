@@ -28,11 +28,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Logger;
 
-import com.xbreeze.xml.config.DecomposableElementConfig;
-import com.xbreeze.xml.config.DecomposeConfig;
-import com.xbreeze.xml.config.IncludeAttributeConfig;
+import com.xbreeze.xml.decompose.config.DecomposableElementConfig;
+import com.xbreeze.xml.decompose.config.DecomposeConfig;
+import com.xbreeze.xml.decompose.config.IncludeAttributeConfig;
+import com.xbreeze.xml.decompose.config.NodeRemovalConfig;
 import com.xbreeze.xml.utils.FileUtils;
 import com.xbreeze.xml.utils.XMLUtils;
 import com.ximpleware.AutoPilot;
@@ -79,12 +81,15 @@ public class XmlDecomposer {
 		}
 		
 		// Prepare the Xml Document.
-		VTDNav preparedNv = prepareDocument(nv);
-		//VTDNav preparedNv = nv;
+		nv = prepareDocument(nv);
+		
+		if (decomposeConfig.getNodeRemovalConfigs() != null && decomposeConfig.getNodeRemovalConfigs().size() > 0) {
+			removeNodes(nv, decomposeConfig.getNodeRemovalConfigs());
+		}
 		
 		// Parse and write document parts.
 		logger.info("Parsing and writing document parts...");
-		parseAndWriteDocumentParts(preparedNv, null, xmlFile.getName(), targetDirectoryPath, 0, decomposeConfig);
+		parseAndWriteDocumentParts(nv, null, xmlFile.getName(), targetDirectoryPath, 0, decomposeConfig);
 		logger.info("Done parsing and writing document parts.");
 		
 		// Done
@@ -160,6 +165,57 @@ public class XmlDecomposer {
 		
 		// Output and reparse the modifier xml to the VtdNav.
 		return xm.outputAndReparse();
+	}
+	
+	/**
+	 * Function to remove all nodes as specified in the config.
+	 * @param nv The VTDNav object.
+	 * @param decomposeConfig The decompose config.
+	 * @return The VTDNav on the model object where the nodes are removed.
+	 * @throws Exception
+	 */
+	private VTDNav removeNodes(VTDNav nv, List<NodeRemovalConfig> nodeRemovalConfigs) throws Exception {
+		logger.info("Removing nodes from the PowerDesigner model document...");
+		
+		XMLModifier xm;
+		try {
+			xm = new XMLModifier(nv);
+		} catch (Exception e) {
+			throw new Exception("Error while initializing XMLModifier");
+		}
+		
+		for (NodeRemovalConfig nodeRemovalConfig : nodeRemovalConfigs) {
+			AutoPilot ap = new AutoPilot(nv);
+			logger.fine(String.format("Removing nodes using XPath expression '%s'...", nodeRemovalConfig.getXPath()));
+			ap.selectXPath(nodeRemovalConfig.getXPath());
+			
+			// Execute the XPath expression and loop through the results.
+			boolean removedNodes = false;
+	        while ((ap.evalXPath()) != -1) {
+	        	logger.fine(String.format(" - Removing node '%d'...", nv.getCurrentIndex()));
+	        	// Remove the node.
+	        	xm.remove();
+	        	// Update removedNodes to true.
+	        	removedNodes = true;
+	        }
+	        
+	        // If nodes were removed, re-init the VTDNav and reset the XMLModifier.
+	        if (removedNodes) {
+		        // Output and re-parse the document for the next injection.
+		        // This is necessary, otherwise exceptions will be thrown when injecting attributes for the same element.
+		        nv = xm.outputAndReparse();
+		        // Reset and bind the modifier to the new VTDNav object.
+		        xm.reset();
+		        xm.bind(nv);
+	        } else {
+	        	logger.warning(String.format("The NodeRemoval instruction yielded no nodes ('%s').", nodeRemovalConfig.getXPath()));
+	        }
+		}
+		
+		logger.info("Done removing nodes from the PowerDesigner model document.");
+		
+		// We can return the nv object since it is already reparsed, reset and bind in the latest iteration of the config loop.
+		return nv;
 	}
 	
 	/**

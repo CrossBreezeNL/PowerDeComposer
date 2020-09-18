@@ -1,6 +1,8 @@
-package com.xbreeze.xml.config;
+package com.xbreeze.xml.decompose.config;
 
 import javax.xml.bind.annotation.XmlAttribute;
+
+import com.xbreeze.xml.config.AbstractConfigElementWithXPathAttribute;
 
 public class IncludeAttributeConfig extends AbstractConfigElementWithXPathAttribute {
 	private String _name;

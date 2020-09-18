@@ -1,9 +1,11 @@
-package com.xbreeze.xml.config;
+package com.xbreeze.xml.decompose.config;
 
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
+
+import com.xbreeze.xml.config.AllConditionGroup;
 
 public class DecomposableElementConfig extends AllConditionGroup {
 	private TargetFileNameConfig _targetFileNameConfig;
