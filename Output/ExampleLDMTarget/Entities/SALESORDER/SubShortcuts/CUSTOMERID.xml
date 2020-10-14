@@ -1,0 +1,12 @@
+<o:Shortcut Id="59CFF4F5-CC43-4D55-9027-47411BFA1F2C">
+<a:ObjectID>59CFF4F5-CC43-4D55-9027-47411BFA1F2C</a:ObjectID>
+<a:Name>CustomerID</a:Name>
+<a:Code>CUSTOMERID</a:Code>
+<a:TargetStereotype/>
+<a:TargetID>4D0B931E-98D2-44C8-8877-240C2A031363</a:TargetID>
+<a:TargetClassID>E1690028-F3DD-4986-B6CB-1509A400BE2B</a:TargetClassID>
+<a:TargetPackagePath>&lt;Model&gt;::SalesOrder</a:TargetPackagePath>
+<c:FullShortcutReplica>
+<o:SubReplication Ref="55F097E6-2BFA-4450-B546-B2C68E049420"/>
+</c:FullShortcutReplica>
+</o:Shortcut>

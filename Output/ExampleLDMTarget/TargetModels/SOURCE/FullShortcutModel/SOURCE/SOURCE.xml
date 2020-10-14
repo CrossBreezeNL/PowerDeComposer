@@ -1,40 +1,3 @@
-<o:TargetModel Id="1857384A-1B06-40DF-BC6A-243FA8EED248">
-<a:ObjectID>1857384A-1B06-40DF-BC6A-243FA8EED248</a:ObjectID>
-<a:Name>Source</a:Name>
-<a:Code>SOURCE</a:Code>
-<a:CreationDate>1587201191</a:CreationDate>
-<a:Creator>Willem</a:Creator>
-<a:ModificationDate>1587201235</a:ModificationDate>
-<a:Modifier>Willem</a:Modifier>
-<a:TargetModelURL>file:///C|/GIT/Repos/CrossBreeze/PowerDeComposer_Public/Output/ExampleLDMSource.ldm</a:TargetModelURL>
-<a:TargetModelID>267CD695-BA81-416F-9803-07119CED9D21</a:TargetModelID>
-<a:TargetModelClassID>5F45F978-C4F3-4E35-A3FC-AF3318663A0F</a:TargetModelClassID>
-<a:TargetModelLastModificationDate>1587201032</a:TargetModelLastModificationDate>
-<c:SessionShortcuts>
-<o:Shortcut Ref="0CC18BFF-BDFA-4AEF-9DAB-E3FDE1DF72E6"/>
-<o:Shortcut Ref="2433197A-4C39-4FE1-B45F-8146169796FE"/>
-<o:Shortcut Ref="FDDE4E79-53C9-40F7-8160-F66371E849B3"/>
-<o:Shortcut Ref="FC928100-226A-427A-9BFF-B0B1D9429A46"/>
-<o:Shortcut Ref="E42AA150-5571-4579-A263-2912A00314EB"/>
-<o:Shortcut Ref="8AF67742-D9AA-48FF-9514-18521A790F20"/>
-<o:Shortcut Ref="676B35F3-E86B-4966-BC94-308876D888DA"/>
-<o:Shortcut Ref="59CFF4F5-CC43-4D55-9027-47411BFA1F2C"/>
-<o:Shortcut Ref="FA8C7AB4-C2A7-4B4F-8146-22992A1D4635"/>
-</c:SessionShortcuts>
-<c:SessionReplications>
-<o:Replication Ref="11D94679-8908-4C6C-9A64-D3C88BBCFF8C"/>
-<o:SubReplication Ref="905FF317-7671-483A-AC56-9A743AD5A739"/>
-<o:SubReplication Ref="2FCD9CA0-6237-42C6-A683-224A10285706"/>
-<o:SubReplication Ref="F88F815F-412A-4E0C-8555-332BD70C0DFF"/>
-<o:SubReplication Ref="0843411A-A9F1-4BDC-812E-41F21FC21622"/>
-<o:SubReplication Ref="573B6445-2390-44E6-96D6-DE7A46B4444A"/>
-<o:SubReplication Ref="5E6CE10C-DE25-45EA-BFF5-D81A9257D836"/>
-<o:SubReplication Ref="1FCA0E5D-2926-4BDB-AFB8-108EF165625D"/>
-<o:SubReplication Ref="0B3253AF-D1B3-40C1-B99E-EEB9881E6739"/>
-<o:SubReplication Ref="55F097E6-2BFA-4450-B546-B2C68E049420"/>
-<o:SubReplication Ref="1782A797-D337-476D-9C90-662D7FD736F5"/>
-</c:SessionReplications>
-<c:FullShortcutModel>
 <o:Model Id="9B492F86-486F-4193-AB0D-090E93FCBE8A">
 <a:ObjectID>9B492F86-486F-4193-AB0D-090E93FCBE8A</a:ObjectID>
 <a:Name>Source</a:Name>
@@ -442,8 +405,8 @@ IndxFKName=%REFR%_FK
 IndxThreshold=</a:ModelOptionsText>
 <a:RepositoryFilename>C:\GIT\Repos\CrossBreeze\PowerDeComposer_Public\Output\ExampleLDMTarget.ldm</a:RepositoryFilename>
 <c:Entities>
-<xi:include href="Entities\6E161055-B56B-4096-91F6-48FC9FDFD3D8.xml" type="Entity" name="Customer" />
-<xi:include href="Entities\94CBE5DF-6A0F-4CD2-8A71-9B66CE8F3197.xml" type="Entity" name="SalesOrder" />
+<xi:include href="Entities\CUSTOMER.xml" ObjectID="6E161055-B56B-4096-91F6-48FC9FDFD3D8" />
+<xi:include href="Entities\SALESORDER.xml" ObjectID="94CBE5DF-6A0F-4CD2-8A71-9B66CE8F3197" />
 </c:Entities>
 <c:Replications>
 <o:Replication Id="11D94679-8908-4C6C-9A64-D3C88BBCFF8C">
@@ -596,5 +559,3 @@ IndxThreshold=</a:ModelOptionsText>
 </o:Replication>
 </c:Replications>
 </o:Model>
-</c:FullShortcutModel>
-</o:TargetModel>

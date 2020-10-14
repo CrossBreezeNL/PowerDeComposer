@@ -1,0 +1,12 @@
+<o:Shortcut Id="676B35F3-E86B-4966-BC94-308876D888DA">
+<a:ObjectID>676B35F3-E86B-4966-BC94-308876D888DA</a:ObjectID>
+<a:Name>SalesOrderID</a:Name>
+<a:Code>SALESORDERID</a:Code>
+<a:TargetStereotype/>
+<a:TargetID>9A05436D-99B0-4332-97BB-FB0B54EEDEBA</a:TargetID>
+<a:TargetClassID>E1690028-F3DD-4986-B6CB-1509A400BE2B</a:TargetClassID>
+<a:TargetPackagePath>&lt;Model&gt;::SalesOrder</a:TargetPackagePath>
+<c:FullShortcutReplica>
+<o:SubReplication Ref="0B3253AF-D1B3-40C1-B99E-EEB9881E6739"/>
+</c:FullShortcutReplica>
+</o:Shortcut>

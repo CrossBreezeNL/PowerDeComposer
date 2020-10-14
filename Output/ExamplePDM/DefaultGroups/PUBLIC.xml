@@ -1,0 +1,12 @@
+<o:Group Id="E018EB0E-7E66-4B93-9840-A860DE288AFF">
+<a:ObjectID>E018EB0E-7E66-4B93-9840-A860DE288AFF</a:ObjectID>
+<a:Name>PUBLIC</a:Name>
+<a:Code>PUBLIC</a:Code>
+<a:CreationDate>1586204060</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1586204078</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<c:Group.Users>
+<o:User Ref="9FFABB3E-18F3-44ED-A56D-6A1ECDB0A8B6"/>
+</c:Group.Users>
+</o:Group>

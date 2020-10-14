@@ -6,3 +6,4 @@ target
 /bin/
 /target/
 **/*.xjb
+PowerDeComposer/src/main/resources/com/xbreeze/xml/config/schema1.xsd

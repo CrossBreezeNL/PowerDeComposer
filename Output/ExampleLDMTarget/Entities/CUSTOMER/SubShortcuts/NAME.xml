@@ -1,0 +1,12 @@
+<o:Shortcut Id="FC928100-226A-427A-9BFF-B0B1D9429A46">
+<a:ObjectID>FC928100-226A-427A-9BFF-B0B1D9429A46</a:ObjectID>
+<a:Name>Name</a:Name>
+<a:Code>NAME</a:Code>
+<a:TargetStereotype/>
+<a:TargetID>F170F682-DF52-47DF-AEB2-D69944472655</a:TargetID>
+<a:TargetClassID>E1690028-F3DD-4986-B6CB-1509A400BE2B</a:TargetClassID>
+<a:TargetPackagePath>&lt;Model&gt;::Customer</a:TargetPackagePath>
+<c:FullShortcutReplica>
+<o:SubReplication Ref="0843411A-A9F1-4BDC-812E-41F21FC21622"/>
+</c:FullShortcutReplica>
+</o:Shortcut>

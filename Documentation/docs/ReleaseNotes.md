@@ -20,6 +20,18 @@ Click on the header of a version number to go to the documentation of that speci
 [//]: # (>     * [ ] Binding)
 [//]: # (>         * [X] Some issue...)
 
+## Version 1.2.0
+
+- [ ] 1.2.0 <sup>14-10-2020</sup>
+> !!! success "Enhanced features"
+>     * [ ] Decompose model
+>         - [X] Specify node to use for the target file names.
+>         - [X] Specify condition for which nodes to decompose.
+>         - [X] Specify attributes to add on the xi:include elements.
+>         - [X] Added support for removing elements and attribute while decomposing.
+>     * [ ] Configuration
+>         - [X] Fully refactored config so decomposing can be configured in more detail. (See [Configuration](Configuration.md))
+
 ## Version 1.1.2
 
 - [ ] 1.1.2 <sup>25-08-2020</sup>

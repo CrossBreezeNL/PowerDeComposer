@@ -5,17 +5,22 @@
 		<!-- Specify the nodes to remove before decomposing. -->
 		<NodeRemovals>
 			<!-- Remove the object count on the PowerDesigner processing instruction. -->
-			<NodeRemoval xpath="/processing-instruction('PowerDesigner')/@Objects" />
+			<!-- If we try to remove the whole processing instruction using the xpath below, we get an error: First char after <? invalid -->
+			<!-- <NodeRemoval xpath="/processing-instruction('PowerDesigner')" /> -->
+			<!-- If we try to remove an attribute on a processing instruction it doesn't do anything. This is because a processing instruction is not a formal XML entity. So it can only be handled as a whole. -->
 			<!-- <NodeRemoval xpath="//processing-instruction('PowerDesigner')/@Objects" /> -->
 			<!-- Remove the symbols count on the PowerDesigner processing instruction. -->
 			<!-- <NodeRemoval xpath="//processing-instruction('PowerDesigner')/@Symbols" />  -->
+			
 			<!-- Remove the CreationDate, Creator, ModificationDate & Modifier from all Shortcuts. -->
-			<!-- <NodeRemoval xpath="//o:Shortcut/a:CreationDate" />
-			<NodeRemoval xpath="//o:Shortcut/a:Creator" />
-			<NodeRemoval xpath="//o:Shortcut/a:ModificationDate" />
-			<NodeRemoval xpath="//o:Shortcut/a:Modifier" /> -->
+			<NodeRemoval xpath="//Shortcut/CreationDate" />
+			<NodeRemoval xpath="//Shortcut/Creator" />
+			<NodeRemoval xpath="//Shortcut/ModificationDate" />
+			<NodeRemoval xpath="//Shortcut/Modifier" />
 			<!-- Remove the TargetModelLastModificationDate from all TargetModels. -->
-			<!-- <NodeRemoval xpath="//o:TargetModel/a:TargetModelLastModificationDate" />  -->
+			<NodeRemoval xpath="//TargetModel/TargetModelLastModificationDate" />
+			<!-- Remove the c:FullShortcutModel from all TargetModels. -->
+			<!-- <NodeRemoval xpath="//o:TargetModel/c:FullShortcutModel" /> -->
 		</NodeRemovals>
 		
 		<!-- Specify which elements should be decomposed. -->
@@ -26,10 +31,14 @@
 			<!-- Use the parent axis on the current node to set a predicate on the parent. -->
 			<!-- Decompose all elements where the parent name starts with 'c:' (these are the collections in PowerDesigner). -->
 			<ElementCondition xpath="parent::node()[starts-with(name(), 'c:')]" />
-			<!-- Don't decompose the Children, Attributes and Identifiers collection. -->
+			<!-- Don't decompose the Children collection (this is the higher level collection of the model). -->
 			<ElementCondition xpath="parent::node()[name() != 'c:Children']" />
+			<!-- LDM collections not to decompose. -->
 			<ElementCondition xpath="parent::node()[name() != 'c:Attributes']" />
 			<ElementCondition xpath="parent::node()[name() != 'c:Identifiers']" />
+			<!-- PDM collections not to decompose. -->
+			<ElementCondition xpath="parent::node()[name() != 'c:Columns']" />
+			<ElementCondition xpath="parent::node()[name() != 'c:Keys']" />
 			
 			<!-- Example for comparing on the element name. -->
 			<!-- <ElementCondition xpath="name() = 'o:Entity'" /> -->
@@ -48,12 +57,12 @@
 			</OneOffConditions>
 			 -->
 			 
-			<!-- Here we specify which information to include as an attribute on the XInclude tag. -->
+			<!-- Here we specify which information to include as an attribute on the xi:include tag. -->
 			<IncludeAttributes>
-				<IncludeAttribute name="name" xpath="./Name" />
+				<IncludeAttribute name="ObjectID" xpath="./ObjectID" />
 			</IncludeAttributes>
 			<!-- Here we specify the xpath to execute on a decomposable element to get the file name (without .xml). -->
-			<TargetFileName xpath="./ObjectID" />
+			<TargetFileName xpath="./Code" />
 		</DecomposableElement>
 
 	</Decompose>

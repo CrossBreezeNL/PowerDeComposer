@@ -75,7 +75,9 @@ public class XmlDecomposer {
 		VTDNav nv;
 		try {
 			logger.fine("Creating VTDNav on file contents...");
-			nv = XMLUtils.getVTDNav(xmlFileContents);
+			// We need to set the VTDNav to namespace unaware, since we will also process parts of the XML document
+			// in the recursive parseAndWriteDocumentParts function. In the document parts the xmlns is not defined on
+			// the elements anywhere, so it can't parse the XML with namespaces.			nv = XMLUtils.getVTDNav(xmlFileContents, false);
 		} catch (Exception e) {
 			throw new Exception(String.format("Error while parsing Xml document: %s", e.getMessage()), e);
 		}
@@ -84,7 +86,7 @@ public class XmlDecomposer {
 		nv = prepareDocument(nv);
 		
 		if (decomposeConfig.getNodeRemovalConfigs() != null && decomposeConfig.getNodeRemovalConfigs().size() > 0) {
-			removeNodes(nv, decomposeConfig.getNodeRemovalConfigs());
+			nv = removeNodes(nv, decomposeConfig.getNodeRemovalConfigs());
 		}
 		
 		// Parse and write document parts.
@@ -117,14 +119,14 @@ public class XmlDecomposer {
 			throw new Exception("Error while initializing XMLModifier");
 		}
 		
-		AutoPilot ap = new AutoPilot(nv);
+		AutoPilot ap = getAutoPilot(nv);
+		
 		// Select all elements which have an Id and an ObjectID.
 		ap.selectXPath("//*[./@Id and ./ObjectID]");
 		
+		// Create a list of local and global ids.
 		HashMap<String, String> localToGlobalIds = new HashMap<String, String>();
-		
 		while ((ap.evalXPath()) != -1) {
-			
 			String elementName = nv.toString(nv.getCurrentIndex());
 			int localObjectIdIndex = nv.getAttrVal("Id");
 	    	String localObjectId = nv.toString(localObjectIdIndex);
@@ -168,6 +170,23 @@ public class XmlDecomposer {
 	}
 	
 	/**
+	 * Create an autopilot for PowerDesigner models.
+	 * @param nv The VTDNav object.
+	 * @return The AutoPilot where the namespaces for PowerDesigner models are registered.
+	 */
+	private static AutoPilot getAutoPilot(VTDNav nv) {
+		AutoPilot ap = new AutoPilot(nv);
+		/**
+		 * xmlns:a="attribute" xmlns:c="collection" xmlns:o="object"
+		 */
+		ap.declareXPathNameSpace("a", "attribute");
+		ap.declareXPathNameSpace("c", "collection");
+		ap.declareXPathNameSpace("o", "object");
+		
+		return ap;
+	}
+	
+	/**
 	 * Function to remove all nodes as specified in the config.
 	 * @param nv The VTDNav object.
 	 * @param decomposeConfig The decompose config.
@@ -185,7 +204,7 @@ public class XmlDecomposer {
 		}
 		
 		for (NodeRemovalConfig nodeRemovalConfig : nodeRemovalConfigs) {
-			AutoPilot ap = new AutoPilot(nv);
+			AutoPilot ap = getAutoPilot(nv);
 			logger.fine(String.format("Removing nodes using XPath expression '%s'...", nodeRemovalConfig.getXPath()));
 			ap.selectXPath(nodeRemovalConfig.getXPath());
 			
@@ -193,8 +212,10 @@ public class XmlDecomposer {
 			boolean removedNodes = false;
 	        while ((ap.evalXPath()) != -1) {
 	        	logger.fine(String.format(" - Removing node '%d'...", nv.getCurrentIndex()));
+	        	// Expand the element offset with the leading whitespace, so we also remove whitespace before this node.
+	        	long elementOffset = nv.expandWhiteSpaces(nv.getElementFragment(), VTDNav.WS_LEADING);
 	        	// Remove the node.
-	        	xm.remove();
+	        	xm.remove(elementOffset);
 	        	// Update removedNodes to true.
 	        	removedNodes = true;
 	        }
@@ -227,7 +248,7 @@ public class XmlDecomposer {
 	 * @throws Exception
 	 */
 	private static Path parseAndWriteDocumentParts(VTDNav nv, String currentObjectName, String targetFileName, Path targetDirectoryPath, int depth, DecomposeConfig decomposeConfig) throws Exception {
-		
+		// Create the prefix string based on the depth.
 		String prefix = String.join("", Collections.nCopies(depth, STR_PREFIX_SPACER));
 		logger.fine(String.format("%s> %s", prefix, targetDirectoryPath));
 		
@@ -242,11 +263,9 @@ public class XmlDecomposer {
 		// Get a reference to the decomposable element configuration.
 		DecomposableElementConfig decomposableElementConfig = decomposeConfig.getDecomposableElementConfig();
 		
-		AutoPilot ap = new AutoPilot(nv);
+		AutoPilot ap = getAutoPilot(nv);
 		// Select all elements which conform to the elements conditions as specified in the config.
-		String xPathExpression = decomposableElementConfig.getXPathExpression();
-		logger.fine(String.format("Decomposable element expression: '%s'", xPathExpression));
-		ap.selectXPath(String.format("//*[%s]", xPathExpression));
+		ap.selectXPath(String.format("//*[%s]", decomposableElementConfig.getXPathExpression()));
 		int minimumNextOffset = 0;
 		int extractedChildCount = 0;
 		// Loop through the found elements.
@@ -259,16 +278,20 @@ public class XmlDecomposer {
 	    	String parentElementName = XMLUtils.getParentElementName(nv);
 	    	
 	    	// Get the current element name without namespaces.
-			String elementName = XMLUtils.getElementNameWithoutNameSpace(nv.toString(nv.getCurrentIndex()));
+			//String elementName = XMLUtils.getElementNameWithoutNameSpace(nv.toString(nv.getCurrentIndex()));
 			
 	    	// Get the element offset and length (including whitespaces).
 	    	long elementOffsetAndLength = nv.getElementFragment();
 	    	int elementOffset = (int)elementOffsetAndLength;
 	    	int elementLength = (int)(elementOffsetAndLength>>32);
 	    	
+	    	logger.fine(String.format("%s - Found element: '%s' at %d till %d", prefix, nv.toRawString(nv.getCurrentIndex()), elementOffset, elementOffset + elementLength));
+	    	
 	    	// If the current offset is not after the end of the previous fragment, skip this one (it is part of a section passed into the recursive call).
 	    	if (elementOffset < minimumNextOffset)
     			continue;
+	    	
+	    	logger.fine(String.format("%s - After the offset of the previous element (%d < %d)...", prefix, elementOffset, minimumNextOffset));
 	    	
 	    	// Make sure the next index found by the AutoPilot is after the current fragment (used in the previous if condition).
 	    	minimumNextOffset = elementOffset + elementLength;
@@ -300,7 +323,7 @@ public class XmlDecomposer {
 			// Create a VTDNav for navigating the document.
 			VTDNav partNv;
 			try {
-				partNv = XMLUtils.getVTDNav(objectXmlPart);
+				partNv = XMLUtils.getVTDNav(objectXmlPart, false);
 			} catch (Exception e) {
 				throw new Exception(String.format("Error while parsing Xml Part: %s", e.getMessage()), e);
 			}
@@ -318,7 +341,8 @@ public class XmlDecomposer {
 			
 			// Construct the include tag contents.
 			StringBuffer includeElementStringBuffer = new StringBuffer();
-			includeElementStringBuffer.append(String.format("<xi:include href=\"%s\" type=\"%s\"", actualRelativePath, elementName));
+			//includeElementStringBuffer.append(String.format("<xi:include href=\"%s\" type=\"%s\"", actualRelativePath, elementName));
+			includeElementStringBuffer.append(String.format("<xi:include href=\"%s\"", actualRelativePath));
 			// Loop through the include attributes to add the min the include tag.
 			for (String includeAttributeName : includeAttributesWithValues.keySet()) {
 				// Insert the include sub element in the include tag.
@@ -332,6 +356,8 @@ public class XmlDecomposer {
 			// Increase the extracted child count.
 			extractedChildCount++;
 		}
+		
+		logger.fine(String.format("%s - Found %d childs", prefix, extractedChildCount));
 		
         // Get the root element of the document.
 		logger.fine(String.format("%s - Writing file: %s", prefix, targetFileName));

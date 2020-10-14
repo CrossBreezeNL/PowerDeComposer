@@ -1,0 +1,12 @@
+<o:Shortcut Id="E42AA150-5571-4579-A263-2912A00314EB">
+<a:ObjectID>E42AA150-5571-4579-A263-2912A00314EB</a:ObjectID>
+<a:Name>DateOfBirth</a:Name>
+<a:Code>DATEOFBIRTH</a:Code>
+<a:TargetStereotype/>
+<a:TargetID>F4F4C74F-22F4-4F55-8274-1D73887610A8</a:TargetID>
+<a:TargetClassID>E1690028-F3DD-4986-B6CB-1509A400BE2B</a:TargetClassID>
+<a:TargetPackagePath>&lt;Model&gt;::Customer</a:TargetPackagePath>
+<c:FullShortcutReplica>
+<o:SubReplication Ref="573B6445-2390-44E6-96D6-DE7A46B4444A"/>
+</c:FullShortcutReplica>
+</o:Shortcut>

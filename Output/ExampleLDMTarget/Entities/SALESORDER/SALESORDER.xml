@@ -1,0 +1,17 @@
+<o:Shortcut Id="8AF67742-D9AA-48FF-9514-18521A790F20">
+<a:ObjectID>8AF67742-D9AA-48FF-9514-18521A790F20</a:ObjectID>
+<a:Name>SalesOrder</a:Name>
+<a:Code>SALESORDER</a:Code>
+<a:TargetStereotype/>
+<a:TargetID>8B4BE9EA-92E6-4863-A71B-00CD678C51B2</a:TargetID>
+<a:TargetClassID>D86B0751-A544-42AE-AAA6-6E32C602F706</a:TargetClassID>
+<a:TargetPackagePath>&lt;Model&gt;</a:TargetPackagePath>
+<c:SubShortcuts>
+<xi:include href="SubShortcuts\SALESORDERID.xml" ObjectID="676B35F3-E86B-4966-BC94-308876D888DA" />
+<xi:include href="SubShortcuts\CUSTOMERID.xml" ObjectID="59CFF4F5-CC43-4D55-9027-47411BFA1F2C" />
+<xi:include href="SubShortcuts\DATEOFSALE.xml" ObjectID="FA8C7AB4-C2A7-4B4F-8146-22992A1D4635" />
+</c:SubShortcuts>
+<c:FullShortcutReplica>
+<o:SubReplication Ref="5E6CE10C-DE25-45EA-BFF5-D81A9257D836"/>
+</c:FullShortcutReplica>
+</o:Shortcut>

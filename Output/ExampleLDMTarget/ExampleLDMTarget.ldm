@@ -414,32 +414,32 @@ IndxFKName=%REFR%_FK
 IndxThreshold=</a:ModelOptionsText>
 <a:RepositoryFilename>C:\GIT\Repos\CrossBreeze\PowerDeComposer_Public\Output\ExampleLDMTarget.ldm</a:RepositoryFilename>
 <c:LogicalDiagrams>
-<xi:include href="LogicalDiagrams\8DADB600-B70B-4B55-B1F2-39B58DB0DB80.xml" type="LogicalDiagram" name="Target" />
+<xi:include href="LogicalDiagrams\TARGET.xml" ObjectID="8DADB600-B70B-4B55-B1F2-39B58DB0DB80" />
 </c:LogicalDiagrams>
 <c:DataSources>
-<xi:include href="DataSources\EEBE7F20-7670-486C-A399-AE20AD3CF1EF.xml" type="DefaultDataSource" name="ExampleSource" />
+<xi:include href="DataSources\EXAMPLESOURCE.xml" ObjectID="EEBE7F20-7670-486C-A399-AE20AD3CF1EF" />
 </c:DataSources>
 <c:DefaultDiagram>
 <o:LogicalDiagram Ref="8DADB600-B70B-4B55-B1F2-39B58DB0DB80"/>
 </c:DefaultDiagram>
 <c:Mappings>
-<xi:include href="Mappings\41485D52-D79B-4D5A-9F23-08D0777DE539.xml" type="DefaultObjectMapping" name="Customer_ExampleSource" />
-<xi:include href="Mappings\A35FCD43-155A-4552-AC41-80AF43E47FDE.xml" type="DefaultObjectMapping" name="SalesOrder_ExampleSource" />
+<xi:include href="Mappings\CUSTOMER_EXAMPLESOURCE.xml" ObjectID="41485D52-D79B-4D5A-9F23-08D0777DE539" />
+<xi:include href="Mappings\SALESORDER_EXAMPLESOURCE.xml" ObjectID="A35FCD43-155A-4552-AC41-80AF43E47FDE" />
 </c:Mappings>
 <c:SourceModels>
-<xi:include href="SourceModels\0CC18BFF-BDFA-4AEF-9DAB-E3FDE1DF72E6.xml" type="Shortcut" name="Source" />
+<xi:include href="SourceModels\SOURCE.xml" ObjectID="0CC18BFF-BDFA-4AEF-9DAB-E3FDE1DF72E6" />
 </c:SourceModels>
 <c:Entities>
-<xi:include href="Entities\7DB08289-F667-4F0D-8768-BF68757A9505.xml" type="Entity" name="Customer" />
-<xi:include href="Entities\880CBE63-1CA5-4654-A47E-4D84DEA84C22.xml" type="Entity" name="SalesOrder" />
-<xi:include href="Entities\2433197A-4C39-4FE1-B45F-8146169796FE.xml" type="Shortcut" name="Customer" />
-<xi:include href="Entities\8AF67742-D9AA-48FF-9514-18521A790F20.xml" type="Shortcut" name="SalesOrder" />
+<xi:include href="Entities\CUSTOMER.xml" ObjectID="7DB08289-F667-4F0D-8768-BF68757A9505" />
+<xi:include href="Entities\SALESORDER.xml" ObjectID="880CBE63-1CA5-4654-A47E-4D84DEA84C22" />
+<xi:include href="Entities\CUSTOMER\CUSTOMER.xml" ObjectID="2433197A-4C39-4FE1-B45F-8146169796FE" />
+<xi:include href="Entities\SALESORDER\SALESORDER.xml" ObjectID="8AF67742-D9AA-48FF-9514-18521A790F20" />
 </c:Entities>
 <c:Relationships>
-<xi:include href="Relationships\82966087-565D-4D56-A2B0-82FCED9F9326.xml" type="Relationship" name="Relationship_1" />
+<xi:include href="Relationships\RELATIONSHIP_1.xml" ObjectID="82966087-565D-4D56-A2B0-82FCED9F9326" />
 </c:Relationships>
 <c:TargetModels>
-<xi:include href="TargetModels\1857384A-1B06-40DF-BC6A-243FA8EED248\1857384A-1B06-40DF-BC6A-243FA8EED248.xml" type="TargetModel" name="Source" />
+<xi:include href="TargetModels\SOURCE\SOURCE.xml" ObjectID="1857384A-1B06-40DF-BC6A-243FA8EED248" />
 </c:TargetModels>
 </o:Model>
 </c:Children>
