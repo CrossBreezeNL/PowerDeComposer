@@ -30,6 +30,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.xbreeze.xml.decompose.config.DecomposableElementConfig;
 import com.xbreeze.xml.decompose.config.DecomposeConfig;
@@ -204,19 +206,64 @@ public class XmlDecomposer {
 			throw new Exception("Error while initializing XMLModifier");
 		}
 		
+		// Create a pattern to recognize XPath expressions on processing instructions.
+		Pattern piAttributeRemovalPattern = Pattern.compile("(?<PIXPath>/?/processing-instruction\\(.+\\))/@(?<PIAttribute>.+)");
+		
 		for (NodeRemovalConfig nodeRemovalConfig : nodeRemovalConfigs) {
 			AutoPilot ap = getAutoPilot(nv);
-			logger.fine(String.format("Removing nodes using XPath expression '%s'...", nodeRemovalConfig.getXPath()));
-			ap.selectXPath(nodeRemovalConfig.getXPath());
+			String nodeRemovalXPath = nodeRemovalConfig.getXPath();
+			logger.fine(String.format("Removing nodes using XPath expression '%s'...", nodeRemovalXPath));
+			
+			// If the node removal instruction is on a processing instruction, find the attribute which needs to be removed.
+			String piAttributeToRemove = null;
+			Matcher piAttributeRemovalMatcher = piAttributeRemovalPattern.matcher(nodeRemovalXPath);
+			if (piAttributeRemovalMatcher.matches()) {
+				nodeRemovalXPath = piAttributeRemovalMatcher.group("PIXPath");
+				piAttributeToRemove = piAttributeRemovalMatcher.group("PIAttribute");
+				logger.fine(String.format(" - The node removal is in a processing instruction (PIXPath='%s';PIAttribute='%s').", nodeRemovalXPath, piAttributeToRemove));
+			}
+			ap.selectXPath(nodeRemovalXPath);
 			
 			// Execute the XPath expression and loop through the results.
 			boolean removedNodes = false;
 	        while ((ap.evalXPath()) != -1) {
-	        	logger.fine(String.format(" - Removing node '%d'...", nv.getCurrentIndex()));
-	        	// Expand the element offset with the leading whitespace, so we also remove whitespace before this node.
-	        	long elementOffset = nv.expandWhiteSpaces(nv.getElementFragment(), VTDNav.WS_LEADING);
-	        	// Remove the node.
-	        	xm.remove(elementOffset);
+	        	int currentNodeIndex = nv.getCurrentIndex();
+				logger.fine(String.format(" - Removing node '%d' (offset=%d;length=%d;type=%d)...", currentNodeIndex, nv.getTokenOffset(currentNodeIndex), nv.getTokenLength(currentNodeIndex), nv.getTokenType(currentNodeIndex)));
+	        	// If the node is an element, expand the element offset with the leading whitespace, so we also remove whitespace before this node.
+	        	if (nv.getTokenType(currentNodeIndex) == VTDNav.TOKEN_STARTING_TAG) {
+	        		xm.remove(nv.expandWhiteSpaces(nv.getElementFragment(), VTDNav.WS_LEADING));
+	        	}
+	        	// If the token is a processing-instruction name, we need to remove the token before and after as well.
+	        	else if (nv.getTokenType(currentNodeIndex) == VTDNav.TOKEN_PI_NAME) {
+	        		// If there is an attribute specified on the processing instruction, find the attribute in the processing instruction.
+	        		if (piAttributeToRemove != null) {
+        				// The processing instruction value is in the token after te name.
+	        			String piValue = nv.toRawString(currentNodeIndex + 1);
+	        			int piValueOffset = nv.getTokenOffset(currentNodeIndex + 1);
+	        			logger.fine(String.format(" - Processing instruction value: '%s'", piValue));
+	        			Pattern piAttributePattern = Pattern.compile(String.format(" %s=\\\"[a-zA-Z0-9]+\\\"", piAttributeToRemove));
+	        			Matcher piAttributeMatcher = piAttributePattern.matcher(piValue);
+	        			if (piAttributeMatcher.find()) {
+	        				logger.fine(String.format(" - Removing processing instruction attribute: '%s'", piAttributeMatcher.group()));
+	        				// Remove the processing instruction attribute from the xml document.
+	        				xm.removeContent(piValueOffset + piAttributeMatcher.start(), piAttributeMatcher.end() - piAttributeMatcher.start());
+	        			}
+	        		}
+	        		// If there is no attribute removal specified on the XPath on the processing instruction, remove the whole processing instruction.
+	        		else {
+		        		// The processing instruction offset is the start of the processing instruction name minus 2 characters (<?).
+		        		int piOffset = nv.getTokenOffset(currentNodeIndex) - 2;
+		        		int piLength = nv.getTokenOffset(currentNodeIndex + 1) + nv.getTokenLength(currentNodeIndex + 1) + 2 - piOffset;
+		        		
+		        		logger.fine(String.format(" - Node content: '%s'", nv.toRawString(piOffset, piLength)));
+		    	    	long piFragment = ((long)piLength)<<32| piOffset;
+		    	    	xm.remove(nv.expandWhiteSpaces(piFragment, VTDNav.WS_LEADING));
+	        		}
+	        	}
+	        	// If the node is not an element, remove the whole token.
+	        	else {
+	        		xm.removeToken(currentNodeIndex);
+	        	}
 	        	// Update removedNodes to true.
 	        	removedNodes = true;
 	        }
@@ -230,7 +277,7 @@ public class XmlDecomposer {
 		        xm.reset();
 		        xm.bind(nv);
 	        } else {
-	        	logger.warning(String.format("The NodeRemoval instruction yielded no nodes ('%s').", nodeRemovalConfig.getXPath()));
+	        	logger.warning(String.format("The NodeRemoval instruction yielded no nodes ('%s').", nodeRemovalXPath));
 	        }
 		}
 		

@@ -58,28 +58,23 @@ When no configuration file is specified on the command, the following configurat
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <PowerDeComposerConfig>
-
 	<Decompose>
-
+	
 		<!-- Specify the nodes to remove before decomposing. -->
 		<NodeRemovals>
 			<!-- Remove the object count on the PowerDesigner processing instruction. -->
-			<!-- If we try to remove the whole processing instruction using the xpath below, we get an error: First char after <? invalid -->
-			<!-- <NodeRemoval xpath="/processing-instruction('PowerDesigner')" /> -->
-			<!-- If we try to remove an attribute on a processing instruction it doesn't do anything. This is because a processing instruction is not a formal XML entity. So it can only be handled as a whole. -->
-			<!-- <NodeRemoval xpath="//processing-instruction('PowerDesigner')/@Objects" /> -->
+			<NodeRemoval xpath="/processing-instruction('PowerDesigner')/@Objects" />
 			<!-- Remove the symbols count on the PowerDesigner processing instruction. -->
-			<!-- <NodeRemoval xpath="//processing-instruction('PowerDesigner')/@Symbols" />  -->
+			<NodeRemoval xpath="/processing-instruction('PowerDesigner')/@Symbols" />
 			
 			<!-- Remove the CreationDate, Creator, ModificationDate & Modifier from all Shortcuts. -->
 			<NodeRemoval xpath="//Shortcut/CreationDate" />
 			<NodeRemoval xpath="//Shortcut/Creator" />
 			<NodeRemoval xpath="//Shortcut/ModificationDate" />
 			<NodeRemoval xpath="//Shortcut/Modifier" />
+			
 			<!-- Remove the TargetModelLastModificationDate from all TargetModels. -->
 			<NodeRemoval xpath="//TargetModel/TargetModelLastModificationDate" />
-			<!-- Remove the c:FullShortcutModel from all TargetModels. -->
-			<!-- <NodeRemoval xpath="//o:TargetModel/c:FullShortcutModel" /> -->
 		</NodeRemovals>
 		
 		<!-- Specify which elements should be decomposed. -->
@@ -125,6 +120,5 @@ When no configuration file is specified on the command, the following configurat
 		</DecomposableElement>
 
 	</Decompose>
-
 </PowerDeComposerConfig>
 ```
