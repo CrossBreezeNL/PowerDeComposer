@@ -24,7 +24,8 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.x-breeze.powerdecomposer</groupId>
   <artifactId>PowerDeComposer</artifactId>
-  <version>1.1.2</version>
+  <version>1.2.0</version>
+  <packaging>jar</packaging>
   <name>CrossBreeze PowerDeComposer</name>
   <description>PowerDeComposer is a utility that enables integrating PowerDesigner with the version control system of your choice.</description>
   <url>http://http://powerdecomposer.x-breeze.com</url>	
@@ -49,9 +50,9 @@
 	    </developer>
   	</developers>
   		<scm>
-	  <connection>https://x-breeze@dev.azure.com/x-breeze/CrossTest_Public/_git/CrossTest_Public</connection>
-	  <developerConnection>https://x-breeze@dev.azure.com/x-breeze/CrossTest_Public/_git/CrossTest_Public</developerConnection>
-	  <url>https://dev.azure.com/x-breeze/_git/CrossTest_Public</url>
+	  <connection>https://x-breeze@dev.azure.com/x-breeze/PowerDeComposer_Public/_git/PowerDeComposer_Public</connection>
+	  <developerConnection>https://x-breeze@dev.azure.com/x-breeze/PowerDeComposer_Public/_git/PowerDeComposer_Public</developerConnection>
+	  <url>https://dev.azure.com/x-breeze/_git/PowerDeComposer_Public</url>
 	</scm>
 	<properties>
 		<java.version>1.8</java.version>
