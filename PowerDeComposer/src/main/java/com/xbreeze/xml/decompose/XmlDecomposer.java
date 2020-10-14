@@ -77,7 +77,8 @@ public class XmlDecomposer {
 			logger.fine("Creating VTDNav on file contents...");
 			// We need to set the VTDNav to namespace unaware, since we will also process parts of the XML document
 			// in the recursive parseAndWriteDocumentParts function. In the document parts the xmlns is not defined on
-			// the elements anywhere, so it can't parse the XML with namespaces.			nv = XMLUtils.getVTDNav(xmlFileContents, false);
+			// the elements anywhere, so it can't parse the XML with namespaces.
+			nv = XMLUtils.getVTDNav(xmlFileContents, false);
 		} catch (Exception e) {
 			throw new Exception(String.format("Error while parsing Xml document: %s", e.getMessage()), e);
 		}
