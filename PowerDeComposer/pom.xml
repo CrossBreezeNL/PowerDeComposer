@@ -167,16 +167,40 @@
 				</plugins>
 			</build>
 		</profile>
+		<profile>
+		<id>executableJar</id>
+		<build>
+			<plugins>
+				<plugin>
+				    <groupId>org.apache.maven.plugins</groupId>
+				    <artifactId>maven-assembly-plugin</artifactId>
+				    <version>3.3.0</version>	    
+			        <configuration>        
+			            <archive>
+			            <manifest>
+			                <mainClass>
+			                    com.xbreeze.xml.Executor
+			                </mainClass>
+			            </manifest>
+			            </archive>
+			            <descriptorRefs>
+			                <descriptorRef>jar-with-dependencies</descriptorRef>
+			            </descriptorRefs>			           
+			        </configuration>
+				</plugin>
+			</plugins>
+		</build>
+		</profile>		
 	</profiles>
   <build>
     <sourceDirectory>src/main/java</sourceDirectory>
     <resources>
 	    <resource>
-	    	<directory>src/main/resources</directory>
+	    	 <directory>src/main/resources</directory>
 	    </resource>
     </resources>
     <plugins>
-      <plugin>
+     <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.7.0</version>
         <configuration>
@@ -184,21 +208,8 @@
           <target>1.8</target>
         </configuration>
       </plugin>
-       <plugin>
-	      <!-- Build an executable JAR -->
-	      <groupId>org.apache.maven.plugins</groupId>
-	      <artifactId>maven-jar-plugin</artifactId>
-	      <version>3.1.0</version>
-	      <configuration>
-	        <archive>
-	          <manifest>
-	            <addClasspath>true</addClasspath>
-	            <classpathPrefix>lib/</classpathPrefix>
-	            <mainClass>com.xbreeze.xml.Executor</mainClass>
-	          </manifest>
-	        </archive>
-	      </configuration>
-	    </plugin>
+      
+	     
 	    <!-- Generate JAX-B schema file -->
         <plugin>
             <groupId>org.codehaus.mojo</groupId>

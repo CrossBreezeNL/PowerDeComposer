@@ -50,7 +50,7 @@ public class Executor {
 		// Setup the global LogManager.
 		LogManager logManager = LogManager.getLogManager();
 		// Read the logging configuration from the resource file.
-		try {
+		try {			
 			logManager.readConfiguration(Executor.class.getResourceAsStream("logging.properties"));
 		} catch (SecurityException | IOException e) {
 			System.err.println(String.format("Error while getting logging configuration", e.getMessage()));
