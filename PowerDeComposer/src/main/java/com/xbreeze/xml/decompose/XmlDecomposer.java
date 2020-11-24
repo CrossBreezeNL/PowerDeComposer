@@ -24,6 +24,7 @@ package com.xbreeze.xml.decompose;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
@@ -37,6 +38,7 @@ import com.xbreeze.xml.decompose.config.DecomposableElementConfig;
 import com.xbreeze.xml.decompose.config.DecomposeConfig;
 import com.xbreeze.xml.decompose.config.IncludeAttributeConfig;
 import com.xbreeze.xml.decompose.config.NodeRemovalConfig;
+import com.xbreeze.xml.utils.FileContentAndCharset;
 import com.xbreeze.xml.utils.FileUtils;
 import com.xbreeze.xml.utils.XMLUtils;
 import com.ximpleware.AutoPilot;
@@ -66,7 +68,7 @@ public class XmlDecomposer {
 		
 		// Read the xml file into a string.
 		logger.fine("Getting file contents...");
-		String xmlFileContents = FileUtils.getFileContent(xmlFile.toURI());
+		FileContentAndCharset xmlFileContentsAndCharset = FileUtils.getFileContent(xmlFile.toURI());
 		//logger.fine("Start of file contents:");
 		//logger.fine("--------------------------------------------------");
 		//logger.fine(xmlFileContents);
@@ -80,7 +82,7 @@ public class XmlDecomposer {
 			// We need to set the VTDNav to namespace unaware, since we will also process parts of the XML document
 			// in the recursive parseAndWriteDocumentParts function. In the document parts the xmlns is not defined on
 			// the elements anywhere, so it can't parse the XML with namespaces.
-			nv = XMLUtils.getVTDNav(xmlFileContents, false);
+			nv = XMLUtils.getVTDNav(xmlFileContentsAndCharset, false);
 		} catch (Exception e) {
 			throw new Exception(String.format("Error while parsing Xml document: %s", e.getMessage()), e);
 		}
@@ -94,7 +96,7 @@ public class XmlDecomposer {
 		
 		// Parse and write document parts.
 		logger.info("Parsing and writing document parts...");
-		parseAndWriteDocumentParts(nv, null, xmlFile.getName(), targetDirectoryPath, 0, decomposeConfig);
+		parseAndWriteDocumentParts(nv, xmlFileContentsAndCharset.getFileCharset(), null, xmlFile.getName(), targetDirectoryPath, 0, decomposeConfig);
 		logger.info("Done parsing and writing document parts.");
 		
 		// Done
@@ -295,7 +297,7 @@ public class XmlDecomposer {
 	 * @param currentPartIsRoot
 	 * @throws Exception
 	 */
-	private static Path parseAndWriteDocumentParts(VTDNav nv, String currentObjectName, String targetFileName, Path targetDirectoryPath, int depth, DecomposeConfig decomposeConfig) throws Exception {
+	private static Path parseAndWriteDocumentParts(VTDNav nv, Charset fileCharset, String currentObjectName, String targetFileName, Path targetDirectoryPath, int depth, DecomposeConfig decomposeConfig) throws Exception {
 		// Create the prefix string based on the depth.
 		String prefix = String.join("", Collections.nCopies(depth, STR_PREFIX_SPACER));
 		logger.fine(String.format("%s> %s", prefix, targetDirectoryPath));
@@ -364,6 +366,7 @@ public class XmlDecomposer {
 	    	// Parse the XML Fragment and write it to its own file.
 	    	// If the parent element name contains a namespace part, remove it.
 	    	String parentElementFolder = XMLUtils.getElementNameWithoutNameSpace(parentElementName);
+	    	logger.fine(String.format("Parent element name: '%s'; parent element folder: '%s'; child object name: '%s'", parentElementName, parentElementFolder, childObjectName));
 	    	
 			// Remove the xml node which is being referenced.
 			xm.removeContent(elementOffset, elementLength);
@@ -371,18 +374,19 @@ public class XmlDecomposer {
 			// Create a VTDNav for navigating the document.
 			VTDNav partNv;
 			try {
-				partNv = XMLUtils.getVTDNav(objectXmlPart, false);
+				partNv = XMLUtils.getVTDNav(objectXmlPart, fileCharset, false);
 			} catch (Exception e) {
 				throw new Exception(String.format("Error while parsing Xml Part: %s", e.getMessage()), e);
 			}
 			
 			// Set the relative path with a parent folder of the current element name.
-			String relativePath = String.format("./%s/%s/", parentElementFolder, childObjectName);
+			//String relativePath = String.format("./%s/%s/", parentElementFolder, childObjectName);
 			//Path childTargetDirectory = targetDirectoryPath.resolve(parentElementFolder).resolve(objectName);
-			Path childTargetDirectory = targetDirectoryPath.resolve(relativePath);
+			String childObjectLegalFileName = FileUtils.getLegalFileName(childObjectName);
+			Path childTargetDirectory = targetDirectoryPath.resolve(parentElementFolder).resolve(childObjectLegalFileName);
 			// Derive the object file name.
-			String childObjectFileName = String.format("%s.xml", childObjectName);
-			Path childFileLocation = parseAndWriteDocumentParts(partNv, childObjectName, childObjectFileName, childTargetDirectory, depth + 1, decomposeConfig);
+			String childObjectFileNameWithExtension = String.format("%s.xml", childObjectLegalFileName);
+			Path childFileLocation = parseAndWriteDocumentParts(partNv, fileCharset, childObjectName, childObjectFileNameWithExtension, childTargetDirectory, depth + 1, decomposeConfig);
 			
 			// Insert the include tag for the found object.
 			String actualRelativePath = targetDirectoryPath.relativize(childFileLocation).toString();

@@ -34,6 +34,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
+import com.xbreeze.xml.utils.FileContentAndCharset;
 import com.xbreeze.xml.utils.FileUtils;
 import com.xbreeze.xml.utils.XMLUtils;
 import com.ximpleware.AutoPilot;
@@ -61,14 +62,18 @@ public class XmlComposer {
 			throw new Exception(String.format("The specified xml file doesn't exist '%s'.", xmlFilePath));
 
 		// Read the xml file into a string.
-		String xmlFileContents = FileUtils.getFileContent(xmlFile.toURI());
-		HashMap<URI, Integer> resolvedIncludes = new HashMap<>();
-		// Resolve all inluces
-		String resolvedXmlFileContents = this.resolveIncludes(xmlFileContents, xmlFile.toURI(), 0, resolvedIncludes);
+		FileContentAndCharset fcac = FileUtils.getFileContent(xmlFile.toURI()); 
+		HashMap<URI, Integer> resolvedIncludes = new HashMap<URI, Integer>();
+		// Resolve all includes
+		String resolvedXmlFileContents = this.resolveIncludes(fcac, xmlFile.toURI(), 0, resolvedIncludes);
 
 		try {
-			Files.write(Paths.get(xmlTargetFilePath), resolvedXmlFileContents.getBytes(),
-					StandardOpenOption.CREATE,StandardOpenOption.TRUNCATE_EXISTING);
+			Files.write(
+					Paths.get(xmlTargetFilePath),
+					resolvedXmlFileContents.getBytes(fcac.getFileCharset()),
+					StandardOpenOption.CREATE,
+					StandardOpenOption.TRUNCATE_EXISTING
+			);
 
 			// extra options
 			// Files.write(Paths.get(path), content.getBytes(),
@@ -83,8 +88,7 @@ public class XmlComposer {
 
 	}
 
-	private String resolveIncludes(String xmlFileContents, URI xmlFileUri, int level,
-			HashMap<URI, Integer> resolvedIncludes) throws Exception {
+	private String resolveIncludes(FileContentAndCharset xmlFileContentsAndCharset, URI xmlFileUri, int level, HashMap<URI, Integer> resolvedIncludes) throws Exception {
 		logger.fine(String.format("Scanning file %s for includes", xmlFileUri.toString()));
 		// Check for cycle detection, e.g. an include that is already included
 		// previously
@@ -120,7 +124,7 @@ public class XmlComposer {
 			// Open the config file and look for includes
 			// Make this XPath namespace aware so it actually looks for xi:include instead
 			// of include in all namespaces
-			VTDNav nav = XMLUtils.getVTDNav(xmlFileContents, false);
+			VTDNav nav = XMLUtils.getVTDNav(xmlFileContentsAndCharset, false);
 			AutoPilot ap = new AutoPilot(nav);
 			// Declare the XInclude namespace.
 			//ap.declareXPathNameSpace("xi", "http://www.w3.org/2001/XInclude");
@@ -152,7 +156,7 @@ public class XmlComposer {
 
 					try {
 						// get file contents, recursively processing any includes found
-						String includeContents = this.resolveIncludes(FileUtils.getFileContent(includeFileUri),
+						String includeContents = this.resolveIncludes(FileUtils.getFileContent(includeFileUri, xmlFileContentsAndCharset.getFileCharset()),
 								includeFileUri, level + 1, resolvedIncludes);
 
 						/* XPointer is not needed for now */
@@ -191,7 +195,7 @@ public class XmlComposer {
 					logger.fine("**** End of XML file ****");
 					return resolvedXML;
 				} else {
-					return xmlFileContents;
+					return xmlFileContentsAndCharset.getFileContents();
 				}
 			} catch (NavException e) {
 				throw new Exception(String.format("Error scanning %s for includes", xmlFileUri.toString()), e);

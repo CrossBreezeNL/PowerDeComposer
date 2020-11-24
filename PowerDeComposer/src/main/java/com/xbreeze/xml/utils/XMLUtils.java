@@ -24,6 +24,7 @@ package com.xbreeze.xml.utils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.logging.Logger;
 
 import com.ximpleware.AutoPilot;
@@ -51,13 +52,26 @@ public class XMLUtils {
 	}
 	
 	/**
-	 * Get the VTDNav object for a XML document.
+	 * Get the VTDNav object for a XML document namespace-unaware.
 	 * @param xmlDocument The XML document as a String.
+	 * @param charsetToUse The character set to use for the file contents.
 	 * @return The VTDNav.
 	 * @throws GeneratorException
 	 */
-	public static VTDNav getVTDNav(String xmlDocument) throws Exception {
-		return getVTDNav(xmlDocument, false);
+	public static VTDNav getVTDNav(String xmlDocument, Charset charsetToUse) throws Exception {
+		return getVTDNav(new FileContentAndCharset(xmlDocument, charsetToUse), false);
+	}
+	
+	/**
+	 * Get the VTDNav object for a XML document.
+	 * @param xmlDocument The XML document as a String.
+	 * @param charsetToUse The character set to use for the file contents.
+	 * @param namespaceAware Whether VTD-Nav should be namespace aware.
+	 * @return The VTDNav.
+	 * @throws GeneratorException
+	 */
+	public static VTDNav getVTDNav(String xmlDocument, Charset charsetToUse, boolean namespaceAware) throws Exception {
+		return getVTDNav(new FileContentAndCharset(xmlDocument, charsetToUse), namespaceAware);
 	}
 	
 	/**
@@ -68,20 +82,15 @@ public class XMLUtils {
 	 * @return The VTDNav.
 	 * @throws GeneratorException
 	 */
-	public static VTDNav getVTDNav(String xmlDocument, boolean namespaceAware) throws Exception {
+	public static VTDNav getVTDNav(FileContentAndCharset xmlFileContentsAndCharset, boolean namespaceAware) throws Exception {
 		// Create a VTGGen object.
 		VTDGen vg = new VTDGen();
 		
 		// Enable collecting all whitespaces.
 		vg.enableIgnoredWhiteSpace(true);
 		
-		// Set the document (in UTF-8 encoding).
-		// Currently the encoding is set to US_ASCII, cause this solves the issue for special characters and doesn't seem to break anything.
-		// Question is asked to the vtd-gen developer if this is a bug in vtg-gen.
-		// https://stackoverflow.com/questions/51507388/vtd-xml-element-fragment-incorrect
-		//vg.setDoc(xmlDocument.getBytes(StandardCharsets.US_ASCII));
-		// Disabled the bytes retrieval using a specific charset, because this breaks the PowerDesigner special characters.
-		vg.setDoc(xmlDocument.getBytes());
+		// Set the document (in original file encoding).
+		vg.setDoc(xmlFileContentsAndCharset.getBytes());
 		
 		// When enabling namespace awareness, you must map the URLs of all used namespaces here.
 		try {

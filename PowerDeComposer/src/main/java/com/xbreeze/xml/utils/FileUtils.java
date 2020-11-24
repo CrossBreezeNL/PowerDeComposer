@@ -25,7 +25,10 @@ package com.xbreeze.xml.utils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.IOUtils;
@@ -34,17 +37,67 @@ import org.apache.commons.io.input.BOMInputStream;
 public class FileUtils {
 	// The logger for this class.
 	protected static final Logger logger = Logger.getLogger(XMLUtils.class.getName());
-
-	public static String getFileContent(URI fileLocation) throws IOException {
+	
+	private static final String XML_PROCESSING_INSTRUCTION_UTF8 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+	
+	public static FileContentAndCharset getFileContent(URI fileLocation) throws IOException {
 		// Create a input stream from the template file.
 		FileInputStream fis = new FileInputStream(new File(fileLocation));
 		// Wrap the input stream in a BOMInputStream so it is invariant for the BOM.
 		BOMInputStream bomInputStream = new BOMInputStream(fis);
-		// Get the charset from the bom of the input stream.
-		String bomCharsetName = bomInputStream.getBOMCharsetName();
-		logger.fine(String.format("Get file contents using charset %s", bomCharsetName));
-		// Create a String using the BOMInputStream and the charset.
-		// The charset can be null, this gives no errors.
-		return IOUtils.toString(bomInputStream, bomCharsetName);
+		
+		// Initialize the file charset to null.
+		Charset fileCharset = null;
+		// If the file has a BOM use the encoding according to the BOM.
+		if (bomInputStream.hasBOM()) {
+			// Get the charset from the bom of the input stream.
+			fileCharset = Charset.forName(bomInputStream.getBOMCharsetName());
+			logger.fine(String.format("The file has a BOM specifying charset '%s'", fileCharset.name()));
+		}
+		
+		// If the file doesn't have a bom, check whether the first line of the file is a XML processing instruction.
+		if (fileCharset == null) {
+			// Read the first part of the file and check whether the first bytes equal the UTF-8 XML processing instruction.
+			byte[] readNBytes = bomInputStream.readNBytes(XML_PROCESSING_INSTRUCTION_UTF8.getBytes(StandardCharsets.UTF_8).length);
+			if (new String(readNBytes).equals(XML_PROCESSING_INSTRUCTION_UTF8)) {
+				logger.fine("The file starts with a XML processing instruction with UTF-8 encoding.");
+				fileCharset = StandardCharsets.UTF_8;
+			}
+			// Set the position for the file input stream back to 0, since we started reading the file here.
+			fis.getChannel().position(0);
+		}
+
+		// If the charset hasen't been set yet, we aren't sure what the encoding is, defaulting to UTF-8.
+		if (fileCharset == null) {
+			logger.warning("The encoding of the file can't be detected, defaulting to UTF-8");
+			fileCharset = StandardCharsets.UTF_8;
+		}
+		
+		// Read the file using the given charset.
+		return getFileContent(bomInputStream, fileCharset);
+	}
+	
+	public static FileContentAndCharset getFileContent(URI fileLocation, Charset fileCharset) throws IOException {
+		// Create a input stream from the template file.
+		FileInputStream fis = new FileInputStream(new File(fileLocation));
+		// Read the file using the given charset.
+		return getFileContent(fis, fileCharset);
+	}
+	
+	public static FileContentAndCharset getFileContent(InputStream fileInputStream, Charset fileCharset) throws IOException {
+		logger.fine(String.format("Get file contents using charset %s", fileCharset.name()));
+		// Create a String using the InputStream and the Charset.
+		String fileContents = IOUtils.toString(fileInputStream, fileCharset);
+		// Return the FileContentAndCharset object.
+		return new FileContentAndCharset(fileContents, fileCharset);
+	}
+	
+	/**
+	 * Function where the illegal characters for a file name are replaced with an underscore
+	 * @param possiblyIllegalFileName The file name which might contain illegal characters.
+	 * @return The legal file name.
+	 */
+	public static String getLegalFileName(String possiblyIllegalFileName) {
+		return possiblyIllegalFileName.replaceAll("[:\\\\/*?|<>\"]", "_");
 	}
 }
