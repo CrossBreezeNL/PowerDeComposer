@@ -97,7 +97,7 @@ public class XmlDecomposer {
 		
 		// Parse and write document parts.
 		logger.info("Parsing and writing document parts...");
-		parseAndWriteDocumentParts(nv, xmlFileContentsAndCharset.getFileCharset(), null, xmlFile.getName(), targetDirectoryPath, 0, decomposeConfig);
+		parseAndWriteDocumentParts(nv, xmlFileContentsAndCharset.getFileCharset(), null, xmlFile.getName(), targetDirectoryPath, 0, decomposeConfig.getDecomposableElementConfig());
 		logger.info("Done parsing and writing document parts.");
 		
 		// Done
@@ -302,12 +302,12 @@ public class XmlDecomposer {
 	/**
 	 * Recursively parse the docPartXml to created xi:include reference and write the resulting Xml document to a file.
 	 * @param docPartXml
-	 * @param targetFileName
+	 * @param currentTargetFileName
 	 * @param targetDirectoryPath
 	 * @param currentPartIsRoot
 	 * @throws Exception
 	 */
-	private static Path parseAndWriteDocumentParts(VTDNav nv, Charset fileCharset, String currentObjectName, String targetFileName, Path targetDirectoryPath, int depth, DecomposeConfig decomposeConfig) throws Exception {
+	private static Path parseAndWriteDocumentParts(VTDNav nv, Charset fileCharset, String currentObjectName, String currentTargetFileName, Path targetDirectoryPath, int depth, DecomposableElementConfig decomposableElementConfig) throws Exception {
 		// Create the prefix string based on the depth.
 		String prefix = String.join("", Collections.nCopies(depth, STR_PREFIX_SPACER));
 		logger.fine(String.format("%s> %s", prefix, targetDirectoryPath));
@@ -319,9 +319,6 @@ public class XmlDecomposer {
 		} catch (Exception e) {
 			throw new Exception("Error while initializing XMLModifier");
 		}
-		
-		// Get a reference to the decomposable element configuration.
-		DecomposableElementConfig decomposableElementConfig = decomposeConfig.getDecomposableElementConfig();
 		
 		AutoPilot ap = getAutoPilot(nv);
 		// Select all elements which conform to the elements conditions as specified in the config.
@@ -336,9 +333,6 @@ public class XmlDecomposer {
 			
 	    	// Get the parent element name, to be used as the folder name.
 	    	String parentElementName = XMLUtils.getParentElementName(nv);
-	    	
-	    	// Get the current element name without namespaces.
-			//String elementName = XMLUtils.getElementNameWithoutNameSpace(nv.toString(nv.getCurrentIndex()));
 			
 	    	// Get the element offset and length (including whitespaces).
 	    	long elementOffsetAndLength = nv.getElementFragment();
@@ -357,7 +351,7 @@ public class XmlDecomposer {
 	    	minimumNextOffset = elementOffset + elementLength;
 	    	
 	    	// Get the sub element contents to use as the child object name (and thus for the file name).
-	    	String childObjectName = XMLUtils.getXPathText(nv, decomposableElementConfig.getTargetFileNameConfig().getXPath());
+	    	String childTargetFileName = XMLUtils.getXPathText(nv, decomposableElementConfig.getTargetFileNameConfig().getXPath());
 			HashMap<String, String> includeAttributesWithValues = new HashMap<String, String>();
 			// Loop over the sub elements to include to fill the hashmap.
 			// We have to do this loop here, and can't do it later in the code, since the pointer is now on the right spot in the model file.
@@ -367,16 +361,22 @@ public class XmlDecomposer {
 				if (subElementText.length() > 0)
 					includeAttributesWithValues.put(includeAttributeConfig.getName(), subElementText);
 			}
+			
+	    	// Get the target folder name using the XPath specified in the config.
+	    	String childTargetFolderName = XMLUtils.getXPathText(nv, decomposableElementConfig.getTargetFolderNameConfig().getXPath());
 	    	
-	    	if (parentElementName == null)
-	    		logger.info(String.format("The parent element name is not found for %s: %s.", decomposableElementConfig.getTargetFileNameConfig().getXPath(), childObjectName));
+	    	// If the child target folder resolves into an empty string, we use the parent element name as a fallback.
+	    	if (childTargetFolderName == null || childTargetFolderName.length() == 0) {
+	    		logger.info(String.format("The target folder name is not found for %s: %s using %s, using parent element name %s.", decomposableElementConfig.getTargetFileNameConfig().getXPath(), childTargetFileName, decomposableElementConfig.getTargetFolderNameConfig().getXPath(), parentElementName));
+	    		childTargetFolderName = XMLUtils.getElementNameWithoutNameSpace(parentElementName);
+	    	}
 			
 	    	// Get the contents of the XML Fragment.
 	    	String objectXmlPart = nv.toRawString(elementOffset, elementLength);
 	    	// Parse the XML Fragment and write it to its own file.
 	    	// If the parent element name contains a namespace part, remove it.
-	    	String parentElementFolder = XMLUtils.getElementNameWithoutNameSpace(parentElementName);
-	    	logger.fine(String.format("Parent element name: '%s'; parent element folder: '%s'; child object name: '%s'", parentElementName, parentElementFolder, childObjectName));
+	    	String childTargetFolderLegalName = FileUtils.getLegalFileName(childTargetFolderName);
+	    	logger.fine(String.format("Target folder name: '%s'; Target legal folder name: '%s'; child target file name: '%s'", childTargetFolderName, childTargetFolderLegalName, childTargetFileName));
 	    	
 			// Remove the xml node which is being referenced.
 			xm.removeContent(elementOffset, elementLength);
@@ -392,11 +392,11 @@ public class XmlDecomposer {
 			// Set the relative path with a parent folder of the current element name.
 			//String relativePath = String.format("./%s/%s/", parentElementFolder, childObjectName);
 			//Path childTargetDirectory = targetDirectoryPath.resolve(parentElementFolder).resolve(objectName);
-			String childObjectLegalFileName = FileUtils.getLegalFileName(childObjectName);
-			Path childTargetDirectory = targetDirectoryPath.resolve(parentElementFolder).resolve(childObjectLegalFileName);
+			String childObjectLegalFileName = FileUtils.getLegalFileName(childTargetFileName);
+			Path childTargetDirectory = targetDirectoryPath.resolve(childTargetFolderLegalName).resolve(childObjectLegalFileName);
 			// Derive the object file name.
 			String childObjectFileNameWithExtension = String.format("%s.xml", childObjectLegalFileName);
-			Path childFileLocation = parseAndWriteDocumentParts(partNv, fileCharset, childObjectName, childObjectFileNameWithExtension, childTargetDirectory, depth + 1, decomposeConfig);
+			Path childFileLocation = parseAndWriteDocumentParts(partNv, fileCharset, childTargetFileName, childObjectFileNameWithExtension, childTargetDirectory, depth + 1, decomposableElementConfig);
 			
 			// Insert the include tag for the found object.
 			String actualRelativePath = targetDirectoryPath.relativize(childFileLocation).toString();
@@ -422,11 +422,11 @@ public class XmlDecomposer {
 		logger.fine(String.format("%s - Found %d childs", prefix, extractedChildCount));
 		
         // Get the root element of the document.
-		logger.fine(String.format("%s - Writing file: %s", prefix, targetFileName));
-		Path targetFilePath = targetDirectoryPath.resolve(targetFileName);
+		logger.fine(String.format("%s - Writing file: %s", prefix, currentTargetFileName));
+		Path targetFilePath = targetDirectoryPath.resolve(currentTargetFileName);
 		// If the current element does not have extracted child elements, store the file in the parent folder.
 		if (depth != 0 && extractedChildCount == 0) {
-			targetFilePath = targetDirectoryPath.getParent().resolve(targetFileName);
+			targetFilePath = targetDirectoryPath.getParent().resolve(currentTargetFileName);
 		}
 		// Write the resulting XML file.
 		// Get the target folder of the target file.

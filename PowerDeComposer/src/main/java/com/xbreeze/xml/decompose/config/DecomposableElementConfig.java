@@ -9,6 +9,7 @@ import com.xbreeze.xml.config.AllConditionGroup;
 
 public class DecomposableElementConfig extends AllConditionGroup {
 	private TargetFileNameConfig _targetFileNameConfig;
+	private TargetFolderNameConfig _targetFolderNameConfig;
 	private List<IncludeAttributeConfig> _includeAttributeConfigs;
 	
 	public DecomposableElementConfig() {
@@ -22,6 +23,15 @@ public class DecomposableElementConfig extends AllConditionGroup {
 	
 	public void setTargetFileNameConfig(TargetFileNameConfig targetFileNameConfig) {
 		this._targetFileNameConfig = targetFileNameConfig;
+	}
+	
+	@XmlElement(name = "TargetFolderName")
+	public TargetFolderNameConfig getTargetFolderNameConfig() {
+		return _targetFolderNameConfig;
+	}
+	
+	public void setTargetFolderNameConfig(TargetFolderNameConfig targetFolderNameConfig) {
+		this._targetFolderNameConfig = targetFolderNameConfig;
 	}
 	
 	@XmlElement(name = "IncludeAttribute")

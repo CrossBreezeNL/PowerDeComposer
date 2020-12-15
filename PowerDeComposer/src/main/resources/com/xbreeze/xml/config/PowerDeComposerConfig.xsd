@@ -82,6 +82,8 @@
           </xs:element>
                     
           <xs:element minOccurs="0" name="TargetFileName" type="targetFileNameConfig"/>
+                    
+          <xs:element minOccurs="0" name="TargetFolderName" type="targetFolderNameConfig"/>
                   
         </xs:sequence>
               
@@ -122,6 +124,14 @@
   </xs:complexType>
     
   <xs:complexType name="targetFileNameConfig">
+        
+    <xs:sequence/>
+        
+    <xs:attribute name="xpath" type="xs:string"/>
+      
+  </xs:complexType>
+    
+  <xs:complexType name="targetFolderNameConfig">
         
     <xs:sequence/>
         

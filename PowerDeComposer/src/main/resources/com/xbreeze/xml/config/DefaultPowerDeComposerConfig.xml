@@ -61,6 +61,8 @@
 			</IncludeAttributes>
 			<!-- Here we specify the xpath to execute on a decomposable element to get the file name (without .xml). -->
 			<TargetFileName xpath="./Code" />
+			<!--  Here we specify the xpath to execute on a decomposable element to get the folder name to store the file in. -->
+			<TargetFolderName xpath="./Stereotype" />
 		</DecomposableElement>
 
 	</Decompose>
