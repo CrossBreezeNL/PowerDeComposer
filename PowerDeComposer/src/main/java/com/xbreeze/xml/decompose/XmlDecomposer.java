@@ -36,6 +36,7 @@ import java.util.regex.Pattern;
 
 import com.xbreeze.xml.decompose.config.DecomposableElementConfig;
 import com.xbreeze.xml.decompose.config.DecomposeConfig;
+import com.xbreeze.xml.decompose.config.IdentifierReplacementConfig;
 import com.xbreeze.xml.decompose.config.IncludeAttributeConfig;
 import com.xbreeze.xml.decompose.config.NodeRemovalConfig;
 import com.xbreeze.xml.utils.FileContentAndCharset;
@@ -88,7 +89,7 @@ public class XmlDecomposer {
 		}
 		
 		// Prepare the Xml Document.
-		nv = prepareDocument(nv);
+		nv = prepareDocument(nv, decomposeConfig.getIdentifierReplacementConfig());
 		
 		if (decomposeConfig.getNodeRemovalConfigs() != null && decomposeConfig.getNodeRemovalConfigs().size() > 0) {
 			nv = removeNodes(nv, decomposeConfig.getNodeRemovalConfigs());
@@ -112,9 +113,9 @@ public class XmlDecomposer {
 	 * @return
 	 * @throws Exception 
 	 */
-	private VTDNav prepareDocument(VTDNav nv) throws Exception {
+	private VTDNav prepareDocument(VTDNav nv, IdentifierReplacementConfig identifierReplacementConfig) throws Exception {
 		logger.info("Preparing PowerDesigner model document...");
-		
+
 		// We are going to replace all Id="o?" and Ref="o?" values, so we need an XmlModifier.
 		logger.info(" - Overwriting local ids with global ids...");
 		XMLModifier xm;
@@ -126,45 +127,54 @@ public class XmlDecomposer {
 		
 		AutoPilot ap = getAutoPilot(nv);
 		
-		// Select all elements which have an Id and an ObjectID.
-		ap.selectXPath("//*[./@Id and ./ObjectID]");
+		// Select all elements using the identifier node xpath.
+		ap.selectXPath(identifierReplacementConfig.getIdentifierNodeXPath());
 		
 		// Create a list of local and global ids.
 		HashMap<String, String> localToGlobalIds = new HashMap<String, String>();
 		while ((ap.evalXPath()) != -1) {
-			String elementName = nv.toString(nv.getCurrentIndex());
-			int localObjectIdIndex = nv.getAttrVal("Id");
-	    	String localObjectId = nv.toString(localObjectIdIndex);
-	    	String globalObjectId = XMLUtils.getSubElementText(nv, "ObjectID");
+			// Get the current index
+			int identifierNodeIndex = nv.getCurrentIndex();
+			// If the token is an attribute value, add 1 to the index to get to the attribute value.
+			if (nv.getTokenType(identifierNodeIndex) == VTDNav.TOKEN_ATTR_NAME) {
+				identifierNodeIndex += 1;
+			}
+	    	String identifierOriginalValue = nv.toString(identifierNodeIndex);
+	    	String identifierReplacementValue = XMLUtils.getSubElementText(nv, identifierReplacementConfig.getReplacementValueXPath());
 
-	    	logger.fine(String.format("Found local id '%s' with global id '%s' (element: '%s')", localObjectId, globalObjectId, elementName));
-	    	localToGlobalIds.put(localObjectId, globalObjectId);
+	    	logger.fine(String.format("Found identifier '%s' and replaced with value '%s'", identifierOriginalValue, identifierReplacementValue));
+	    	localToGlobalIds.put(identifierOriginalValue, identifierReplacementValue);
 	    	
-	    	xm.updateToken(localObjectIdIndex, globalObjectId);
+	    	// Update the value of the identifier node.
+	    	xm.updateToken(identifierNodeIndex, identifierReplacementValue);
 		}
 		
-		// Loop through all local ids and replaces all references to it with the global.
-		logger.info(" - Overwriting local refs with global ids...");
+		// Loop through all referencing nodes and replaces their values with the replacement value belonging to the original identifier.
+		logger.info(" - Overwriting identifier references with replacement value...");
 		// In stead of looping through specific refs, loop through all refs and replace them there.
 		try {
 			ap.resetXPath();
-			ap.selectXPath("//*/@Ref");
+			ap.selectXPath(identifierReplacementConfig.getReferencingNodeXPath());
 		} catch (XPathParseException e) {
-			throw new Exception(String.format("Error while replacing @Ref attribute values: %s", e.getMessage()), e);
+			throw new Exception(String.format("Error while replacing referencing node values: %s", e.getMessage()), e);
 		}
 		
 		// Find all references on the local id and replace it with the global id.
 		while ((ap.evalXPath()) != -1) {
 			
-			// Get the current index and add 1, because the current is the attribute name, and we want the attribute value.
-			int localObjectRefIndex = nv.getCurrentIndex() + 1;
-			String localObjectId = nv.toString(localObjectRefIndex);
+			// Get the current index
+			int localObjectRefIndex = nv.getCurrentIndex();
+			// If the token is an attribute value, add 1 to the index to get to the attribute value.
+			if (nv.getTokenType(nv.getCurrentIndex()) == VTDNav.TOKEN_ATTR_NAME) {
+				localObjectRefIndex += 1;
+			}
+			String referencingOriginalIdentifierValue = nv.toString(localObjectRefIndex);
 			// Replace the local id with the global id if it is in the collection.
-			if (localToGlobalIds.containsKey(localObjectId)) {
-				String globalObjectId = localToGlobalIds.get(localObjectId);
-		    	logger.fine(String.format("Found reference id '%s' with global id '%s' (index: %d)", localObjectId, globalObjectId, localObjectRefIndex));
+			if (localToGlobalIds.containsKey(referencingOriginalIdentifierValue)) {
+				String referencingIdentiierReplacementValue = localToGlobalIds.get(referencingOriginalIdentifierValue);
+		    	logger.fine(String.format("Found reference id '%s' with global id '%s' (index: %d)", referencingOriginalIdentifierValue, referencingIdentiierReplacementValue, localObjectRefIndex));
 		    	// Update local reference to the global GUID.
-		    	xm.updateToken(localObjectRefIndex, globalObjectId);
+		    	xm.updateToken(localObjectRefIndex, referencingIdentiierReplacementValue);
 			}
 		}
 		

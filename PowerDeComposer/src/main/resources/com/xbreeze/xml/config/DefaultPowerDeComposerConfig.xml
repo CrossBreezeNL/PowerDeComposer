@@ -2,6 +2,8 @@
 <PowerDeComposerConfig>
 	<Decompose>
 	
+		<IdentifierReplacement identifierNodeXPath="//*/@Id[../ObjectID]" replacementValueXPath="../ObjectID" referencingNodeXPath="//*/@Ref" />
+	
 		<!-- Specify the nodes to remove before decomposing. -->
 		<NodeRemovals>
 			<!-- Remove the object count on the PowerDesigner processing instruction. -->

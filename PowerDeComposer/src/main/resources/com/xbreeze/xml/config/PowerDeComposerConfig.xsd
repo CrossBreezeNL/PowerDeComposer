@@ -17,6 +17,8 @@
         
     <xs:sequence>
             
+      <xs:element minOccurs="0" name="IdentifierReplacement" type="identifierReplacementConfig"/>
+            
       <xs:element minOccurs="0" name="NodeRemovals">
                 
         <xs:complexType>
@@ -34,6 +36,18 @@
       <xs:element minOccurs="0" name="DecomposableElement" type="decomposableElementConfig"/>
           
     </xs:sequence>
+      
+  </xs:complexType>
+    
+  <xs:complexType name="identifierReplacementConfig">
+        
+    <xs:sequence/>
+        
+    <xs:attribute name="identifierNodeXPath" type="xs:string"/>
+        
+    <xs:attribute name="referencingNodeXPath" type="xs:string"/>
+        
+    <xs:attribute name="replacementValueXPath" type="xs:string"/>
       
   </xs:complexType>
     
