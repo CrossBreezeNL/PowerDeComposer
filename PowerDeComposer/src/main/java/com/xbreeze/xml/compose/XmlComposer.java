@@ -100,30 +100,13 @@ public class XmlComposer {
 			resolvedIncludes.put(xmlFileUri, level);
 		}
 
-		// Get basePath of configFile. If the provided URI refers to a file, us its
+		// Get basePath of the file. If the provided URI refers to a file, use its
 		// parent path, if it refers to a folder use it as base path
 		try {
-			URI basePath = new URI("file:///../");
-			File xmlFile = new File(xmlFileUri.getPath());
-			if (xmlFile.isDirectory()) {
-				basePath = xmlFileUri;
-			} else if (xmlFile.isFile()) {
-				String parentPath = xmlFile.getParent();
-				if (parentPath != null) {
-					basePath = Paths.get(parentPath).toUri();
-				}
-			}
-			// Resolve basePath to absolute/real path
-			try {
-				basePath = Paths.get(basePath).toRealPath(LinkOption.NOFOLLOW_LINKS).toUri();
-			} catch (IOException e) {
-				throw new Exception(
-						String.format("Error resolving config basePath %s to canonical path", basePath.toString()), e);
-			}
+			Path basePath = FileUtils.getBasePath(Path.of(xmlFileUri));
 
-			// Open the config file and look for includes
-			// Make this XPath namespace aware so it actually looks for xi:include instead
-			// of include in all namespaces
+			// Open the file and look for includes
+			// TODO: Make this XPath namespace aware so it actually looks for xi:include instead of include in all namespaces
 			VTDNav nav = XMLUtils.getVTDNav(xmlFileContentsAndCharset, false);
 			AutoPilot ap = new AutoPilot(nav);
 			// Declare the XInclude namespace.
@@ -143,11 +126,9 @@ public class XmlComposer {
 							xmlFileUri.toString()));
 					// Resolve include to a valid path against the basePath
 					logger.fine(String.format("base path %s", basePath.toString()));
-					Path p = Paths.get(basePath);
 					URI includeFileUri = null;
 					try {
-						includeFileUri = p.resolve(Paths.get(includeFileLocation)).toRealPath(LinkOption.NOFOLLOW_LINKS)
-								.toUri();
+						includeFileUri = basePath.resolve(includeFileLocation).toRealPath(LinkOption.NOFOLLOW_LINKS).toUri();
 					} catch (IOException e) {
 						throw new Exception(String.format("Error resolving found include %s for %s to canonical path",
 								includeFileLocation, xmlFileUri.toString()), e);

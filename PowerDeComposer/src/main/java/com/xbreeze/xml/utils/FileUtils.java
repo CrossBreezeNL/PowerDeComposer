@@ -29,6 +29,8 @@ import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.IOUtils;
@@ -99,5 +101,29 @@ public class FileUtils {
 	 */
 	public static String getLegalFileName(String possiblyIllegalFileName) {
 		return possiblyIllegalFileName.replaceAll("[:\\\\/*?|<>\"]", "_");
+	}
+	
+	/**
+	 * Function to get the base path of an URI.
+	 * Get basePath of the file. If the provided URI refers to a file, use its parent path.
+	 * If it refers to a folder use it as base path
+	 * @param fileUri The file URI
+	 * @return The base path URI
+	 * @throws Exception
+	 */
+	public static Path getBasePath(Path filePath) throws Exception {
+		Path basePath = filePath;
+		// Check whether the path points to a file, and if so get the parent path.
+		if (filePath.toFile().isFile()) {
+			basePath = filePath.getParent();
+		}
+		// Resolve basePath to absolute/real path
+		try {
+			basePath = basePath.toRealPath(LinkOption.NOFOLLOW_LINKS);
+		} catch (IOException e) {
+			throw new Exception(
+					String.format("Error resolving config basePath %s to canonical path", basePath.toString()), e);
+		}
+		return basePath;
 	}
 }
