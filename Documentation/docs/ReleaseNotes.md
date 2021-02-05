@@ -20,6 +20,16 @@ Click on the header of a version number to go to the documentation of that speci
 [//]: # (>     * [ ] Binding)
 [//]: # (>         * [X] Some issue...)
 
+## Version 1.3.0
+
+- [ ] 1.3.0 <sup>05-02-2021</sup>
+> !!! success "Enhanced features"
+>     * [ ] Decompose model
+>         - [X] Specify node to use for the target folder names.
+>         - [X] Added functionality to remove former decomposed files which aren't part of the latest decomposed model.
+>     * [ ] Configuration
+>         - [X] Updated default configuration so it de decomposed folder structure and file names are more readable.
+
 ## Version 1.2.0
 
 - [ ] 1.2.0 <sup>14-10-2020</sup>

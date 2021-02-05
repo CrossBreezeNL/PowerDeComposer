@@ -71,7 +71,7 @@ public class FileUtils {
 
 		// If the charset hasen't been set yet, we aren't sure what the encoding is, defaulting to UTF-8.
 		if (fileCharset == null) {
-			logger.warning("The encoding of the file can't be detected, defaulting to UTF-8");
+			logger.warning(String.format("The encoding of the file can't be detected, defaulting to UTF-8 (%s)", fileLocation.toString()));
 			fileCharset = StandardCharsets.UTF_8;
 		}
 		

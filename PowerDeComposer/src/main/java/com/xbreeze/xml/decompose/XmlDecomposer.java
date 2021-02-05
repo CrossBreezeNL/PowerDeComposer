@@ -63,16 +63,15 @@ public class XmlDecomposer {
 		
 		logger.info(String.format("Starting Xml Decomposer for '%s'", xmlFilePath));
 		
+		// Check whether the XML file to decompose exists.
 		File xmlFile = new File(xmlFilePath);
-		Path targetDirectoryPath = Paths.get(targetDirectory);
+		if (!xmlFile.exists())
+			throw new Exception(String.format("The specified xml file doesn't exist '%s'.", xmlFilePath));
 		
 		// Get the existing list of files in the decomposed model (if it exists). This is needed to track files which are written and which need to be deleted.
 		HashSet<URI> formerDecomposedFilePaths = new HashSet<URI>();
-		addFormerFilePaths(targetDirectoryPath.resolve(xmlFile.getName()), formerDecomposedFilePaths);
-		
-		// Check whether the XML file to decompose exists.
-		if (!xmlFile.exists())
-			throw new Exception(String.format("The specified xml file doesn't exist '%s'.", xmlFilePath));
+		Path targetDirectoryPath = Paths.get(targetDirectory);
+		addFormerFilePaths(targetDirectoryPath.resolve(xmlFile.getName()), formerDecomposedFilePaths, null);
 		
 		// Read the xml file into a string.
 		logger.fine("Getting file contents...");
@@ -122,7 +121,7 @@ public class XmlDecomposer {
 		logger.info("Done.");
 	}
 	
-	private void addFormerFilePaths(Path fileWithIncludesPath, HashSet<URI> filePathsSet) throws Exception {
+	private void addFormerFilePaths(Path fileWithIncludesPath, HashSet<URI> filePathsSet, Charset fileCharset) throws Exception {
 		// Only go further when the file exists.
 		if (fileWithIncludesPath.toFile().exists()) {
 			// Resolve the path to a real path URI so this can be used as a key of the hashset.
@@ -136,8 +135,13 @@ public class XmlDecomposer {
 				// Get the file base path.
 				Path basePath = FileUtils.getBasePath(fileWithIncludesPath);
 				
-				// Read the xml file into a string.
-				FileContentAndCharset fcac = FileUtils.getFileContent(fileUri);
+				// Read the XML file into a string, if the charset is known from a parent file, use it.
+				FileContentAndCharset fcac;
+				if (fileCharset == null) {
+					fcac = FileUtils.getFileContent(fileUri);
+				} else {
+					fcac = FileUtils.getFileContent(fileUri, fileCharset);
+				}
 				
 				// Open the file and look for includes
 				// TODO: Make this XPath namespace aware so it actually looks for xi:include instead of include in all namespaces
@@ -159,7 +163,7 @@ public class XmlDecomposer {
 					// Resolve the included file path.
 					Path includeFilePath = basePath.resolve(includeFileLocation);
 					// Add the file path of the included file (and scan its contents for more includes).
-					addFormerFilePaths(includeFilePath, filePathsSet);
+					addFormerFilePaths(includeFilePath, filePathsSet, fcac.getFileCharset());
 				}
 			}
 		}
@@ -423,20 +427,24 @@ public class XmlDecomposer {
 					includeAttributesWithValues.put(includeAttributeConfig.getName(), subElementText);
 			}
 			
-	    	// Get the target folder name using the XPath specified in the config.
-	    	String childTargetFolderName = XMLUtils.getXPathText(nv, decomposableElementConfig.getTargetFolderNameConfig().getXPath());
+	    	// Get the target folder name using the XPath specified in the config (if specified).
+			String childTargetFolderName = XMLUtils.getElementNameWithoutNameSpace(parentElementName);
+	    	// If the parent element name contains a namespace part, remove it.
+	    	String childTargetFolderLegalName = FileUtils.getLegalFileName(childTargetFolderName);
+			String childTargetSubLegalFolderName;
+			if (decomposableElementConfig.getTargetFolderNameConfig() != null && decomposableElementConfig.getTargetFolderNameConfig().getXPath() != null && decomposableElementConfig.getTargetFolderNameConfig().getXPath().length() > 0) {
+				childTargetSubLegalFolderName = FileUtils.getLegalFileName(XMLUtils.getXPathText(nv, decomposableElementConfig.getTargetFolderNameConfig().getXPath())); 
+				// If the XPath resolves in an empty value, use the parent element name.
+				if (childTargetSubLegalFolderName == null || childTargetSubLegalFolderName.length() == 0) {
+					logger.info(String.format("The target folder name is not found for %s: %s using %s, using parent element name %s.", decomposableElementConfig.getTargetFileNameConfig().getXPath(), childTargetFileName, decomposableElementConfig.getTargetFolderNameConfig().getXPath(), parentElementName));
+				} else {
+					childTargetFolderLegalName = childTargetFolderLegalName.concat("/").concat(childTargetSubLegalFolderName);
+				}
+			}
 	    	
-	    	// If the child target folder resolves into an empty string, we use the parent element name as a fallback.
-	    	if (childTargetFolderName == null || childTargetFolderName.length() == 0) {
-	    		logger.info(String.format("The target folder name is not found for %s: %s using %s, using parent element name %s.", decomposableElementConfig.getTargetFileNameConfig().getXPath(), childTargetFileName, decomposableElementConfig.getTargetFolderNameConfig().getXPath(), parentElementName));
-	    		childTargetFolderName = XMLUtils.getElementNameWithoutNameSpace(parentElementName);
-	    	}
-			
 	    	// Get the contents of the XML Fragment.
 	    	String objectXmlPart = nv.toRawString(elementOffset, elementLength);
 	    	// Parse the XML Fragment and write it to its own file.
-	    	// If the parent element name contains a namespace part, remove it.
-	    	String childTargetFolderLegalName = FileUtils.getLegalFileName(childTargetFolderName);
 	    	logger.fine(String.format("Target folder name: '%s'; Target legal folder name: '%s'; child target file name: '%s'", childTargetFolderName, childTargetFolderLegalName, childTargetFileName));
 	    	
 			// Remove the xml node which is being referenced.
