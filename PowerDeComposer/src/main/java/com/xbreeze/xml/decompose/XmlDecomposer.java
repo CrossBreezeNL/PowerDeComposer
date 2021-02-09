@@ -112,11 +112,12 @@ public class XmlDecomposer {
 		
 		// If there are files in the former file hierarchy which aren't written, remove them.
 		if (formerDecomposedFilePaths.size() > 0) {
+			logger.info(String.format("Deleting %d former decomposed files...", formerDecomposedFilePaths.size()));
 			for (URI formerFileUri : formerDecomposedFilePaths) {
 				if (new File(formerFileUri).delete()) {
-					logger.info(String.format("Removed former decomposed file '%s'", formerFileUri));
+					logger.fine(String.format("Removed former decomposed file '%s'", formerFileUri));
 				} else {
-					logger.severe(String.format("Error while removing former decomposed file '%s'!", formerFileUri));
+					logger.warning(String.format("Error while removing former decomposed file '%s'!", formerFileUri));
 				}
 			}
 		}
