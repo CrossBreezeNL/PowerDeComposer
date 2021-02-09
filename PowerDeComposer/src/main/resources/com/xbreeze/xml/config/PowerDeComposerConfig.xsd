@@ -91,7 +91,7 @@
                       
           </xs:element>
                     
-          <xs:element minOccurs="0" name="TargetFileName" type="targetFileNameConfig"/>
+          <xs:element name="TargetFileName" type="targetFileNameConfig"/>
                     
           <xs:element minOccurs="0" name="TargetFolderName" type="targetFolderNameConfig"/>
                   

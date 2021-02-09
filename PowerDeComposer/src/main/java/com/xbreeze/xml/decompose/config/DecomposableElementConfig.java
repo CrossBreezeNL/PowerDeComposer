@@ -16,7 +16,7 @@ public class DecomposableElementConfig extends AllConditionGroup {
 		super();
 	}
 	
-	@XmlElement(name = "TargetFileName")
+	@XmlElement(name = "TargetFileName", required = true)
 	public TargetFileNameConfig getTargetFileNameConfig() {
 		return _targetFileNameConfig;
 	}

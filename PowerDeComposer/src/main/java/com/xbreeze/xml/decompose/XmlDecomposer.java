@@ -427,16 +427,23 @@ public class XmlDecomposer {
 	    	// Make sure the next index found by the AutoPilot is after the current fragment (used in the previous if condition).
 	    	minimumNextOffset = elementOffset + elementLength;
 	    	
+	    	// Make sure the target file name config is set.
+	    	if (decomposableElementConfig.getTargetFileNameConfig() == null)
+	    		throw new Exception("The TargetFileName configuration isn't set!");
+	    	
 	    	// Get the sub element contents to use as the child object name (and thus for the file name).
 	    	String childTargetFileName = XMLUtils.getXPathText(nv, decomposableElementConfig.getTargetFileNameConfig().getXPath());
 			HashMap<String, String> includeAttributesWithValues = new HashMap<String, String>();
-			// Loop over the sub elements to include to fill the hashmap.
-			// We have to do this loop here, and can't do it later in the code, since the pointer is now on the right spot in the model file.
-			for (IncludeAttributeConfig includeAttributeConfig : decomposableElementConfig.getIncludeAttributeConfigs()) {
-				String subElementText = XMLUtils.getXPathText(nv, includeAttributeConfig.getXPath());
-				// Only include the attribute if it contains a value.
-				if (subElementText.length() > 0)
-					includeAttributesWithValues.put(includeAttributeConfig.getName(), subElementText);
+			// Go through the configured includes attributes if they exist.
+			if (decomposableElementConfig.getIncludeAttributeConfigs() != null) {
+				// Loop over the sub elements to include to fill the hashmap.
+				// We have to do this loop here, and can't do it later in the code, since the pointer is now on the right spot in the model file.
+				for (IncludeAttributeConfig includeAttributeConfig : decomposableElementConfig.getIncludeAttributeConfigs()) {
+					String subElementText = XMLUtils.getXPathText(nv, includeAttributeConfig.getXPath());
+					// Only include the attribute if it contains a value.
+					if (subElementText.length() > 0)
+						includeAttributesWithValues.put(includeAttributeConfig.getName(), subElementText);
+				}
 			}
 			
 	    	// Get the target folder name using the XPath specified in the config (if specified).
@@ -448,7 +455,7 @@ public class XmlDecomposer {
 				childTargetSubLegalFolderName = FileUtils.getLegalFileName(XMLUtils.getXPathText(nv, decomposableElementConfig.getTargetFolderNameConfig().getXPath())); 
 				// If the XPath resolves in an empty value, use the parent element name.
 				if (childTargetSubLegalFolderName == null || childTargetSubLegalFolderName.length() == 0) {
-					logger.info(String.format("The target folder name is not found for %s: %s using %s, using parent element name %s.", decomposableElementConfig.getTargetFileNameConfig().getXPath(), childTargetFileName, decomposableElementConfig.getTargetFolderNameConfig().getXPath(), parentElementName));
+					logger.fine(String.format("The target folder name is not found for %s: %s using %s, using parent element name %s.", decomposableElementConfig.getTargetFileNameConfig().getXPath(), childTargetFileName, decomposableElementConfig.getTargetFolderNameConfig().getXPath(), parentElementName));
 				} else {
 					childTargetFolderLegalName = childTargetFolderLegalName.concat("/").concat(childTargetSubLegalFolderName);
 				}
