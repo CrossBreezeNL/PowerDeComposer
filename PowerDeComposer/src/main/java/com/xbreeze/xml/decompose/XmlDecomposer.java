@@ -68,6 +68,8 @@ public class XmlDecomposer {
 		if (!xmlFile.exists())
 			throw new Exception(String.format("The specified xml file doesn't exist '%s'.", xmlFilePath));
 		
+		// TODO: Perform changes detection here before doing anything else.
+		
 		// Get the existing list of files in the decomposed model (if it exists). This is needed to track files which are written and which need to be deleted.
 		HashSet<URI> formerDecomposedFilePaths = new HashSet<URI>();
 		Path targetDirectoryPath = Paths.get(targetDirectory);
@@ -121,6 +123,13 @@ public class XmlDecomposer {
 		logger.info("Done.");
 	}
 	
+	/**
+	 * Add the former decompose file paths to the filePathsSet collection.
+	 * @param fileWithIncludesPath The current file.
+	 * @param filePathsSet The collection of file paths found this far.
+	 * @param fileCharset The file charset to use.
+	 * @throws Exception
+	 */
 	private void addFormerFilePaths(Path fileWithIncludesPath, HashSet<URI> filePathsSet, Charset fileCharset) throws Exception {
 		// Only go further when the file exists.
 		if (fileWithIncludesPath.toFile().exists()) {
@@ -314,7 +323,7 @@ public class XmlDecomposer {
 	        	else if (nv.getTokenType(currentNodeIndex) == VTDNav.TOKEN_PI_NAME) {
 	        		// If there is an attribute specified on the processing instruction, find the attribute in the processing instruction.
 	        		if (piAttributeToRemove != null) {
-        				// The processing instruction value is in the token after te name.
+        				// The processing instruction value is in the token after the name.
 	        			String piValue = nv.toRawString(currentNodeIndex + 1);
 	        			int piValueOffset = nv.getTokenOffset(currentNodeIndex + 1);
 	        			logger.fine(String.format(" - Processing instruction value: '%s'", piValue));

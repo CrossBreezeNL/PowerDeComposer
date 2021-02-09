@@ -26,6 +26,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.ximpleware.AutoPilot;
 import com.ximpleware.ModifyException;
@@ -166,12 +168,50 @@ public class XMLUtils {
 	 * @param nv
 	 * @param subElementName
 	 * @return
-	 * @throws XPathParseException
+	 * @throws Exception 
 	 */
-	public static String getXPathText(VTDNav nv, String xpath) throws XPathParseException {
-		AutoPilot sap = new AutoPilot(nv);
-		sap.selectXPath(xpath);
-		return sap.evalXPathToString();
+	public static String getXPathText(VTDNav nv, String xpath) throws Exception {
+		// Create a pattern to recognize XPath expressions on processing instructions.
+		Pattern piAttributeXPathPattern = Pattern.compile("(?<PIXPath>/?/processing-instruction\\(.+\\))/@(?<PIAttribute>.+)");
+		// Get the matcher for the PI attribute xpath.
+		Matcher piAttributeXPathMatcher = piAttributeXPathPattern.matcher(xpath);
+		// Check whether the XPath matches a processing-instruction selection.
+		if (piAttributeXPathMatcher.matches()) {
+			String piNodeXPath = piAttributeXPathMatcher.group("PIXPath");
+			String piAttributeToRemove = piAttributeXPathMatcher.group("PIAttribute");
+			AutoPilot sap = new AutoPilot(nv);
+			sap.selectXPath(piNodeXPath);
+			if (sap.evalXPath() != -1) {
+				int currentNodeIndex = nv.getCurrentIndex();
+				// If the token is a processing-instruction name, we can select the value for the specific attribute.
+				if (nv.getTokenType(currentNodeIndex) == VTDNav.TOKEN_PI_NAME) {
+    				// The processing instruction value is in the token after the name.
+        			String piValue = nv.toRawString(currentNodeIndex + 1);
+        			Pattern piAttributePattern = Pattern.compile(String.format(" %s=\\\"[a-zA-Z0-9]+\\\"", piAttributeToRemove));
+        			Matcher piAttributeMatcher = piAttributePattern.matcher(piValue);
+        			if (piAttributeMatcher.find()) {
+        				// Return the found processing instruction attribute.
+        				return piAttributeMatcher.group();
+        			}
+        			// If the processing instruction attribute can't be found, return null.
+        			else {
+        				return null;
+        			}
+				} else {
+					throw new Exception(String.format("The processing instruction XPath didn't result in a processing instruction token for: %s.", xpath));
+				}
+			}
+			else {
+				throw new Exception(String.format("The processing instruction wasn't found for: %s.", xpath));
+			}
+			
+		}
+		// If the XPath isn't a processing instruction attribute selection, perform the normal XPath on the AutoPilot.
+		else {
+			AutoPilot sap = new AutoPilot(nv);
+			sap.selectXPath(xpath);
+			return sap.evalXPathToString();			
+		}
 	}
 	
 	/**

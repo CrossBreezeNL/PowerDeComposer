@@ -2,6 +2,13 @@
 <PowerDeComposerConfig>
 	<Decompose>
 	
+		<!-- Specify a XPath to execute on both sides (composed and decomposed) to decide whether the decompose. -->
+		<!-- If the value doesn't exist on both sides we do nothing. -->
+		<!-- If the value exists on one side but not on the other side, we decompose. -->
+		<!-- If the value exists on both sides, we decompose if the value is different. -->
+		<ChangeDetection xpath="/processing-instruction('PowerDesigner')/@LastModificationDate" />
+	
+		<!-- Configuration on how to replace identifiers. -->
 		<IdentifierReplacement identifierNodeXPath="//*/@Id[../ObjectID]" replacementValueXPath="../ObjectID" referencingNodeXPath="//*/@Ref" />
 	
 		<!-- Specify the nodes to remove before decomposing. -->

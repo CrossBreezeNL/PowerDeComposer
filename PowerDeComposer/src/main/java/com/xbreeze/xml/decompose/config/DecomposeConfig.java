@@ -6,14 +6,24 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlType;
 
-@XmlType(propOrder = {"identifierReplacementConfig", "nodeRemovalConfigs", "decomposableElementConfig"})
+@XmlType(propOrder = {"changeDetectionConfig", "identifierReplacementConfig", "nodeRemovalConfigs", "decomposableElementConfig"})
 public class DecomposeConfig {
+	private ChangeDetectionConfig _changeDetectionConfig;
 	private IdentifierReplacementConfig _identifierReplacementConfig;
 	private List<NodeRemovalConfig> _nodeRemovalConfigs;
 	private DecomposableElementConfig _decomposableElementConfig;
 	
 	public DecomposeConfig() {
 		super();
+	}
+	
+	@XmlElement(name = "ChangeDetection")
+	public ChangeDetectionConfig getChangeDetectionConfig() {
+		return _changeDetectionConfig;
+	}
+	
+	public void setChangeDetectionConfig(ChangeDetectionConfig changeDetectionConfig) {
+		this._changeDetectionConfig = changeDetectionConfig;
 	}
 	
 	@XmlElement(name = "IdentifierReplacement")
