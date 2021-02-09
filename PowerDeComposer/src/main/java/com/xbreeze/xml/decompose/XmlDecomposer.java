@@ -96,8 +96,10 @@ public class XmlDecomposer {
 			throw new Exception(String.format("Error while parsing Xml document: %s", e.getMessage()), e);
 		}
 		
-		// Prepare the Xml Document.
-		nv = prepareDocument(nv, decomposeConfig.getIdentifierReplacementConfig());
+		// Replace the identifiers in the XML Document, if specified in the config.
+		if (decomposeConfig.getIdentifierReplacementConfig() != null) {
+			nv = replaceIdentifiers(nv, decomposeConfig.getIdentifierReplacementConfig());
+		}
 		
 		if (decomposeConfig.getNodeRemovalConfigs() != null && decomposeConfig.getNodeRemovalConfigs().size() > 0) {
 			nv = removeNodes(nv, decomposeConfig.getNodeRemovalConfigs());
@@ -187,8 +189,8 @@ public class XmlDecomposer {
 	 * @return
 	 * @throws Exception 
 	 */
-	private VTDNav prepareDocument(VTDNav nv, IdentifierReplacementConfig identifierReplacementConfig) throws Exception {
-		logger.info("Preparing PowerDesigner model document...");
+	private VTDNav replaceIdentifiers(VTDNav nv, IdentifierReplacementConfig identifierReplacementConfig) throws Exception {
+		logger.info("Replacing identifiers in document...");
 
 		// We are going to replace all Id="o?" and Ref="o?" values, so we need an XmlModifier.
 		logger.info(" - Overwriting local ids with global ids...");
@@ -252,7 +254,7 @@ public class XmlDecomposer {
 			}
 		}
 		
-		logger.info("Done preparing PowerDesigner model document.");
+		logger.info("Done replacing identifiers in document.");
 		
 		// Output and reparse the modifier xml to the VtdNav.
 		return xm.outputAndReparse();
