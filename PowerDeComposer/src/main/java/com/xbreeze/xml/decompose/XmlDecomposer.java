@@ -105,10 +105,12 @@ public class XmlDecomposer {
 			nv = removeNodes(nv, decomposeConfig.getNodeRemovalConfigs());
 		}
 		
-		// Parse and write document parts.
-		logger.info("Parsing and writing document parts...");
-		parseAndWriteDocumentParts(nv, xmlFileContentsAndCharset.getFileCharset(), null, xmlFile.getName(), targetDirectoryPath, 0, decomposeConfig.getDecomposableElementConfig(), formerDecomposedFilePaths);
-		logger.info("Done parsing and writing document parts.");
+		// Parse and write document parts, if specified in the config.
+		if (decomposeConfig.getDecomposableElementConfig() != null && decomposeConfig.getDecomposableElementConfig().getElementConditionsAndGroups() != null && decomposeConfig.getDecomposableElementConfig().getElementConditionsAndGroups().size() > 0) {
+			logger.info("Parsing and writing document parts...");
+			parseAndWriteDocumentParts(nv, xmlFileContentsAndCharset.getFileCharset(), null, xmlFile.getName(), targetDirectoryPath, 0, decomposeConfig.getDecomposableElementConfig(), formerDecomposedFilePaths);
+			logger.info("Done parsing and writing document parts.");
+		}
 		
 		// If there are files in the former file hierarchy which aren't written, remove them.
 		if (formerDecomposedFilePaths.size() > 0) {
@@ -317,13 +319,25 @@ public class XmlDecomposer {
 			boolean removedNodes = false;
 	        while ((ap.evalXPath()) != -1) {
 	        	int currentNodeIndex = nv.getCurrentIndex();
-				logger.fine(String.format(" - Removing node '%d' (offset=%d;length=%d;type=%d)...", currentNodeIndex, nv.getTokenOffset(currentNodeIndex), nv.getTokenLength(currentNodeIndex), nv.getTokenType(currentNodeIndex)));
+				int currentTokenType = nv.getTokenType(currentNodeIndex);
+				logger.fine(String.format(" - Removing node '%d' (offset=%d;length=%d;type=%d)...", currentNodeIndex, nv.getTokenOffset(currentNodeIndex), nv.getTokenLength(currentNodeIndex), currentTokenType));
 	        	// If the node is an element, expand the element offset with the leading whitespace, so we also remove whitespace before this node.
-	        	if (nv.getTokenType(currentNodeIndex) == VTDNav.TOKEN_STARTING_TAG) {
+	        	if (currentTokenType == VTDNav.TOKEN_STARTING_TAG) {
 	        		xm.remove(nv.expandWhiteSpaces(nv.getElementFragment(), VTDNav.WS_LEADING));
 	        	}
+	        	// If the token is an attribute name, we need to remove the attribute name, the equals sign and its value (we use removeAttribute function for this).
+	        	else if (currentTokenType == VTDNav.TOKEN_ATTR_NAME) {
+	        		// Store the attribute name index.
+	        		int attributeNameIndex = nv.getTokenOffset(currentNodeIndex);
+	        		// Remove the attribute with value.
+	        		xm.remove();
+	        		// Remove the space before the attribute name (if it's there).
+	        		if (nv.toString(attributeNameIndex - 1, 1).equals(" ")) {
+	        			xm.removeContent(attributeNameIndex - 1, 1);
+	        		}
+	        	}
 	        	// If the token is a processing-instruction name, we need to remove the token before and after as well.
-	        	else if (nv.getTokenType(currentNodeIndex) == VTDNav.TOKEN_PI_NAME) {
+	        	else if (currentTokenType == VTDNav.TOKEN_PI_NAME) {
 	        		// If there is an attribute specified on the processing instruction, find the attribute in the processing instruction.
 	        		if (piAttributeToRemove != null) {
         				// The processing instruction value is in the token after the name.
@@ -351,7 +365,7 @@ public class XmlDecomposer {
 	        	}
 	        	// If the node is not an element, remove the whole token.
 	        	else {
-	        		xm.removeToken(currentNodeIndex);
+	        		xm.remove();
 	        	}
 	        	// Update removedNodes to true.
 	        	removedNodes = true;
