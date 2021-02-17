@@ -24,8 +24,10 @@ package com.xbreeze.xml.decompose;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -106,7 +108,7 @@ public class XmlDecomposer {
 		}
 		
 		// Parse and write document parts, if specified in the config.
-		if (decomposeConfig.getDecomposableElementConfig() != null && decomposeConfig.getDecomposableElementConfig().getElementConditionsAndGroups() != null && decomposeConfig.getDecomposableElementConfig().getElementConditionsAndGroups().size() > 0) {
+		if (decomposeConfig.getDecomposableElementConfig() != null) {
 			logger.info("Parsing and writing document parts...");
 			parseAndWriteDocumentParts(nv, xmlFileContentsAndCharset.getFileCharset(), null, xmlFile.getName(), targetDirectoryPath, 0, decomposeConfig.getDecomposableElementConfig(), formerDecomposedFilePaths);
 			logger.info("Done parsing and writing document parts.");
@@ -116,10 +118,12 @@ public class XmlDecomposer {
 		if (formerDecomposedFilePaths.size() > 0) {
 			logger.info(String.format("Deleting %d former decomposed files...", formerDecomposedFilePaths.size()));
 			for (URI formerFileUri : formerDecomposedFilePaths) {
-				if (new File(formerFileUri).delete()) {
+				try {
+					// Remove the file using the Files class i.s.o. the File object, since this throws an exception containing information about the problem.
+					Files.delete(Path.of(formerFileUri));
 					logger.fine(String.format("Removed former decomposed file '%s'", formerFileUri));
-				} else {
-					logger.warning(String.format("Error while removing former decomposed file '%s'!", formerFileUri));
+				} catch (IOException ex) {
+					logger.warning(String.format("Error while removing former decomposed file '%s': %s", formerFileUri, ex.getMessage()));
 				}
 			}
 		}
@@ -410,118 +414,122 @@ public class XmlDecomposer {
 		} catch (Exception e) {
 			throw new Exception("Error while initializing XMLModifier");
 		}
-		
-		AutoPilot ap = getAutoPilot(nv);
-		// Select all elements which conform to the elements conditions as specified in the config.
-		ap.selectXPath(String.format("//*[%s]", decomposableElementConfig.getXPathExpression()));
-		int minimumNextOffset = 0;
 		int extractedChildCount = 0;
-		// Loop through the found elements.
-		while ((ap.evalXPath()) != -1) {
-			// skip the root element.
-			if (nv.getCurrentIndex() == nv.getRootIndex())
-				continue;
-			
-	    	// Get the parent element name, to be used as the folder name.
-	    	String parentElementName = XMLUtils.getParentElementName(nv);
-			
-	    	// Get the element offset and length (including whitespaces).
-	    	long elementOffsetAndLength = nv.getElementFragment();
-	    	int elementOffset = (int)elementOffsetAndLength;
-	    	int elementLength = (int)(elementOffsetAndLength>>32);
-	    	
-	    	logger.fine(String.format("%s - Found element: '%s' at %d till %d", prefix, nv.toRawString(nv.getCurrentIndex()), elementOffset, elementOffset + elementLength));
-	    	
-	    	// If the current offset is not after the end of the previous fragment, skip this one (it is part of a section passed into the recursive call).
-	    	if (elementOffset < minimumNextOffset)
-    			continue;
-	    	
-	    	logger.fine(String.format("%s - After the offset of the previous element (%d < %d)...", prefix, elementOffset, minimumNextOffset));
-	    	
-	    	// Make sure the next index found by the AutoPilot is after the current fragment (used in the previous if condition).
-	    	minimumNextOffset = elementOffset + elementLength;
-	    	
-	    	// Make sure the target file name config is set.
-	    	if (decomposableElementConfig.getTargetFileNameConfig() == null)
-	    		throw new Exception("The TargetFileName configuration isn't set!");
-	    	
-	    	// Get the sub element contents to use as the child object name (and thus for the file name).
-	    	String childTargetFileName = XMLUtils.getXPathText(nv, decomposableElementConfig.getTargetFileNameConfig().getXPath());
-			HashMap<String, String> includeAttributesWithValues = new HashMap<String, String>();
-			// Go through the configured includes attributes if they exist.
-			if (decomposableElementConfig.getIncludeAttributeConfigs() != null) {
-				// Loop over the sub elements to include to fill the hashmap.
-				// We have to do this loop here, and can't do it later in the code, since the pointer is now on the right spot in the model file.
-				for (IncludeAttributeConfig includeAttributeConfig : decomposableElementConfig.getIncludeAttributeConfigs()) {
-					String subElementText = XMLUtils.getXPathText(nv, includeAttributeConfig.getXPath());
-					// Only include the attribute if it contains a value.
-					if (subElementText.length() > 0)
-						includeAttributesWithValues.put(includeAttributeConfig.getName(), subElementText);
-				}
-			}
-			
-	    	// Get the target folder name using the XPath specified in the config (if specified).
-			String childTargetFolderName = XMLUtils.getElementNameWithoutNameSpace(parentElementName);
-	    	// If the parent element name contains a namespace part, remove it.
-	    	String childTargetFolderLegalName = FileUtils.getLegalFileName(childTargetFolderName);
-			String childTargetSubLegalFolderName;
-			if (decomposableElementConfig.getTargetFolderNameConfig() != null && decomposableElementConfig.getTargetFolderNameConfig().getXPath() != null && decomposableElementConfig.getTargetFolderNameConfig().getXPath().length() > 0) {
-				childTargetSubLegalFolderName = FileUtils.getLegalFileName(XMLUtils.getXPathText(nv, decomposableElementConfig.getTargetFolderNameConfig().getXPath())); 
-				// If the XPath resolves in an empty value, use the parent element name.
-				if (childTargetSubLegalFolderName == null || childTargetSubLegalFolderName.length() == 0) {
-					logger.fine(String.format("The target folder name is not found for %s: %s using %s, using parent element name %s.", decomposableElementConfig.getTargetFileNameConfig().getXPath(), childTargetFileName, decomposableElementConfig.getTargetFolderNameConfig().getXPath(), parentElementName));
-				} else {
-					childTargetFolderLegalName = childTargetFolderLegalName.concat("/").concat(childTargetSubLegalFolderName);
-				}
-			}
-	    	
-	    	// Get the contents of the XML Fragment.
-	    	String objectXmlPart = nv.toRawString(elementOffset, elementLength);
-	    	// Parse the XML Fragment and write it to its own file.
-	    	logger.fine(String.format("Target folder name: '%s'; Target legal folder name: '%s'; child target file name: '%s'", childTargetFolderName, childTargetFolderLegalName, childTargetFileName));
-	    	
-			// Remove the xml node which is being referenced.
-			xm.removeContent(elementOffset, elementLength);
-			
-			// Create a VTDNav for navigating the document.
-			VTDNav partNv;
-			try {
-				partNv = XMLUtils.getVTDNav(objectXmlPart, fileCharset, false);
-			} catch (Exception e) {
-				throw new Exception(String.format("Error while parsing Xml Part: %s", e.getMessage()), e);
-			}
-			
-			// Set the relative path with a parent folder of the current element name.
-			//String relativePath = String.format("./%s/%s/", parentElementFolder, childObjectName);
-			//Path childTargetDirectory = targetDirectoryPath.resolve(parentElementFolder).resolve(objectName);
-			String childObjectLegalFileName = FileUtils.getLegalFileName(childTargetFileName);
-			Path childTargetDirectory = targetDirectoryPath.resolve(childTargetFolderLegalName).resolve(childObjectLegalFileName);
-			// Derive the object file name.
-			String childObjectFileNameWithExtension = String.format("%s.xml", childObjectLegalFileName);
-			Path childFileLocation = parseAndWriteDocumentParts(partNv, fileCharset, childTargetFileName, childObjectFileNameWithExtension, childTargetDirectory, depth + 1, decomposableElementConfig, formerDecomposedFilesSet);
-			
-			// Insert the include tag for the found object.
-			String actualRelativePath = targetDirectoryPath.relativize(childFileLocation).toString();
-			
-			// Construct the include tag contents.
-			StringBuffer includeElementStringBuffer = new StringBuffer();
-			//includeElementStringBuffer.append(String.format("<xi:include href=\"%s\" type=\"%s\"", actualRelativePath, elementName));
-			includeElementStringBuffer.append(String.format("<xi:include href=\"%s\"", actualRelativePath));
-			// Loop through the include attributes to add the min the include tag.
-			for (String includeAttributeName : includeAttributesWithValues.keySet()) {
-				// Insert the include sub element in the include tag.
-				includeElementStringBuffer.append(String.format(" %s=\"%s\"", includeAttributeName, XMLUtils.excapeXMLChars(includeAttributesWithValues.get(includeAttributeName))));				
-			}
-			includeElementStringBuffer.append(" />");
-			
-			// Insert the full include element.
-	    	xm.insertBeforeElement(includeElementStringBuffer.toString());
-			
-			// Increase the extracted child count.
-			extractedChildCount++;
-		}
 		
-		logger.fine(String.format("%s - Found %d childs", prefix, extractedChildCount));
+		// Only decompose elements if conditions are configured.
+		if (decomposableElementConfig.getElementConditionsAndGroups() != null && decomposableElementConfig.getElementConditionsAndGroups().size() > 0) {
+			
+			AutoPilot ap = getAutoPilot(nv);
+			// Select all elements which conform to the elements conditions as specified in the config.
+			ap.selectXPath(String.format("//*[%s]", decomposableElementConfig.getXPathExpression()));
+			int minimumNextOffset = 0;
+			// Loop through the found elements.
+			while ((ap.evalXPath()) != -1) {
+				// skip the root element.
+				if (nv.getCurrentIndex() == nv.getRootIndex())
+					continue;
+				
+		    	// Get the parent element name, to be used as the folder name.
+		    	String parentElementName = XMLUtils.getParentElementName(nv);
+				
+		    	// Get the element offset and length (including whitespaces).
+		    	long elementOffsetAndLength = nv.getElementFragment();
+		    	int elementOffset = (int)elementOffsetAndLength;
+		    	int elementLength = (int)(elementOffsetAndLength>>32);
+		    	
+		    	logger.fine(String.format("%s - Found element: '%s' at %d till %d", prefix, nv.toRawString(nv.getCurrentIndex()), elementOffset, elementOffset + elementLength));
+		    	
+		    	// If the current offset is not after the end of the previous fragment, skip this one (it is part of a section passed into the recursive call).
+		    	if (elementOffset < minimumNextOffset)
+	    			continue;
+		    	
+		    	logger.fine(String.format("%s - After the offset of the previous element (%d < %d)...", prefix, elementOffset, minimumNextOffset));
+		    	
+		    	// Make sure the next index found by the AutoPilot is after the current fragment (used in the previous if condition).
+		    	minimumNextOffset = elementOffset + elementLength;
+		    	
+		    	// Make sure the target file name config is set.
+		    	if (decomposableElementConfig.getTargetFileNameConfig() == null)
+		    		throw new Exception("The TargetFileName configuration isn't set!");
+		    	
+		    	// Get the sub element contents to use as the child object name (and thus for the file name).
+		    	String childTargetFileName = XMLUtils.getXPathText(nv, decomposableElementConfig.getTargetFileNameConfig().getXPath());
+				HashMap<String, String> includeAttributesWithValues = new HashMap<String, String>();
+				// Go through the configured includes attributes if they exist.
+				if (decomposableElementConfig.getIncludeAttributeConfigs() != null) {
+					// Loop over the sub elements to include to fill the hashmap.
+					// We have to do this loop here, and can't do it later in the code, since the pointer is now on the right spot in the model file.
+					for (IncludeAttributeConfig includeAttributeConfig : decomposableElementConfig.getIncludeAttributeConfigs()) {
+						String subElementText = XMLUtils.getXPathText(nv, includeAttributeConfig.getXPath());
+						// Only include the attribute if it contains a value.
+						if (subElementText.length() > 0)
+							includeAttributesWithValues.put(includeAttributeConfig.getName(), subElementText);
+					}
+				}
+				
+		    	// Get the target folder name using the XPath specified in the config (if specified).
+				String childTargetFolderName = XMLUtils.getElementNameWithoutNameSpace(parentElementName);
+		    	// If the parent element name contains a namespace part, remove it.
+		    	String childTargetFolderLegalName = FileUtils.getLegalFileName(childTargetFolderName);
+				String childTargetSubLegalFolderName;
+				if (decomposableElementConfig.getTargetFolderNameConfig() != null && decomposableElementConfig.getTargetFolderNameConfig().getXPath() != null && decomposableElementConfig.getTargetFolderNameConfig().getXPath().length() > 0) {
+					childTargetSubLegalFolderName = FileUtils.getLegalFileName(XMLUtils.getXPathText(nv, decomposableElementConfig.getTargetFolderNameConfig().getXPath())); 
+					// If the XPath resolves in an empty value, use the parent element name.
+					if (childTargetSubLegalFolderName == null || childTargetSubLegalFolderName.length() == 0) {
+						logger.fine(String.format("The target folder name is not found for %s: %s using %s, using parent element name %s.", decomposableElementConfig.getTargetFileNameConfig().getXPath(), childTargetFileName, decomposableElementConfig.getTargetFolderNameConfig().getXPath(), parentElementName));
+					} else {
+						childTargetFolderLegalName = childTargetFolderLegalName.concat("/").concat(childTargetSubLegalFolderName);
+					}
+				}
+		    	
+		    	// Get the contents of the XML Fragment.
+		    	String objectXmlPart = nv.toRawString(elementOffset, elementLength);
+		    	// Parse the XML Fragment and write it to its own file.
+		    	logger.fine(String.format("Target folder name: '%s'; Target legal folder name: '%s'; child target file name: '%s'", childTargetFolderName, childTargetFolderLegalName, childTargetFileName));
+		    	
+				// Remove the xml node which is being referenced.
+				xm.removeContent(elementOffset, elementLength);
+				
+				// Create a VTDNav for navigating the document.
+				VTDNav partNv;
+				try {
+					partNv = XMLUtils.getVTDNav(objectXmlPart, fileCharset, false);
+				} catch (Exception e) {
+					throw new Exception(String.format("Error while parsing Xml Part: %s", e.getMessage()), e);
+				}
+				
+				// Set the relative path with a parent folder of the current element name.
+				//String relativePath = String.format("./%s/%s/", parentElementFolder, childObjectName);
+				//Path childTargetDirectory = targetDirectoryPath.resolve(parentElementFolder).resolve(objectName);
+				String childObjectLegalFileName = FileUtils.getLegalFileName(childTargetFileName);
+				Path childTargetDirectory = targetDirectoryPath.resolve(childTargetFolderLegalName).resolve(childObjectLegalFileName);
+				// Derive the object file name.
+				String childObjectFileNameWithExtension = String.format("%s.xml", childObjectLegalFileName);
+				Path childFileLocation = parseAndWriteDocumentParts(partNv, fileCharset, childTargetFileName, childObjectFileNameWithExtension, childTargetDirectory, depth + 1, decomposableElementConfig, formerDecomposedFilesSet);
+				
+				// Insert the include tag for the found object.
+				String actualRelativePath = targetDirectoryPath.relativize(childFileLocation).toString();
+				
+				// Construct the include tag contents.
+				StringBuffer includeElementStringBuffer = new StringBuffer();
+				//includeElementStringBuffer.append(String.format("<xi:include href=\"%s\" type=\"%s\"", actualRelativePath, elementName));
+				includeElementStringBuffer.append(String.format("<xi:include href=\"%s\"", actualRelativePath));
+				// Loop through the include attributes to add the min the include tag.
+				for (String includeAttributeName : includeAttributesWithValues.keySet()) {
+					// Insert the include sub element in the include tag.
+					includeElementStringBuffer.append(String.format(" %s=\"%s\"", includeAttributeName, XMLUtils.excapeXMLChars(includeAttributesWithValues.get(includeAttributeName))));				
+				}
+				includeElementStringBuffer.append(" />");
+				
+				// Insert the full include element.
+		    	xm.insertBeforeElement(includeElementStringBuffer.toString());
+				
+				// Increase the extracted child count.
+				extractedChildCount++;
+			}
+			
+			logger.fine(String.format("%s - Found %d childs", prefix, extractedChildCount));
+		}
 		
         // Get the root element of the document.
 		logger.fine(String.format("%s - Writing file: %s", prefix, currentTargetFileName));
