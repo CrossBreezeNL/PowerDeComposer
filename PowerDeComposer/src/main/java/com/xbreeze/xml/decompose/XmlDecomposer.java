@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
@@ -108,12 +107,18 @@ public class XmlDecomposer {
 		}
 		
 		// Parse and write document parts, if specified in the config.
+		// Keep track of the decomposed files, so we can:
+		// - Detect whether a file is written multiple times in one run
+		// - Detect which files were in the previous decomposed file, but aren't anymore.
+		HashSet<URI> currentDecomposedFilePaths = new HashSet<URI>();
 		if (decomposeConfig.getDecomposableElementConfig() != null) {
 			logger.info("Parsing and writing document parts...");
-			parseAndWriteDocumentParts(nv, xmlFileContentsAndCharset.getFileCharset(), null, xmlFile.getName(), targetDirectoryPath, 0, decomposeConfig.getDecomposableElementConfig(), formerDecomposedFilePaths);
+			parseAndWriteDocumentParts(nv, xmlFileContentsAndCharset.getFileCharset(), null, xmlFile.getName(), targetDirectoryPath, 0, decomposeConfig.getDecomposableElementConfig(), currentDecomposedFilePaths);
 			logger.info("Done parsing and writing document parts.");
 		}
-		
+
+		// Remove all file paths which are written in the current run in the formerDecomposedFilePaths collections, so we keep a collection of files which were part of the decomposed model and aren't anymore.
+		formerDecomposedFilePaths.removeAll(currentDecomposedFilePaths);
 		// If there are files in the former file hierarchy which aren't written, remove them.
 		if (formerDecomposedFilePaths.size() > 0) {
 			logger.info(String.format("Deleting %d former decomposed files...", formerDecomposedFilePaths.size()));
@@ -143,7 +148,7 @@ public class XmlDecomposer {
 		// Only go further when the file exists.
 		if (fileWithIncludesPath.toFile().exists()) {
 			// Resolve the path to a real path URI so this can be used as a key of the hashset.
-			URI fileUri = fileWithIncludesPath.toRealPath(LinkOption.NOFOLLOW_LINKS).toUri();
+			URI fileUri = fileWithIncludesPath.toAbsolutePath().normalize().toUri();
 			// Check whether the file URI is already in the set.
 			if (!filePathsSet.contains(fileUri)) {
 				// If not, add the file URI to the set.
@@ -402,7 +407,7 @@ public class XmlDecomposer {
 	 * @param currentPartIsRoot
 	 * @throws Exception
 	 */
-	private static Path parseAndWriteDocumentParts(VTDNav nv, Charset fileCharset, String currentObjectName, String currentTargetFileName, Path targetDirectoryPath, int depth, DecomposableElementConfig decomposableElementConfig, HashSet<URI> formerDecomposedFilesSet) throws Exception {
+	private static Path parseAndWriteDocumentParts(VTDNav nv, Charset fileCharset, String currentObjectName, String currentTargetFileName, Path targetDirectoryPath, int depth, DecomposableElementConfig decomposableElementConfig, HashSet<URI> currentDecomposedFilePaths) throws Exception {
 		// Create the prefix string based on the depth.
 		String prefix = String.join("", Collections.nCopies(depth, STR_PREFIX_SPACER));
 		logger.fine(String.format("%s> %s", prefix, targetDirectoryPath));
@@ -505,7 +510,7 @@ public class XmlDecomposer {
 				Path childTargetDirectory = targetDirectoryPath.resolve(childTargetFolderLegalName).resolve(childObjectLegalFileName);
 				// Derive the object file name.
 				String childObjectFileNameWithExtension = String.format("%s.xml", childObjectLegalFileName);
-				Path childFileLocation = parseAndWriteDocumentParts(partNv, fileCharset, childTargetFileName, childObjectFileNameWithExtension, childTargetDirectory, depth + 1, decomposableElementConfig, formerDecomposedFilesSet);
+				Path childFileLocation = parseAndWriteDocumentParts(partNv, fileCharset, childTargetFileName, childObjectFileNameWithExtension, childTargetDirectory, depth + 1, decomposableElementConfig, currentDecomposedFilePaths);
 				
 				// Insert the include tag for the found object.
 				String actualRelativePath = targetDirectoryPath.relativize(childFileLocation).toString();
@@ -534,11 +539,22 @@ public class XmlDecomposer {
         // Get the root element of the document.
 		logger.fine(String.format("%s - Writing file: %s", prefix, currentTargetFileName));
 		Path targetFilePath = targetDirectoryPath.resolve(currentTargetFileName);
-		// If the current element does not have extracted child elements, store the file in the parent folder.
+		// If the current element doesn't have extracted child elements, store the file in the parent folder.
 		if (depth != 0 && extractedChildCount == 0) {
 			targetFilePath = targetDirectoryPath.getParent().resolve(currentTargetFileName);
 		}
-		// Write the resulting XML file.
+		
+		// Add the file to the list of decomposed file paths of the current run.
+		// We need to normalize the absolute path to get a comparable path without relative bits like ..
+		URI targetFileUri = targetFilePath.toAbsolutePath().normalize().toUri();
+		if (!currentDecomposedFilePaths.contains(targetFileUri)) {
+			currentDecomposedFilePaths.add(targetFileUri);
+		}
+		// Tried to write a file twice in one run, this should never happen.
+		else {
+			throw new Exception(String.format("Tried to write a file twice, this should never happen ('%s').", targetFileUri.toString()));
+		}
+		
 		// Get the target folder of the target file.
 		File targetFolder = targetFilePath.getParent().toFile();
 		// Create the target folder(s) if they don't exist.
@@ -550,13 +566,6 @@ public class XmlDecomposer {
 		// Write the target Xml file.
 		xm.output(new FileOutputStream(targetFilePath.toString()));
 		//logger.fine(String.format("%s< %s", prefix, targetDirectoryPath));
-		
-		// Check whether the file was also in the former list of files, and if so, remove it from the set (so it won't be removed at the end).
-		URI targetFileUri = targetFilePath.toRealPath(LinkOption.NOFOLLOW_LINKS).toUri();
-		if (formerDecomposedFilesSet.contains(targetFileUri)) {
-			logger.fine(String.format("The file '%s' was also written in the previous decompose run, so removing it from the former set.", targetFileUri.toString()));
-			formerDecomposedFilesSet.remove(targetFileUri);
-		}
 		
 		return targetFilePath;
 	}
