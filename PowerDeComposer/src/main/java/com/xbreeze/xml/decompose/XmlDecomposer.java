@@ -69,13 +69,6 @@ public class XmlDecomposer {
 		if (!xmlFile.exists())
 			throw new Exception(String.format("The specified xml file doesn't exist '%s'.", xmlFilePath));
 		
-		// TODO: Perform changes detection here before doing anything else.
-		
-		// Get the existing list of files in the decomposed model (if it exists). This is needed to track files which are written and which need to be deleted.
-		HashSet<URI> formerDecomposedFilePaths = new HashSet<URI>();
-		Path targetDirectoryPath = Paths.get(targetDirectory);
-		addFormerFilePaths(targetDirectoryPath.resolve(xmlFile.getName()), formerDecomposedFilePaths, null);
-		
 		// Read the xml file into a string.
 		logger.fine("Getting file contents...");
 		FileContentAndCharset xmlFileContentsAndCharset = FileUtils.getFileContent(xmlFile.toURI());
@@ -97,9 +90,65 @@ public class XmlDecomposer {
 			throw new Exception(String.format("Error while parsing Xml document: %s", e.getMessage()), e);
 		}
 		
+		Path targetDirectoryPath = Paths.get(targetDirectory);
+		Path targetFilePath = targetDirectoryPath.resolve(xmlFile.getName());
+		
+		// If configured, perform changes detection here before doing anything else.
+		if (decomposeConfig.getChangeDetectionConfig() != null) {
+			
+			// Check if the target file exists.
+			if (targetFilePath.toFile().exists()) {
+				String changeDetectionXPath = decomposeConfig.getChangeDetectionConfig().getXPath();
+				
+				// Get a VTDNav on the former decomposed root file.
+				FileContentAndCharset formerFcac = FileUtils.getFileContent(targetFilePath.toUri());
+				VTDNav formerNv = XMLUtils.getVTDNav(formerFcac, false);
+				
+				// Evaluate the change detection XPath on both sides to get the values.
+				String decomposedCDValue = XMLUtils.getXPathText(formerNv, changeDetectionXPath);
+				logger.fine(String.format("Change detection decomposed value: %s", decomposedCDValue));
+				String composedCDValue = XMLUtils.getXPathText(nv, changeDetectionXPath);
+				logger.fine(String.format("Change detection composed value: %s", composedCDValue));
+				
+				// If the value doesn't exist on both sides we do nothing.
+				if (
+					(decomposedCDValue == null && composedCDValue == null)
+					||
+					(decomposedCDValue != null && composedCDValue != null && decomposedCDValue.length() == 0 && composedCDValue.length() == 0)
+				) {
+					logger.info("The change detection value is empty on both sides, so stopping.");
+					return;
+				}
+				// If one of the values is null, we decompose.
+				else if (decomposedCDValue == null || composedCDValue == null) {
+					logger.info("The change detection value is empty on one side, so decomposing.");
+				}
+				// If the value is equal, we do nothing.
+				else if (decomposedCDValue.equals(composedCDValue)) {
+					logger.info("The change detection value is equal on both sides, so stopping.");
+					return;
+				}
+				// If the value exists on one side but not on the other side, we decompose.
+				// If the value exists on both sides, we decompose if the value is different.
+				else {
+					logger.info("The composed model is different then the decomposed model, so decomposing.");
+				}
+			}
+			// If the target file doesn't exist, log a warning.
+			else {				
+				logger.warning(String.format("Change detection is configured, but there is no decomposed file yet (%s).", targetFilePath.toString()));
+			}
+		}
+		
+		// Get the existing list of files in the decomposed model (if it exists). This is needed to track files which are written and which need to be deleted.
+		HashSet<URI> formerDecomposedFilePaths = new HashSet<URI>();
+		addFormerFilePaths(targetFilePath, formerDecomposedFilePaths, null);
+		
 		// Replace the identifiers in the XML Document, if specified in the config.
-		if (decomposeConfig.getIdentifierReplacementConfig() != null) {
-			nv = replaceIdentifiers(nv, decomposeConfig.getIdentifierReplacementConfig());
+		if (decomposeConfig.getIdentifierReplacementConfigs() != null && decomposeConfig.getIdentifierReplacementConfigs().size() > 0) {
+			for (IdentifierReplacementConfig identifierReplacementConfig : decomposeConfig.getIdentifierReplacementConfigs()) {
+				nv = replaceIdentifiers(nv, identifierReplacementConfig);
+			}
 		}
 		
 		if (decomposeConfig.getNodeRemovalConfigs() != null && decomposeConfig.getNodeRemovalConfigs().size() > 0) {
@@ -228,41 +277,50 @@ public class XmlDecomposer {
 				identifierNodeIndex += 1;
 			}
 	    	String identifierOriginalValue = nv.toString(identifierNodeIndex);
-	    	String identifierReplacementValue = XMLUtils.getSubElementText(nv, identifierReplacementConfig.getReplacementValueXPath());
+	    	String identifierReplacementValue = XMLUtils.getXPathText(nv, identifierReplacementConfig.getReplacementValueXPath());
 
 	    	logger.fine(String.format("Found identifier '%s' and replaced with value '%s'", identifierOriginalValue, identifierReplacementValue));
-	    	localToGlobalIds.put(identifierOriginalValue, identifierReplacementValue);
+	    	if (!localToGlobalIds.containsKey(identifierOriginalValue)) {
+	    		localToGlobalIds.put(identifierOriginalValue, identifierReplacementValue);
+	    	}
+	    	// If we reach this code, there is a duplicate identifier found, which should never happen.
+	    	else {
+	    		throw new Exception(String.format("A duplicate identifier was found while replacing identifiers (%s). This should never happen!", identifierOriginalValue));
+	    	}
 	    	
 	    	// Update the value of the identifier node.
 	    	xm.updateToken(identifierNodeIndex, identifierReplacementValue);
 		}
 		
-		// Loop through all referencing nodes and replaces their values with the replacement value belonging to the original identifier.
-		logger.info(" - Overwriting identifier references with replacement value...");
-		// In stead of looping through specific refs, loop through all refs and replace them there.
-		try {
-			ap.resetXPath();
-			ap.selectXPath(identifierReplacementConfig.getReferencingNodeXPath());
-		} catch (XPathParseException e) {
-			throw new Exception(String.format("Error while replacing referencing node values: %s", e.getMessage()), e);
-		}
-		
-		// Find all references on the local id and replace it with the global id.
-		while ((ap.evalXPath()) != -1) {
-			
-			// Get the current index
-			int localObjectRefIndex = nv.getCurrentIndex();
-			// If the token is an attribute value, add 1 to the index to get to the attribute value.
-			if (nv.getTokenType(nv.getCurrentIndex()) == VTDNav.TOKEN_ATTR_NAME) {
-				localObjectRefIndex += 1;
+		// If the referencingNodeXPath is present, replace the referencing values using the key collection of the previous step.
+		if (identifierReplacementConfig.getReferencingNodeXPath() != null) {
+			// Loop through all referencing nodes and replaces their values with the replacement value belonging to the original identifier.
+			logger.info(" - Overwriting identifier references with replacement value...");
+			// In stead of looping through specific refs, loop through all refs and replace them there.
+			try {
+				ap.resetXPath();
+				ap.selectXPath(identifierReplacementConfig.getReferencingNodeXPath());
+			} catch (XPathParseException e) {
+				throw new Exception(String.format("Error while replacing referencing node values: %s", e.getMessage()), e);
 			}
-			String referencingOriginalIdentifierValue = nv.toString(localObjectRefIndex);
-			// Replace the local id with the global id if it is in the collection.
-			if (localToGlobalIds.containsKey(referencingOriginalIdentifierValue)) {
-				String referencingIdentiierReplacementValue = localToGlobalIds.get(referencingOriginalIdentifierValue);
-		    	logger.fine(String.format("Found reference id '%s' with global id '%s' (index: %d)", referencingOriginalIdentifierValue, referencingIdentiierReplacementValue, localObjectRefIndex));
-		    	// Update local reference to the global GUID.
-		    	xm.updateToken(localObjectRefIndex, referencingIdentiierReplacementValue);
+			
+			// Find all references on the local id and replace it with the global id.
+			while ((ap.evalXPath()) != -1) {
+				
+				// Get the current index
+				int localObjectRefIndex = nv.getCurrentIndex();
+				// If the token is an attribute value, add 1 to the index to get to the attribute value.
+				if (nv.getTokenType(nv.getCurrentIndex()) == VTDNav.TOKEN_ATTR_NAME) {
+					localObjectRefIndex += 1;
+				}
+				String referencingOriginalIdentifierValue = nv.toString(localObjectRefIndex);
+				// Replace the local id with the global id if it is in the collection.
+				if (localToGlobalIds.containsKey(referencingOriginalIdentifierValue)) {
+					String referencingIdentiierReplacementValue = localToGlobalIds.get(referencingOriginalIdentifierValue);
+			    	logger.fine(String.format("Found reference id '%s' with global id '%s' (index: %d)", referencingOriginalIdentifierValue, referencingIdentiierReplacementValue, localObjectRefIndex));
+			    	// Update local reference to the global GUID.
+			    	xm.updateToken(localObjectRefIndex, referencingIdentiierReplacementValue);
+				}
 			}
 		}
 		

@@ -19,7 +19,19 @@
             
       <xs:element minOccurs="0" name="ChangeDetection" type="changeDetectionConfig"/>
             
-      <xs:element minOccurs="0" name="IdentifierReplacement" type="identifierReplacementConfig"/>
+      <xs:element minOccurs="0" name="IdentifierReplacements">
+                
+        <xs:complexType>
+                    
+          <xs:sequence>
+                        
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="IdentifierReplacement" type="identifierReplacementConfig"/>
+                      
+          </xs:sequence>
+                  
+        </xs:complexType>
+              
+      </xs:element>
             
       <xs:element minOccurs="0" name="NodeRemovals">
                 

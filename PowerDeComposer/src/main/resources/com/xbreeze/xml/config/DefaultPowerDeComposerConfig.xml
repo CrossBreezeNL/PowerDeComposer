@@ -3,13 +3,17 @@
 	<Decompose>
 	
 		<!-- Specify a XPath to execute on both sides (composed and decomposed) to decide whether the decompose. -->
+		<!-- The value of the XPath must be found in the root XML document of the decomposed model, so it can be in a decompose part of the model. -->
 		<!-- If the value doesn't exist on both sides we do nothing. -->
 		<!-- If the value exists on one side but not on the other side, we decompose. -->
 		<!-- If the value exists on both sides, we decompose if the value is different. -->
 		<ChangeDetection xpath="/processing-instruction('PowerDesigner')/@LastModificationDate" />
 	
 		<!-- Configuration on how to replace identifiers. -->
-		<IdentifierReplacement identifierNodeXPath="//*/@Id[../ObjectID]" replacementValueXPath="../ObjectID" referencingNodeXPath="//*/@Ref" />
+		<IdentifierReplacements>
+			<IdentifierReplacement identifierNodeXPath="//*/@Id[../ObjectID]" replacementValueXPath="../ObjectID" referencingNodeXPath="//*/@Ref" />
+			<IdentifierReplacement identifierNodeXPath="//Symbols/*/@Id[../Object/*/@Ref]" replacementValueXPath="concat('Symbol_', ../Object/*/@Ref)" />
+		</IdentifierReplacements>
 	
 		<!-- Specify the nodes to remove before decomposing. -->
 		<NodeRemovals>
