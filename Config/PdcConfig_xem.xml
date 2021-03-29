@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<PowerDeComposerConfig>
+    <Decompose>
+	
+        <!-- Specify the nodes to remove before decomposing. -->
+        <NodeRemovals>
+            <!-- Remove the object count on the PowerDesigner processing instruction. -->
+            <NodeRemoval xpath="/processing-instruction('PowerDesigner')/@Objects" />
+            <!-- Remove the symbols count on the PowerDesigner processing instruction. -->
+            <NodeRemoval xpath="/processing-instruction('PowerDesigner')/@Symbols" />
+			<!-- Remove the symbols count on the PowerDesigner processing instruction. -->
+			<NodeRemoval xpath="/processing-instruction('PowerDesigner')/@LastModificationDate" />
+
+            <!-- Remove the PD Repository information. -->
+            <NodeRemoval xpath="/processing-instruction('PowerDesigner')/@RepositoryId" />
+            <NodeRemoval xpath="/processing-instruction('PowerDesigner')/@ExtractionId" />
+            <NodeRemoval xpath="/processing-instruction('PowerDesigner')/@ExtractionBranch" />
+            <NodeRemoval xpath="/processing-instruction('PowerDesigner')/@ExtractionVersion" />
+            <NodeRemoval xpath="/processing-instruction('PowerDesigner')/@ExtractionDate" />
+            <NodeRemoval xpath="/processing-instruction('PowerDesigner')/@ExtractEndDate" />
+            <NodeRemoval xpath="/processing-instruction('PowerDesigner')/@OriginalExtractionBranch" />
+            <NodeRemoval xpath="/processing-instruction('PowerDesigner')/@OriginalExtractionDate" />
+            <NodeRemoval xpath="/processing-instruction('PowerDesigner')/@OriginalExtractionId" />
+            <NodeRemoval xpath="//ExtendedModelDefinition/RepositoryInformation" />
+
+            <!-- Remove library information. -->
+            <NodeRemoval xpath="/processing-instruction('PowerDesigner')/@LibID" />
+            <NodeRemoval xpath="//ExtendedModelDefinition/LibraryID" />
+            
+        </NodeRemovals>	
+
+        <!-- Specify which elements should be decomposed. -->
+        <!-- The DecomposableElement is implicitly a AllConditions group. -->
+        <DecomposableElement>
+            <OneOffConditions>
+                <!-- Decompose all elements with an ObjectID and Code which are inside a collection (except for the Children collection and collections inside the Entities objects). -->
+                <AllConditions>
+                    <!-- The element must have a ObjectID element as childs. -->
+                    <ElementCondition xpath="./ObjectID" />
+                    <!-- Use the parent axis on the current node to set a predicate on the parent. -->
+                    <!-- Decompose all elements where the parent name starts with 'c:' (these are the collections in PowerDesigner). -->
+                    <ElementCondition xpath="parent::node()[starts-with(name(), 'c:')]" />
+                    <!-- Don't decompose the o:ExtendedModelDefinition element. -->
+                    <ElementCondition xpath="name() != 'o:ExtendedModelDefinition'" />
+                </AllConditions>
+
+                <!-- Decompose the a:CheckGlobalScript. -->
+                <ElementCondition xpath="name() = 'a:CheckGlobalScript'" />
+            </OneOffConditions>
+
+            <!-- Here we specify the xpath to execute on a decomposable element to get the file name (without .xml). -->
+            <!-- For items with a Code element, we use the Code and ObjectID. -->
+            <!-- For items without Code, but with an ObjectID we use the ObjectID. -->
+            <!-- For items with don't have a Code and ObjectID element, we use the name of the element. -->
+            <TargetFileNames>
+                <TargetFileName xpath="normalize-space(./Name), ' ', '_')" condition="string-length(./Name) > 0" /> 
+                <TargetFileName xpath="concat(normalize-space(./Name), ' ', '_'), ./ObjectID)" condition="string-length(./Name) > 0 and string-length(./ObjectID) > 0" /> 
+                <TargetFileName xpath="./ObjectID" condition="string-length(./ObjectID) > 0" />
+                <TargetFileName xpath="translate(name(), ':', '_')" />
+            </TargetFileNames>
+
+            <IncludeAttributes />
+        </DecomposableElement>
+
+    </Decompose>
+</PowerDeComposerConfig>

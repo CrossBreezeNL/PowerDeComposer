@@ -89,6 +89,34 @@
                 
         <xs:sequence>
                     
+          <xs:element minOccurs="0" name="TargetFolderNames">
+                        
+            <xs:complexType>
+                            
+              <xs:sequence>
+                                
+                <xs:element maxOccurs="unbounded" minOccurs="0" name="TargetFolderName" type="targetFolderNameConfig"/>
+                              
+              </xs:sequence>
+                          
+            </xs:complexType>
+                      
+          </xs:element>
+                    
+          <xs:element minOccurs="0" name="TargetFileNames">
+                        
+            <xs:complexType>
+                            
+              <xs:sequence>
+                                
+                <xs:element maxOccurs="unbounded" name="TargetFileName" type="targetFileNameConfig"/>
+                              
+              </xs:sequence>
+                          
+            </xs:complexType>
+                      
+          </xs:element>
+                    
           <xs:element minOccurs="0" name="IncludeAttributes">
                         
             <xs:complexType>
@@ -102,10 +130,6 @@
             </xs:complexType>
                       
           </xs:element>
-                    
-          <xs:element name="TargetFileName" type="targetFileNameConfig"/>
-                    
-          <xs:element minOccurs="0" name="TargetFolderName" type="targetFolderNameConfig"/>
                   
         </xs:sequence>
               
@@ -135,11 +159,11 @@
       
   </xs:complexType>
     
-  <xs:complexType name="includeAttributeConfig">
+  <xs:complexType name="targetFolderNameConfig">
         
     <xs:sequence/>
         
-    <xs:attribute name="name" type="xs:string"/>
+    <xs:attribute name="condition" type="xs:string"/>
         
     <xs:attribute name="xpath" type="xs:string"/>
       
@@ -149,13 +173,17 @@
         
     <xs:sequence/>
         
+    <xs:attribute name="condition" type="xs:string"/>
+        
     <xs:attribute name="xpath" type="xs:string"/>
       
   </xs:complexType>
     
-  <xs:complexType name="targetFolderNameConfig">
+  <xs:complexType name="includeAttributeConfig">
         
     <xs:sequence/>
+        
+    <xs:attribute name="name" type="xs:string"/>
         
     <xs:attribute name="xpath" type="xs:string"/>
       

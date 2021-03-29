@@ -215,6 +215,17 @@ public class XMLUtils {
 	}
 	
 	/**
+	 * Get the element name.
+	 * @param nv
+	 * @param subElementName
+	 */
+	public static String getElementName(VTDNav nv) throws XPathParseException, NavException, XPathEvalException {
+		AutoPilot sap = new AutoPilot(nv);
+		sap.selectXPath("name()");
+		return sap.evalXPathToString();
+	}
+	
+	/**
 	 * Get the text value of a sub element.
 	 * @param nv
 	 * @param subElementName

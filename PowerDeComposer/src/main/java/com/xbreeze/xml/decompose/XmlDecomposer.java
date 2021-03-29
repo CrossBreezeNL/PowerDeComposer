@@ -38,6 +38,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.xbreeze.xml.config.AbstractConfigElementWithXPathAttributeAndCondition;
 import com.xbreeze.xml.decompose.config.DecomposableElementConfig;
 import com.xbreeze.xml.decompose.config.DecomposeConfig;
 import com.xbreeze.xml.decompose.config.IdentifierReplacementConfig;
@@ -494,6 +495,7 @@ public class XmlDecomposer {
 				
 		    	// Get the parent element name, to be used as the folder name.
 		    	String parentElementName = XMLUtils.getParentElementName(nv);
+		    	String elementName = XMLUtils.getElementName(nv);
 				
 		    	// Get the element offset and length (including whitespaces).
 		    	long elementOffsetAndLength = nv.getElementFragment();
@@ -512,13 +514,32 @@ public class XmlDecomposer {
 		    	minimumNextOffset = elementOffset + elementLength;
 		    	
 		    	// Make sure the target file name config is set.
-		    	if (decomposableElementConfig.getTargetFileNameConfig() == null)
+		    	if (decomposableElementConfig.getTargetFileNameConfigs() == null || decomposableElementConfig.getTargetFileNameConfigs().size() == 0)
 		    		throw new Exception("The TargetFileName configuration isn't set!");
 		    	
-		    	// Get the sub element contents to use as the child object name (and thus for the file name).
-		    	String childTargetFileName = XMLUtils.getXPathText(nv, decomposableElementConfig.getTargetFileNameConfig().getXPath());
-				HashMap<String, String> includeAttributesWithValues = new HashMap<String, String>();
+		    	// Get the target folder name for the current decomposable element.
+		    	// If the parent element name contains a namespace part, remove it.
+				String childTargetFolderName = FileUtils.getLegalFileName(XMLUtils.getElementNameWithoutNameSpace(parentElementName));
+		    	// Derive the target folder name using the configuration.
+		    	String childTargetSubFolderName = deriveFirstValidConfiguredValue(nv, decomposableElementConfig.getTargetFolderNameConfigs());
+		    	// If the target sub folder is found using the configuration, we concatenate it with the parent element name folder.
+		    	if (childTargetSubFolderName != null && childTargetSubFolderName.length() > 0) {
+		    		childTargetFolderName = childTargetFolderName.concat("/").concat(FileUtils.getLegalFileName(childTargetSubFolderName));
+		    	}
+		    	// If a target sub folder can't be found, we use the parent element name only.
+		    	else {
+		    		logger.fine(String.format("The target folder name is not found for %s at %d, using parent element name %s.", elementName, elementOffset, parentElementName));
+		    	}
+		    	
+		    	// Derive the target file name for the current decomposable element.
+		    	String childTargetFileName = deriveFirstValidConfiguredValue(nv, decomposableElementConfig.getTargetFileNameConfigs(), targetDirectoryPath, ".xml", currentDecomposedFilePaths);
+		    	// If the target folder configuration doesn't yield a valid result, throw an exception.
+		    	if (childTargetFileName == null || childTargetFileName.length() == 0) {
+		    		throw new Exception(String.format("A valid child target file name is not found for element %s at %s", elementName, elementOffset));
+		    	}
+		    	
 				// Go through the configured includes attributes if they exist.
+	    		HashMap<String, String> includeAttributesWithValues = new HashMap<String, String>();
 				if (decomposableElementConfig.getIncludeAttributeConfigs() != null) {
 					// Loop over the sub elements to include to fill the hashmap.
 					// We have to do this loop here, and can't do it later in the code, since the pointer is now on the right spot in the model file.
@@ -529,26 +550,11 @@ public class XmlDecomposer {
 							includeAttributesWithValues.put(includeAttributeConfig.getName(), subElementText);
 					}
 				}
-				
-		    	// Get the target folder name using the XPath specified in the config (if specified).
-				String childTargetFolderName = XMLUtils.getElementNameWithoutNameSpace(parentElementName);
-		    	// If the parent element name contains a namespace part, remove it.
-		    	String childTargetFolderLegalName = FileUtils.getLegalFileName(childTargetFolderName);
-				String childTargetSubLegalFolderName;
-				if (decomposableElementConfig.getTargetFolderNameConfig() != null && decomposableElementConfig.getTargetFolderNameConfig().getXPath() != null && decomposableElementConfig.getTargetFolderNameConfig().getXPath().length() > 0) {
-					childTargetSubLegalFolderName = FileUtils.getLegalFileName(XMLUtils.getXPathText(nv, decomposableElementConfig.getTargetFolderNameConfig().getXPath())); 
-					// If the XPath resolves in an empty value, use the parent element name.
-					if (childTargetSubLegalFolderName == null || childTargetSubLegalFolderName.length() == 0) {
-						logger.fine(String.format("The target folder name is not found for %s: %s using %s, using parent element name %s.", decomposableElementConfig.getTargetFileNameConfig().getXPath(), childTargetFileName, decomposableElementConfig.getTargetFolderNameConfig().getXPath(), parentElementName));
-					} else {
-						childTargetFolderLegalName = childTargetFolderLegalName.concat("/").concat(childTargetSubLegalFolderName);
-					}
-				}
 		    	
 		    	// Get the contents of the XML Fragment.
 		    	String objectXmlPart = nv.toRawString(elementOffset, elementLength);
 		    	// Parse the XML Fragment and write it to its own file.
-		    	logger.fine(String.format("Target folder name: '%s'; Target legal folder name: '%s'; child target file name: '%s'", childTargetFolderName, childTargetFolderLegalName, childTargetFileName));
+		    	logger.fine(String.format("Target folder name: '%s'; child target file name: '%s'", childTargetFolderName, childTargetFileName));
 		    	
 				// Remove the xml node which is being referenced.
 				xm.removeContent(elementOffset, elementLength);
@@ -562,17 +568,13 @@ public class XmlDecomposer {
 				}
 				
 				// Set the relative path with a parent folder of the current element name.
-				//String relativePath = String.format("./%s/%s/", parentElementFolder, childObjectName);
-				//Path childTargetDirectory = targetDirectoryPath.resolve(parentElementFolder).resolve(objectName);
-				String childObjectLegalFileName = FileUtils.getLegalFileName(childTargetFileName);
-				Path childTargetDirectory = targetDirectoryPath.resolve(childTargetFolderLegalName).resolve(childObjectLegalFileName);
+				Path childTargetDirectory = targetDirectoryPath.resolve(childTargetFolderName).resolve(childTargetFileName);
 				// Derive the object file name.
-				String childObjectFileNameWithExtension = String.format("%s.xml", childObjectLegalFileName);
+				String childObjectFileNameWithExtension = String.format("%s.xml", childTargetFileName);
 				Path childFileLocation = parseAndWriteDocumentParts(partNv, fileCharset, childTargetFileName, childObjectFileNameWithExtension, childTargetDirectory, depth + 1, decomposableElementConfig, currentDecomposedFilePaths);
 				
 				// Insert the include tag for the found object.
 				String actualRelativePath = targetDirectoryPath.relativize(childFileLocation).toString();
-				
 				// Construct the include tag contents.
 				StringBuffer includeElementStringBuffer = new StringBuffer();
 				//includeElementStringBuffer.append(String.format("<xi:include href=\"%s\" type=\"%s\"", actualRelativePath, elementName));
@@ -626,6 +628,48 @@ public class XmlDecomposer {
 		//logger.fine(String.format("%s< %s", prefix, targetDirectoryPath));
 		
 		return targetFilePath;
+	}
+	
+	private static String deriveFirstValidConfiguredValue(VTDNav nv, List<? extends AbstractConfigElementWithXPathAttributeAndCondition> configuredOptions) throws XPathParseException {
+		return deriveFirstValidConfiguredValue(nv, configuredOptions, null, null, null);
+	}
+	
+	private static String deriveFirstValidConfiguredValue(VTDNav nv, List<? extends AbstractConfigElementWithXPathAttributeAndCondition> configuredOptions, Path targetDirectoryPath, String targetFileExtension, HashSet<URI> unallowedFilePaths) throws XPathParseException {
+    	AutoPilot sap = new AutoPilot(nv);
+    	for (AbstractConfigElementWithXPathAttributeAndCondition co : configuredOptions) {
+    		// Check whether the condition of the TargetFileName config is met.
+    		if (co.getCondition() != null)
+    			sap.selectXPath(co.getCondition());
+    		if (co.getCondition() == null || sap.evalXPathToBoolean()) {
+    			// If the condition is met, try to get the value.
+    			sap.selectXPath(co.getXPath());
+    			String foundValue = sap.evalXPathToString();
+    			// If the value is found go on.
+    			if (foundValue != null && foundValue.length() > 0) {
+    				// Strip the found value of illegal file characters.
+    				foundValue = FileUtils.getLegalFileName(foundValue);
+    				// If there are no unallowedValues, return the found value.
+    				if (unallowedFilePaths == null) {
+    					return foundValue;
+    				// Otherwise, chech whether the value is unallowed, if not return the value.
+    				} else {
+    					// Derive the object file name.
+    					String foundFileName = foundValue;
+    					// If the target file extensions is defined, use it.
+    					if (targetFileExtension != null && targetFileExtension.length() > 0)
+    						foundFileName = String.format("%s.%s", foundValue, targetFileExtension);
+    					
+    					URI targetFilePath = targetDirectoryPath.resolve(foundFileName).toUri();
+    					// If the found file path is valid, return the found value (not the file name!).
+    					if (!unallowedFilePaths.contains(targetFilePath)) {
+    						return foundValue;
+    					}
+    				}
+    			}
+    		}
+    	}
+    	// If we reach this point, no (allowed) value has been found, so we return null;
+    	return null;
 	}
 
 }
