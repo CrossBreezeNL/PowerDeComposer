@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<RootElement>
+	<ChildElements>
+		<ChildElement>
+			<NotUnique>Something</NotUnique>
+			<Name>NotUsed</Name>
+		</ChildElement>
+		<ChildElement>
+			<NotUnique>Something</NotUnique>
+			<Name>FistName</Name>
+		</ChildElement>
+		<ChildElement>
+			<NotUnique>Something</NotUnique>
+			<Name>SecondName</Name>
+		</ChildElement>
+	</ChildElements>
+</RootElement>

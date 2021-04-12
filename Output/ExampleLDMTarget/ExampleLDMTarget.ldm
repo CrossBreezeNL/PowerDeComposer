@@ -432,8 +432,8 @@ IndxThreshold=</a:ModelOptionsText>
 <c:Entities>
 <xi:include href="Entities\o_Entity\CUSTOMER.xml" />
 <xi:include href="Entities\o_Entity\SALESORDER.xml" />
-<xi:include href="Entities\o_Shortcut\CUSTOMER_2433197A-4C39-4FE1-B45F-8146169796FE.xml" />
-<xi:include href="Entities\o_Shortcut\SALESORDER_8AF67742-D9AA-48FF-9514-18521A790F20.xml" />
+<xi:include href="Entities\o_Shortcut\CUSTOMER.xml" />
+<xi:include href="Entities\o_Shortcut\SALESORDER.xml" />
 </c:Entities>
 <c:Relationships>
 <xi:include href="Relationships\o_Relationship\RELATIONSHIP_1.xml" />

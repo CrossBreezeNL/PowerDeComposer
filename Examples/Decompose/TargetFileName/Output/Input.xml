@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<RootElement>
+	<ChildElements>
+		<xi:include href="ChildElements\Something.xml" />
+		<xi:include href="ChildElements\FistName.xml" />
+		<xi:include href="ChildElements\SecondName.xml" />
+	</ChildElements>
+</RootElement>

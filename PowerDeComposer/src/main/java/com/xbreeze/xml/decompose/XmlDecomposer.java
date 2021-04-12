@@ -532,7 +532,8 @@ public class XmlDecomposer {
 		    	}
 		    	
 		    	// Derive the target file name for the current decomposable element.
-		    	String childTargetFileName = deriveFirstValidConfiguredValue(nv, decomposableElementConfig.getTargetFileNameConfigs(), targetDirectoryPath, ".xml", currentDecomposedFilePaths);
+		    	Path targetSubFolderPath = targetDirectoryPath.resolve(childTargetFolderName);
+				String childTargetFileName = deriveFirstValidConfiguredValue(nv, decomposableElementConfig.getTargetFileNameConfigs(), targetSubFolderPath, "xml", currentDecomposedFilePaths);
 		    	// If the target folder configuration doesn't yield a valid result, throw an exception.
 		    	if (childTargetFileName == null || childTargetFileName.length() == 0) {
 		    		throw new Exception(String.format("A valid child target file name is not found for element %s at %s", elementName, elementOffset));
@@ -568,7 +569,7 @@ public class XmlDecomposer {
 				}
 				
 				// Set the relative path with a parent folder of the current element name.
-				Path childTargetDirectory = targetDirectoryPath.resolve(childTargetFolderName).resolve(childTargetFileName);
+				Path childTargetDirectory = targetSubFolderPath.resolve(childTargetFileName);
 				// Derive the object file name.
 				String childObjectFileNameWithExtension = String.format("%s.xml", childTargetFileName);
 				Path childFileLocation = parseAndWriteDocumentParts(partNv, fileCharset, childTargetFileName, childObjectFileNameWithExtension, childTargetDirectory, depth + 1, decomposableElementConfig, currentDecomposedFilePaths);
@@ -635,39 +636,46 @@ public class XmlDecomposer {
 	}
 	
 	private static String deriveFirstValidConfiguredValue(VTDNav nv, List<? extends AbstractConfigElementWithXPathAttributeAndCondition> configuredOptions, Path targetDirectoryPath, String targetFileExtension, HashSet<URI> unallowedFilePaths) throws XPathParseException {
-    	AutoPilot sap = new AutoPilot(nv);
-    	for (AbstractConfigElementWithXPathAttributeAndCondition co : configuredOptions) {
-    		// Check whether the condition of the TargetFileName config is met.
-    		if (co.getCondition() != null)
-    			sap.selectXPath(co.getCondition());
-    		if (co.getCondition() == null || sap.evalXPathToBoolean()) {
-    			// If the condition is met, try to get the value.
-    			sap.selectXPath(co.getXPath());
-    			String foundValue = sap.evalXPathToString();
-    			// If the value is found go on.
-    			if (foundValue != null && foundValue.length() > 0) {
-    				// Strip the found value of illegal file characters.
-    				foundValue = FileUtils.getLegalFileName(foundValue);
-    				// If there are no unallowedValues, return the found value.
-    				if (unallowedFilePaths == null) {
-    					return foundValue;
-    				// Otherwise, chech whether the value is unallowed, if not return the value.
-    				} else {
-    					// Derive the object file name.
-    					String foundFileName = foundValue;
-    					// If the target file extensions is defined, use it.
-    					if (targetFileExtension != null && targetFileExtension.length() > 0)
-    						foundFileName = String.format("%s.%s", foundValue, targetFileExtension);
-    					
-    					URI targetFilePath = targetDirectoryPath.resolve(foundFileName).toUri();
-    					// If the found file path is valid, return the found value (not the file name!).
-    					if (!unallowedFilePaths.contains(targetFilePath)) {
-    						return foundValue;
-    					}
-    				}
-    			}
-    		}
-    	}
+		if (configuredOptions != null && configuredOptions.size() > 0) {
+	    	AutoPilot sap = new AutoPilot(nv);
+	    	for (AbstractConfigElementWithXPathAttributeAndCondition co : configuredOptions) {
+	    		logger.fine(String.format("Checking configured option '%s' with condition '%s'", co.getXPath(), co.getCondition()));
+	    		// Check whether the condition of the TargetFileName config is met.
+	    		if (co.getCondition() != null)
+	    			sap.selectXPath(co.getCondition());
+	    		if (co.getCondition() == null || sap.evalXPathToBoolean()) {
+	    			// If the condition is met, try to get the value.
+	    			sap.selectXPath(co.getXPath());
+	    			String foundValue = sap.evalXPathToString();
+	    			// If the value is found go on.
+	    			if (foundValue != null && foundValue.length() > 0) {
+	    				// Strip the found value of illegal file characters.
+	    				foundValue = FileUtils.getLegalFileName(foundValue);
+	    				logger.fine(String.format("Found value: '%s'", foundValue));
+	    				// If there are no unallowedValues, return the found value.
+	    				if (unallowedFilePaths == null) {
+	    					logger.fine("There are no unallowed values, so returning found value.");
+	    					return foundValue;
+	    				// Otherwise, check whether the value is unallowed, if not return the value.
+	    				} else {
+	    					// Derive the object file name.
+	    					String foundFileName = foundValue;
+	    					// If the target file extensions is defined, use it.
+	    					if (targetFileExtension != null && targetFileExtension.length() > 0)
+	    						foundFileName = String.format("%s.%s", foundValue, targetFileExtension);
+	    					
+	    					URI targetFilePath = targetDirectoryPath.resolve(foundFileName).toUri().normalize();
+	    					logger.fine(String.format("Resolved target file name: '%s'", targetFilePath.toString()));
+	    					// If the found file path is valid, return the found value (not the file name!).
+	    					if (!unallowedFilePaths.contains(targetFilePath)) {
+	    						logger.fine("The resolved target file name doesn't exist yet, so returning value.");
+	    						return foundValue;
+	    					}
+	    				}
+	    			}
+	    		}
+	    	}
+		}
     	// If we reach this point, no (allowed) value has been found, so we return null;
     	return null;
 	}

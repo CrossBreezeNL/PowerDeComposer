@@ -1,0 +1,35 @@
+<o:Relationship Id="CA8FF182-BED0-40B6-853E-314BEFF7A4D6">
+<a:ObjectID>CA8FF182-BED0-40B6-853E-314BEFF7A4D6</a:ObjectID>
+<a:Name>Customer_SalesOrder</a:Name>
+<a:Code>CUSTOMER_SALESORDER</a:Code>
+<a:CreationDate>1587201021</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1587201032</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<a:Entity1ToEntity2RoleCardinality>0,n</a:Entity1ToEntity2RoleCardinality>
+<a:Entity2ToEntity1RoleCardinality>0,1</a:Entity2ToEntity1RoleCardinality>
+<c:Object1>
+<o:Entity Ref="8B4BE9EA-92E6-4863-A71B-00CD678C51B2"/>
+</c:Object1>
+<c:Object2>
+<o:Entity Ref="D16A96D9-2011-41D2-BDD8-0DD459A4F791"/>
+</c:Object2>
+<c:Joins>
+<o:RelationshipJoin Id="2163B1B0-22C7-4A3A-B8CA-DF4546ABB68B">
+<a:ObjectID>2163B1B0-22C7-4A3A-B8CA-DF4546ABB68B</a:ObjectID>
+<a:CreationDate>1587201021</a:CreationDate>
+<a:Creator>Willem</a:Creator>
+<a:ModificationDate>1587201021</a:ModificationDate>
+<a:Modifier>Willem</a:Modifier>
+<c:Object1>
+<o:EntityAttribute Ref="A941AF16-E7E8-4A35-8ABE-B0E5C246B488"/>
+</c:Object1>
+<c:Object2>
+<o:EntityAttribute Ref="4D0B931E-98D2-44C8-8877-240C2A031363"/>
+</c:Object2>
+</o:RelationshipJoin>
+</c:Joins>
+<c:ParentIdentifier>
+<o:Identifier Ref="42CB050C-2C2D-4BAF-B33B-7AF6553DB5AF"/>
+</c:ParentIdentifier>
+</o:Relationship>
