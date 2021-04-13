@@ -281,12 +281,15 @@ public class XmlDecomposer {
 	    	String identifierReplacementValue = XMLUtils.getXPathText(nv, identifierReplacementConfig.getReplacementValueXPath());
 
 	    	logger.fine(String.format("Found identifier '%s' and replaced with value '%s'", identifierOriginalValue, identifierReplacementValue));
-	    	if (!localToGlobalIds.containsKey(identifierOriginalValue)) {
+	    	if (!localToGlobalIds.containsKey(identifierOriginalValue) && !localToGlobalIds.containsValue(identifierReplacementValue)) {
 	    		localToGlobalIds.put(identifierOriginalValue, identifierReplacementValue);
 	    	}
 	    	// If we reach this code, there is a duplicate identifier found, which should never happen.
 	    	else {
-	    		throw new Exception(String.format("A duplicate identifier was found while replacing identifiers (%s). This should never happen!", identifierOriginalValue));
+	    		if (localToGlobalIds.containsKey(identifierOriginalValue))
+	    			throw new Exception(String.format("A duplicate identifier was found while replacing identifiers (%s). This should never happen!", identifierOriginalValue));
+	    		if (localToGlobalIds.containsValue(identifierReplacementValue))
+	    			throw new Exception(String.format("A duplicate replacement-identifier was found while replacing identifiers (%s). This should never happen!", identifierReplacementValue));
 	    	}
 	    	
 	    	// Update the value of the identifier node.
