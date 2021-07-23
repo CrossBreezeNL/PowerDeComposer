@@ -10,12 +10,29 @@ The PowerDeComposer configuration for composing and decomposing model files.
 
 	<Decompose>
 
+		<!-- Specify a XPath to execute on both sides (composed and decomposed) to decide whether the decompose. -->
+		<!-- The value of the XPath must be found in the root XML document of the decomposed model, so it can be in a decompose part of the model. -->
+		<!-- If the value doesn't exist on both sides we do nothing. -->
+		<!-- If the value exists on one side but not on the other side, we decompose. -->
+		<!-- If the value exists on both sides, we decompose if the value is different. -->
+		<ChangeDetection xpath="..." />
+
+		<!-- Configuration on how to replace identifiers. -->
+		<IdentifierReplacements>
+			<IdentifierReplacement identifierNodeXPath="..." replacementValueXPath="..." referencingNodeXPath="..." />
+			<IdentifierReplacement identifierNodeXPath="..." replacementValueXPath="..." referencingNodeXPath="..." />
+			...
+		</IdentifierReplacements>
+
+		<!-- Specify the nodes to remove before decomposing. -->
 		<NodeRemovals>
 			<NodeRemoval xpath="..." />
 			<NodeRemoval xpath="..." />
 			...
 		</NodeRemovals>
 
+		<!-- Specify which elements should be decomposed. -->
+		<!-- The DecomposableElement is implicitly a AllConditions group. -->
 		<DecomposableElement>
 			<ElementCondition xpath="..." />
 			<ElementCondition xpath="..." />
@@ -29,16 +46,33 @@ The PowerDeComposer configuration for composing and decomposing model files.
 				...
 			</AllConditions>
 
+            <!-- Here we specify the xpath to execute on a decomposable element to get the folder name to store the file in. -->
+			<!-- The first TargetFolderName configuration which yields a value will be used. -->
+			<TargetFolderNames>
+				<TargetFolderName xpath="..." />
+				<TargetFolderName xpath="..." />
+				...
+			</TargetFolderNames>
+
+			<!-- Here we specify the xpath to execute on a decomposable element to get the file name (without .xml). -->
+            <!-- Target target file names are considered in order of appearance in the config. Once a value has been found which hasen't been written before in the current run, the value is used. -->
+            <!-- For example if the first TargetFileName would lead to the same file name (in the same target folder) for 2 decomposed elements,
+                 the first one would get the name of the TargetFileName specified
+                 and the second one will get the TargetFileName of the next configuration which leads to a value.
+             -->
+            <!-- If no value is found using any configuration an exception is thrown. -->
+			<TargetFileNames>
+				<TargetFileName xpath="..." />
+				<TargetFileName xpath="..." />
+				...
+			</TargetFileNames>
+
 			<!-- Here we specify which information to include as an attribute on the xi:include tag. -->
 			<IncludeAttributes>
 				<IncludeAttribute name="..." xpath="..." />
+				<IncludeAttribute name="..." xpath="..." />
+				...
 			</IncludeAttributes>
-
-			<!-- Here we specify the xpath to execute on a decomposable element to get the file name (without .xml). -->
-			<TargetFileName xpath="..." />
-
-			<!-- Here we specify the xpath to execute on a decomposable element to get the folder name to store the file in. -->
-			<TargetFolderName xpath="..." />
 
 		</DecomposableElement>
 
@@ -50,11 +84,13 @@ The PowerDeComposer configuration for composing and decomposing model files.
 ### Config elements
 | Config element           | Description |
 |:---                      |:---         |
+| ChangeDetection          | Node to evaluate on the composed and decomposed models. Of the value is empty on at least one side or the value differs the decompose is executed. |
+| IdentifierReplacement    | Instruction to replace identifiers with alternative values. The identifierNodeXPath is the node which contains the identifier in the composed model. The replacementValueXPath must be executed to get the new identifier value. The referencingNodeXPath value is optional, it if specified the value in these nodes will also be replaced using the value of the old identifier and the new identifier. |
 | NodeRemoval              | Instruction to remove nodes before decomposing. The XPath is evaluated to find the nodes to remove. An example for such an instruction is to remove the modification date on referenced objects. |
 | ElementCondition         | A condition for an element which need to be extracted into seperate files (XPath expression per node). All conditions together inside the DecomposableElement element are evaluated against a model element to decide whether it needs to be decomposed. Element conditions can be grouped in OneOffConditions or AllConditions elements to specify whether one or all conditions should be met within the container.  |
-| IncludeAttribute         | Instruction to include a certain attribute in the xi:include tag. The name is the name for the xi:include attribute. The xpath expressions will be evaluated to get the value for the new attribute. The xpath can be a simple node selection like "./ObjectID", or it can also contain XPath 1.0 functions like "concat('ID=', ./ObjectID)". |
-| TargetFileName           | The node contents to use as the file name (without extension) for the extracted elements. For PowerDesigner objects this can for example be ./ObjectID, ./Code or ./Name. The xpath can be a simple node selection like "./ObjectID", or it can also contain XPath 1.0 functions like "concat(./ObjectID, '_', ./Code)". |
 | TargetFolderName         | The node contents to use as the folder name for the extracted elements. For PowerDesigner objects this can for example be ./Stereotype. The xpath can be a simple node selection like "./Stereotype", or it can also contain XPath 1.0 functions like "concat(./name(), '_', ./Stereotype)". |
+| TargetFileName           | The node contents to use as the file name (without extension) for the extracted elements. For PowerDesigner objects this can for example be ./ObjectID, ./Code or ./Name. The xpath can be a simple node selection like "./ObjectID", or it can also contain XPath 1.0 functions like "concat(./ObjectID, '_', ./Code)". |
+| IncludeAttribute         | Instruction to include a certain attribute in the xi:include tag. The name is the name for the xi:include attribute. The xpath expressions will be evaluated to get the value for the new attribute. The xpath can be a simple node selection like "./ObjectID", or it can also contain XPath 1.0 functions like "concat('ID=', ./ObjectID)". |
 
 ### Default config
 When no configuration file is specified on the command, the following configuration will be used by default.
@@ -64,9 +100,13 @@ When no configuration file is specified on the command, the following configurat
 <PowerDeComposerConfig>
 	<Decompose>
 	
-		<IdentifierReplacement identifierNodeXPath="//*/@Id[../ObjectID]" replacementValueXPath="../ObjectID" referencingNodeXPath="//*/@Ref" />
+		<ChangeDetection xpath="/processing-instruction('PowerDesigner')/@LastModificationDate" />
 	
-		<!-- Specify the nodes to remove before decomposing. -->
+		<IdentifierReplacements>
+			<IdentifierReplacement identifierNodeXPath="//*/@Id[../ObjectID]" replacementValueXPath="../ObjectID" referencingNodeXPath="//*/@Ref" />
+			<IdentifierReplacement identifierNodeXPath="//Symbols/*/@Id[../Object/*/@Ref]" replacementValueXPath="concat('Symbol_', ../Object/*/@Ref)" />
+		</IdentifierReplacements>
+	
 		<NodeRemovals>
 			<!-- Remove the object count on the PowerDesigner processing instruction. -->
 			<NodeRemoval xpath="/processing-instruction('PowerDesigner')/@Objects" />
@@ -85,8 +125,6 @@ When no configuration file is specified on the command, the following configurat
 			<NodeRemoval xpath="//TargetModel/TargetModelLastModificationDate" />
 		</NodeRemovals>
 		
-		<!-- Specify which elements should be decomposed. -->
-		<!-- The DecomposableElement is implicitly a AllConditions group. -->
 		<DecomposableElement>
 			<!-- The element must have a ObjectID and a Code element as childs. -->
 			<ElementCondition xpath="./ObjectID and ./Code" />
@@ -121,33 +159,32 @@ When no configuration file is specified on the command, the following configurat
 			</OneOffConditions>
 			 -->
 			 
+            <TargetFolderNames>
+            	<!-- For items with a Stereotype element, we use the Stereotype. -->
+            	<TargetFolderName xpath="./Stereotype" condition="string-length(./Stereotype) > 0" />
+            	<!-- For items with a TargetStereotype element, we use the TargetStereotype (the TargetStereotype is specified in case of shortcuts). -->
+            	<TargetFolderName xpath="./TargetStereotype" condition="string-length(./TargetStereotype) > 0" />
+            	<!-- For items which don't have a Stereotype or TargetStereotype element, we use the name of the element. -->
+            	<TargetFolderName xpath="translate(name(), ':', '_')" />
+            </TargetFolderNames>
+			
+            <TargetFileNames>
+            	<!-- For items with a Code element and it is unique for the given TargetFolder, we use the Code. -->
+            	<TargetFileName xpath="translate(normalize-space(./Code), ' ', '_')" condition="string-length(./Code) > 0" />
+            	<!-- For items with a Code and ObjectID element and it is NOT unique for the given TargetFolder, we use the Code and ObjectID. -->
+            	<TargetFileName xpath="concat(translate(normalize-space(./Code), ' ', '_'), '_', ./ObjectID)" condition="string-length(./Code) > 0 and string-length(./ObjectID) > 0" />
+            	<!-- For items without a Code element, but with an ObjectID we use the ObjectID. -->
+            	<TargetFileName xpath="./ObjectID" condition="string-length(./ObjectID) > 0" />
+            	<!-- For items which don't have a Code and ObjectID element, we use the name of the element. -->
+            	<TargetFileName xpath="translate(name(), ':', '_')" />
+            </TargetFileNames>
+            
 			<!-- Here we specify which information to include as an attribute on the xi:include tag. -->
 			<IncludeAttributes />
 			<!--<IncludeAttributes>
 				<IncludeAttribute name="ObjectID" xpath="./ObjectID" />
 			</IncludeAttributes>-->
-			
-			<!-- Here we specify the xpath to execute on a decomposable element to get the file name (without .xml). -->
-			<!-- For items with a Code element and it is unique in its scope, we use the Code. -->
-			<!-- For items with a Code and ObjectID element and it is NOT unique in its scope, we use the Code and ObjectID. -->
-            <!-- For items without a Code element, but with an ObjectID we use the ObjectID. -->
-            <!-- For items which don't have a Code and ObjectID element, we use the name of the element. -->
-            <TargetFileName xpath="concat(
-                    substring(translate(normalize-space(./Code), ' ', '_'),                          1, count(./Code) * number(not(./Code = preceding-sibling::*/child::Code)) * string-length(translate(normalize-space(./Code), ' ', '_'))),
-                    substring(concat(translate(normalize-space(./Code), ' ', '_'), '_', ./ObjectID), 1, count(./Code) * number(./Code = preceding-sibling::*/child::Code) * string-length(concat(translate(normalize-space(./Code), ' ', '_'), '_', ./ObjectID))),
-                    substring(./ObjectID,                                                            1, abs(count(./Code) - 1) * count(./ObjectID) * string-length(./ObjectID)),
-                    substring(translate(name(), ':', '_'),                                           1, abs(count(./Code) - 1) * abs(count(./ObjectID) - 1) * string-length(name()))
-                )" />
-                
-			<!-- Here we specify the xpath to execute on a decomposable element to get the folder name to store the file in. -->
-            <!-- For items with a Stereotype element, we use the Stereotype. -->
-            <!-- For items with a TargetStereotype element, we use the TargetStereotype (the TargetStereotype is specified in case of shortcuts). -->
-            <!-- For items which don't have a Stereotype or TargetStereotype element, we use the name of the element. -->
-            <TargetFolderName xpath="concat(
-                    substring(./Stereotype,                1, count(./Stereotype[text()]) * string-length(./Stereotype)),
-                    substring(./TargetStereotype,          1, abs(count(./Stereotype[text()]) - 1) * count(./TargetStereotype[text()]) * string-length(./Stereotype)),
-                    substring(translate(name(), ':', '_'), 1, abs(count(./Stereotype[text()]) - 1) * abs(count(./TargetStereotype[text()]) - 1) * string-length(name()))
-                )" />
+
 		</DecomposableElement>
 
 	</Decompose>

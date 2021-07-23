@@ -22,13 +22,26 @@ Click on the header of a version number to go to the documentation of that speci
 
 ## Version 1.3.0
 
-- [ ] 1.3.0 <sup>05-02-2021</sup>
+- [ ] 1.3.0 <sup>13-04-2021</sup>
 > !!! success "Enhanced features"
 >     * [ ] Decompose model
->         - [X] Specify node to use for the target folder names.
+>         - [X] Added support for specifying the target folder.
+>         - [X] Changed target folder and file name so one can specify multiple options and use first with a valid value.
 >         - [X] Added functionality to remove former decomposed files which aren't part of the latest decomposed model.
+>         - [X] Added support for running a decompose without decomposable element conditions.
+>         - [X] Changed identifier replacement in the config to be in a collection so one can define multiple replacements.
+>         - [X] Added change detection logic and logging.
+>         - [X] Added throwing error when decomposing leads to writing the same file.
+>         - [X] Added throwing error when identifier replacement values leads to a duplicate.
 >     * [ ] Configuration
->         - [X] Updated default configuration so it de decomposed folder structure and file names are more readable.
+>         - [X] Updated default configuration so the decomposed folder structure and file names are more readable.
+
+## Version 1.2.1
+
+- [ ] 1.2.1 <sup>25-11-2020</sup>
+> !!! success "Enhanced features"
+>     * [ ] Decompose model
+>         - [X] Fixed encoding of decomposed files so it always takes encoding of original file.
 
 ## Version 1.2.0
 
