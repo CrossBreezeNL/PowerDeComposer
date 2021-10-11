@@ -3,6 +3,7 @@ package com.xbreeze.xml.decompose.test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
@@ -19,8 +20,10 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
 public class PowerDeComposerTestSteps {
-	private String pdcConfigLocation;
-	private String xmlFileLocation;
+	// The default value for the config location is set. This is used when the config is specified inline.
+	private String pdcConfigLocation = "InlineFeatureConfig.xml";
+	// The default value for the input location is set. This is used when the input is specified inline.
+	private String inputFileLocation = "InlineFeatureInput.xml";
 	private String targetFolderLocation = "Decomposed";
 	private Path _featureResourcePath;
 
@@ -37,10 +40,26 @@ public class PowerDeComposerTestSteps {
 	public void givenTheConfigFileLocation(String pdcConfigLocation) throws Throwable {
 		this.pdcConfigLocation = pdcConfigLocation;
 	}
+	
+	@Given("^the config file:$")
+	public void givenTheConfigFileContents(String pdcConfigFileContents) throws Throwable {
+		// Write the contents of the config to a file.
+		FileWriter configFileWrite = new FileWriter(_featureResourcePath.resolve(this.pdcConfigLocation).toFile());
+		IOUtils.write(pdcConfigFileContents, configFileWrite);
+		configFileWrite.close();
+	}
 
 	@Given("^the input file '(.*)'$")
 	public void givenTheXmlInputFileLocation(String xmlFileLocation) throws Throwable {
-		this.xmlFileLocation = xmlFileLocation;
+		this.inputFileLocation = xmlFileLocation;
+	}
+	
+	@Given("^the input file:$")
+	public void givenTheXmlInputFileContents(String inputFileContents) throws Throwable {
+		// Write the contents of the input to a file.
+		FileWriter inputFileWrite = new FileWriter(_featureResourcePath.resolve(this.inputFileLocation).toFile());
+		IOUtils.write(inputFileContents, inputFileWrite);
+		inputFileWrite.close();
 	}
 
 	@Given("^the target folder location '(.*)'$")
@@ -51,22 +70,22 @@ public class PowerDeComposerTestSteps {
 	@When("^I execute PowerDeComposer$")
 	public void iExecutePowerDeComposer() throws Throwable {
 		// Execute PowerDeComposer.
-		Executor.main(new String[] { "decompose", _featureResourcePath.resolve(xmlFileLocation).toString(),
+		Executor.main(new String[] { "decompose", _featureResourcePath.resolve(inputFileLocation).toString(),
 				_featureResourcePath.resolve(this.targetFolderLocation).toString(),
 				_featureResourcePath.resolve(this.pdcConfigLocation).toString() });
 	}
 
 	@Then("^I expect a target file '(.*)' with the following content:$")
-	public void thenIExpectTheFileWithFollowingContent(String targetFileLocation, String targetFileContents)
+	public void thenIExpectTheFileWithFollowingContent(String targetFileLocation, String expectdFileContents)
 			throws Throwable {
 		//Open the expected output file and read to string
 		FileInputStream fis = new FileInputStream(_featureResourcePath.resolve(targetFolderLocation).resolve(targetFileLocation).toFile());
 		BOMInputStream bomInputStream = new BOMInputStream(fis);		
-		String expectedResultContent = IOUtils.toString(bomInputStream, bomInputStream.getBOMCharsetName());
+		String actualResultContent = IOUtils.toString(bomInputStream, bomInputStream.getBOMCharsetName());
 		// Assert the expected and actual file contents are the same.
 		assertEquals(
-				expectedResultContent,
-				targetFileContents,
+				expectdFileContents,
+				actualResultContent,
 				"The expected and actual file content is different"
 		);
 	}

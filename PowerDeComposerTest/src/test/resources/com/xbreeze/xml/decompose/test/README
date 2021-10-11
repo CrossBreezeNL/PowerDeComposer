@@ -1,0 +1,4 @@
+# Cucumber Top Tip:
+# When you use a Doc String: """ in cucumber then the amount of whitespace before the """ is removed from the subsequent lines of the docstring.
+# For example when there are 2 spaces before """ then the next lines the maximum of 2 spaces or tabs are removed.
+# So make sure the whitespace type used across the lines are equal.
