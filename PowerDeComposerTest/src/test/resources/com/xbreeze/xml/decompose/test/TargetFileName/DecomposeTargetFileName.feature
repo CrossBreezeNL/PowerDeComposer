@@ -2,7 +2,7 @@ Feature: PowerDeComposer TargetFileNames
 	Here we test the usage of the TargetFileNames configuration during decompose.
 
 	Scenario: One leven decompose
-		Given the input file:
+		Given the input file 'Input.xml':
 		"""
 		<?xml version="1.0" encoding="UTF-8" ?>
 		<RootElement>
@@ -22,10 +22,10 @@ Feature: PowerDeComposer TargetFileNames
 		<PowerDeComposerConfig>
 			<Decompose>
 				<DecomposableElement>
+					<!-- Decompose elements with a Name child-element. -->
 					<ElementCondition xpath="./Name" />
 					
-					<TargetFolderNames>
-					</TargetFolderNames>
+					<TargetFolderNames />
 					<TargetFileNames>
 						<TargetFileName xpath="./Name" condition="string-length(./Name) > 0" />
 					</TargetFileNames>

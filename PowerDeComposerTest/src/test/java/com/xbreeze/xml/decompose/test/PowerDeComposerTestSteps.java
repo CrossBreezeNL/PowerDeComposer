@@ -54,8 +54,9 @@ public class PowerDeComposerTestSteps {
 		this.inputFileLocation = xmlFileLocation;
 	}
 	
-	@Given("^the input file:$")
-	public void givenTheXmlInputFileContents(String inputFileContents) throws Throwable {
+	@Given("^the input file '(.*)':$")
+	public void givenTheXmlInputFileContents(String inputFileLocation, String inputFileContents) throws Throwable {
+		this.givenTheXmlInputFileLocation(inputFileLocation);
 		// Write the contents of the input to a file.
 		FileWriter inputFileWrite = new FileWriter(_featureResourcePath.resolve(this.inputFileLocation).toFile());
 		IOUtils.write(inputFileContents, inputFileWrite);
