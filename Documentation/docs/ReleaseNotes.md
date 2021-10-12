@@ -20,6 +20,13 @@ Click on the header of a version number to go to the documentation of that speci
 [//]: # (>     * [ ] Binding)
 [//]: # (>         * [X] Some issue...)
 
+## Version 1.3.1
+
+- [ ] 1.3.1 <sup>12-10-2021</sup>
+> !!! warning "Bug fixes"
+>     * [ ] Decompose model
+>         - [X] Fixed problem where TargetFileName was not always derived correctly.
+
 ## Version 1.3.0
 
 - [ ] 1.3.0 <sup>13-04-2021</sup>

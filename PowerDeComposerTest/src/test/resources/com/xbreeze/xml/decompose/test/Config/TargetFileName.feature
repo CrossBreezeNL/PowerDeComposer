@@ -1,3 +1,5 @@
+@Unit
+
 Feature: Configure TargetFileName
   Here we test the usage of the TargetFileNames configuration during decompose.
 

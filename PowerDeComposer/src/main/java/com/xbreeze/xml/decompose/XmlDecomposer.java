@@ -600,8 +600,7 @@ public class XmlDecomposer {
 			logger.fine(String.format("%s - Found %d childs", prefix, extractedChildCount));
 		}
 		
-        // Get the root element of the document.
-		logger.fine(String.format("%s - Writing file: %s", prefix, currentTargetFileName));
+        // Get the current file path based on the derived currentTargetFileName.
 		Path targetFilePath = targetDirectoryPath.resolve(currentTargetFileName);
 		// If the current element doesn't have extracted child elements, store the file in the parent folder.
 		if (depth != 0 && extractedChildCount == 0) {
@@ -609,7 +608,7 @@ public class XmlDecomposer {
 		}
 		
 		// Add the file to the list of decomposed file paths of the current run.
-		// We need to normalize the absolute path to get a comparable path without relative bits like ..
+		// We need to normalize the absolute path to get a comparable path without relative bits like '..'.
 		URI targetFileUri = targetFilePath.toAbsolutePath().normalize().toUri();
 		if (!currentDecomposedFilePaths.contains(targetFileUri)) {
 			currentDecomposedFilePaths.add(targetFileUri);
@@ -628,6 +627,7 @@ public class XmlDecomposer {
 			}
 		}
 		// Write the target Xml file.
+		logger.fine(String.format("%s - Writing file: %s", prefix, currentTargetFileName));
 		xm.output(new FileOutputStream(targetFilePath.toString()));
 		//logger.fine(String.format("%s< %s", prefix, targetDirectoryPath));
 		
@@ -667,10 +667,19 @@ public class XmlDecomposer {
 	    					if (targetFileExtension != null && targetFileExtension.length() > 0)
 	    						foundFileName = String.format("%s.%s", foundValue, targetFileExtension);
 	    					
-	    					URI targetFilePath = targetDirectoryPath.resolve(foundFileName).toUri().normalize();
+	    					// If the current element is decompose without children, the file will be as follows.
+	    					URI targetFilePath = targetDirectoryPath.resolve(foundFileName).normalize().toUri();
 	    					logger.fine(String.format("Resolved target file name: '%s'", targetFilePath.toString()));
+	    					// If the current element is decomposed with children (so the current element has children which are decomposed as well) the file path will be as follows.
+	    					// The difference between for former is that when the current element has children the element file is written into it's own subfolder.
+	    					URI targetFileWithChildrenPath = null;
+	    					// Only set the targetFileWithChildrenPath if the targetFileExtension is set (cause then it is a file, otherwise this function is used for a folder).
+	    					if (targetFileExtension != null) {
+	    						targetFileWithChildrenPath = targetDirectoryPath.resolve(foundValue).resolve(foundFileName).normalize().toUri();
+	    						logger.fine(String.format("Resolved target file name with children: '%s'", targetFileWithChildrenPath.toString()));
+	    					}
 	    					// If the found file path is valid, return the found value (not the file name!).
-	    					if (!unallowedFilePaths.contains(targetFilePath)) {
+	    					if (!unallowedFilePaths.contains(targetFilePath) && !unallowedFilePaths.contains(targetFileWithChildrenPath)) {
 	    						logger.fine("The resolved target file name doesn't exist yet, so returning value.");
 	    						return foundValue;
 	    					}

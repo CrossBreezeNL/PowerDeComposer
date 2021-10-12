@@ -6,10 +6,12 @@ import org.junit.platform.suite.api.SelectClasspathResource;
 import org.junit.platform.suite.api.Suite;
 
 import static io.cucumber.junit.platform.engine.Constants.PLUGIN_PROPERTY_NAME;
+import static io.cucumber.junit.platform.engine.Constants.FILTER_TAGS_PROPERTY_NAME;;
 
 @Suite
 @IncludeEngines("cucumber")
 @SelectClasspathResource("com/xbreeze/xml/decompose")
 @ConfigurationParameter(key = PLUGIN_PROPERTY_NAME, value="pretty")
-public class RunPDCIntegrationTest {
+@ConfigurationParameter(key = FILTER_TAGS_PROPERTY_NAME, value="@Debug")
+public class RunPDCDebugTest {
 }
