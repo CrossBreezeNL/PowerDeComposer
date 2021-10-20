@@ -141,9 +141,10 @@ public class XmlDecomposer {
 			}
 		}
 		
-		// Get the existing list of files in the decomposed model (if it exists). This is needed to track files which are written and which need to be deleted.
-		HashSet<URI> formerDecomposedFilePaths = new HashSet<URI>();
-		addFormerFilePaths(targetFilePath, formerDecomposedFilePaths, null);
+		// Perform the node removals (It's important this is done before the identifier replacement, otherwise it might lead to duplicate key problems).
+		if (decomposeConfig.getNodeRemovalConfigs() != null && decomposeConfig.getNodeRemovalConfigs().size() > 0) {
+			nv = removeNodes(nv, decomposeConfig.getNodeRemovalConfigs());
+		}
 		
 		// Replace the identifiers in the XML Document, if specified in the config.
 		if (decomposeConfig.getIdentifierReplacementConfigs() != null && decomposeConfig.getIdentifierReplacementConfigs().size() > 0) {
@@ -152,9 +153,9 @@ public class XmlDecomposer {
 			}
 		}
 		
-		if (decomposeConfig.getNodeRemovalConfigs() != null && decomposeConfig.getNodeRemovalConfigs().size() > 0) {
-			nv = removeNodes(nv, decomposeConfig.getNodeRemovalConfigs());
-		}
+		// Get the existing list of files in the decomposed model (if it exists). This is needed to track files which are written and which need to be deleted.
+		HashSet<URI> formerDecomposedFilePaths = new HashSet<URI>();
+		addFormerFilePaths(targetFilePath, formerDecomposedFilePaths, null);
 		
 		// Parse and write document parts, if specified in the config.
 		// Keep track of the decomposed files, so we can:

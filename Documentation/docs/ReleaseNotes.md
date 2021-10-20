@@ -13,12 +13,19 @@ Click on the header of a version number to go to the documentation of that speci
 [//]: # (>     * [ ] Template)
 [//]: # (>         * [ ] XML Template)
 [//]: # (>             - [X] Some new feature...)
-[//]: # (> !!! "Enhanced features")
+[//]: # (> !!! success "Enhanced features")
 [//]: # (>     * [ ] Model)
 [//]: # (>         - [X] Some enhanced feature...)
 [//]: # (> !!! warning "Bug fixes")
 [//]: # (>     * [ ] Binding)
 [//]: # (>         * [X] Some issue...)
+
+## Version 1.3.2
+
+- [ ] 1.3.2 <sup>20-10-2021</sup>
+> !!! success "Enhanced features"
+>     * [ ] Decompose model
+>         - [X] Moved node removal to be first step, before identifier replacement to solve possible duplicate identifier replacement issues.
 
 ## Version 1.3.1
 

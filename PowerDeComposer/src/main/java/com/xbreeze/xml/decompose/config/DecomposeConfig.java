@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlType;
 
-@XmlType(propOrder = {"changeDetectionConfig", "identifierReplacementConfigs", "nodeRemovalConfigs", "decomposableElementConfig"})
+@XmlType(propOrder = {"changeDetectionConfig", "nodeRemovalConfigs", "identifierReplacementConfigs", "decomposableElementConfig"})
 public class DecomposeConfig {
 	private ChangeDetectionConfig _changeDetectionConfig;
 	private List<IdentifierReplacementConfig> _identifierReplacementConfigs;
@@ -26,16 +26,6 @@ public class DecomposeConfig {
 		this._changeDetectionConfig = changeDetectionConfig;
 	}
 	
-	@XmlElement(name = "IdentifierReplacement")
-	@XmlElementWrapper(name = "IdentifierReplacements")
-	public List<IdentifierReplacementConfig> getIdentifierReplacementConfigs() {
-		return _identifierReplacementConfigs;
-	}
-	
-	public void setIdentifierReplacementConfigs(List<IdentifierReplacementConfig> identifierReplacementConfigs) {
-		this._identifierReplacementConfigs = identifierReplacementConfigs;
-	}
-
 	@XmlElement(name = "NodeRemoval")
 	@XmlElementWrapper(name = "NodeRemovals")
 	public List<NodeRemovalConfig> getNodeRemovalConfigs() {
@@ -46,6 +36,17 @@ public class DecomposeConfig {
 		this._nodeRemovalConfigs = nodeRemovalConfigs;
 	}
 	
+	
+	@XmlElement(name = "IdentifierReplacement")
+	@XmlElementWrapper(name = "IdentifierReplacements")
+	public List<IdentifierReplacementConfig> getIdentifierReplacementConfigs() {
+		return _identifierReplacementConfigs;
+	}
+	
+	public void setIdentifierReplacementConfigs(List<IdentifierReplacementConfig> identifierReplacementConfigs) {
+		this._identifierReplacementConfigs = identifierReplacementConfigs;
+	}
+
 	@XmlElement(name = "DecomposableElement")
 	public DecomposableElementConfig getDecomposableElementConfig() {
 		return _decomposableElementConfig;

@@ -19,20 +19,6 @@
             
       <xs:element minOccurs="0" name="ChangeDetection" type="changeDetectionConfig"/>
             
-      <xs:element minOccurs="0" name="IdentifierReplacements">
-                
-        <xs:complexType>
-                    
-          <xs:sequence>
-                        
-            <xs:element maxOccurs="unbounded" minOccurs="0" name="IdentifierReplacement" type="identifierReplacementConfig"/>
-                      
-          </xs:sequence>
-                  
-        </xs:complexType>
-              
-      </xs:element>
-            
       <xs:element minOccurs="0" name="NodeRemovals">
                 
         <xs:complexType>
@@ -40,6 +26,20 @@
           <xs:sequence>
                         
             <xs:element maxOccurs="unbounded" minOccurs="0" name="NodeRemoval" type="nodeRemovalConfig"/>
+                      
+          </xs:sequence>
+                  
+        </xs:complexType>
+              
+      </xs:element>
+            
+      <xs:element minOccurs="0" name="IdentifierReplacements">
+                
+        <xs:complexType>
+                    
+          <xs:sequence>
+                        
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="IdentifierReplacement" type="identifierReplacementConfig"/>
                       
           </xs:sequence>
                   
@@ -61,6 +61,14 @@
       
   </xs:complexType>
     
+  <xs:complexType name="nodeRemovalConfig">
+        
+    <xs:sequence/>
+        
+    <xs:attribute name="xpath" type="xs:string"/>
+      
+  </xs:complexType>
+    
   <xs:complexType name="identifierReplacementConfig">
         
     <xs:sequence/>
@@ -70,14 +78,6 @@
     <xs:attribute name="referencingNodeXPath" type="xs:string"/>
         
     <xs:attribute name="replacementValueXPath" type="xs:string"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="nodeRemovalConfig">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="xpath" type="xs:string"/>
       
   </xs:complexType>
     
