@@ -1,5 +1,4 @@
 @Unit
-
 Feature: Configure TargetFileName
   Here we test the usage of the TargetFileNames configuration during decompose.
 
@@ -60,7 +59,7 @@ Feature: Configure TargetFileName
       """
 
     Examples: 
-      | Scenario         | FirstId | FirstName | SecondId | SecondName | FirstFileName           | SecondFileName           |
-      | unique names     |       1 | FirstName |        2 | SecondName | ChildElements\FirstName | ChildElements\SecondName |
-      | non-unique names |       1 | FirstName |        2 | FirstName  | ChildElements\FirstName | ChildElements\2          |
-      | empty name       |       1 | FirstName |        2 |            | ChildElements\FirstName | ChildElements\2          |
+      | Scenario         | FirstId | FirstName | SecondId | SecondName | FirstFileName            | SecondFileName            |
+      | unique names     |       1 | FirstName |        2 | SecondName | ChildElements\\FirstName | ChildElements\\SecondName |
+      | non-unique names |       1 | FirstName |        2 | FirstName  | ChildElements\\FirstName | ChildElements\\2          |
+      | empty name       |       1 | FirstName |        2 |            | ChildElements\\FirstName | ChildElements\\2          |
