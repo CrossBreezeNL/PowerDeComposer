@@ -1,4 +1,4 @@
-package com.xbreeze.xml.decompose.test;
+package com.xbreeze.xml.test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -58,10 +58,9 @@ public class PowerDeComposerTestSteps {
 		_decomposedFolderPath = this._featureFileResourcePath.resolve("Decomposed");
 		this.createDirectoryIfItDoesntExist(this._decomposedFolderPath);
 		
-		// Set the default config and input path.
-		_pdcConfigPath = this._configFolderPath.resolve("InlineConfigFile.xml");
-		_composedFilePath = this._composedFolderPath.resolve("InlineFile.xml");
-		_decomposedFilePath = this._decomposedFolderPath.resolve("InlineFile.xml");
+		// Set the default compose and decompose file paths.
+		this._composedFilePath = this._composedFolderPath.resolve("InlineFile.xml");
+		this._decomposedFilePath = this._decomposedFolderPath.resolve("InlineFile.xml");
 		
 		// Log  the paths.
 		scenario.log(String.format("Feature resource path: %s", _featureResourcePath.toString()));
@@ -91,11 +90,8 @@ public class PowerDeComposerTestSteps {
 	@Given("^the config file:$")
 	public void givenTheConfigFileContents(String pdcConfigFileContents) throws Throwable {
 		// Write the contents of the config to a file.
-		Path configPath = _configFolderPath.resolve(_pdcConfigPath);
-		FileWriter configFileWrite = new FileWriter(configPath.toFile());
-		IOUtils.write(pdcConfigFileContents, configFileWrite);
-		configFileWrite.close();
-		this._pdcConfigPath = configPath;
+		this._pdcConfigPath = this._configFolderPath.resolve("InlineConfigFile.xml");
+		this.writeXmlFile(this._pdcConfigPath, pdcConfigFileContents);
 	}
 
 	@Given("^the composed file '(.*)'$")
@@ -109,7 +105,7 @@ public class PowerDeComposerTestSteps {
 		Path composedFilePath = _composedFolderPath.resolve(composedFileName);
 		this.writeXmlFile(composedFilePath, composedFileContents);
 		// Set the input file location.
-		this._composedFilePath = composedFilePath;
+		//this._composedFilePath = composedFilePath;
 	}
 	
 	@Given("^the composed file:$")
@@ -129,7 +125,7 @@ public class PowerDeComposerTestSteps {
 		Path decomposedFilePath = this._decomposedFolderPath.resolve(decomposedFileLocation);
 		this.writeXmlFile(decomposedFilePath, decomposedFileContents);
 		// Add the target file to the set.
-		this._decomposedFilePath = decomposedFilePath;
+		//this._decomposedFilePath = decomposedFilePath;
 	}
 	
 	@Given("^the decomposed file:$")
@@ -162,14 +158,24 @@ public class PowerDeComposerTestSteps {
 	@When("^I perform a compose$")
 	public void iExecuteCompose() throws Throwable {
 		// Execute PowerDeComposer.
-		Executor.main(
-			new String[] {
-				"compose",
-				this._decomposedFilePath.toString(),
-				this._composedFilePath.toString(),
-				this._pdcConfigPath.toString()
-			}
-		);
+		if (this._pdcConfigPath != null) {
+			Executor.main(
+				new String[] {
+					"compose",
+					this._decomposedFilePath.toString(),
+					this._composedFilePath.toString(),
+					this._pdcConfigPath.toString()
+				}
+			);
+		} else {
+			Executor.main(
+				new String[] {
+					"compose",
+					this._decomposedFilePath.toString(),
+					this._composedFilePath.toString()
+				}
+			);
+		}
 	}
 
 	@When("^I perform a decompose$")

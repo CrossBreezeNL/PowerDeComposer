@@ -3,9 +3,9 @@ Feature: Configure TargetFolderName
   Here we test the usage of the TargetFolderNames configuration during decompose.
 
   Scenario Outline: TargetFolderName is <Scenario>
-    Given the composed file 'Input.xml':
+    Given the composed file:
       """
-      <?xml version="1.0" encoding="UTF-8" ?>
+      <?xml version="1.0" encoding="UTF-8"?>
       <RootElement>
       	<ChildElements>
       		<ChildElement type="<FirstType>" id="1">
@@ -19,7 +19,7 @@ Feature: Configure TargetFolderName
       """
     And the config file:
       """
-      <?xml version="1.0" encoding="UTF-8" ?>
+      <?xml version="1.0" encoding="UTF-8"?>
       <PowerDeComposerConfig>
       	<Decompose>
       		<DecomposableElement>
@@ -39,9 +39,9 @@ Feature: Configure TargetFolderName
       </PowerDeComposerConfig>
       """
     When I perform a decompose
-    Then I expect a decomposed file 'Input.xml' with the following content:
+    Then I expect a decomposed file with the following content:
       """
-      <?xml version="1.0" encoding="UTF-8" ?>
+      <?xml version="1.0" encoding="UTF-8"?>
       <RootElement>
       	<ChildElements>
       		<xi:include href="<FirstFileName>.xml" />
@@ -69,9 +69,9 @@ Feature: Configure TargetFolderName
       | the same and same filename | SameType  | SameName  | SameType   | SameName   | ChildElements\\SameType\\SameName   | ChildElements\\SameType\\2            |
 
   Scenario Outline: TargetFolderName is <Scenario> with child-elements
-    Given the composed file 'Input.xml':
+    Given the composed file:
       """
-      <?xml version="1.0" encoding="UTF-8" ?>
+      <?xml version="1.0" encoding="UTF-8"?>
       <RootElement>
       	<ChildElements>
       		<ChildElement type="<FirstType>" id="1">
@@ -95,7 +95,7 @@ Feature: Configure TargetFolderName
       """
     And the config file:
       """
-      <?xml version="1.0" encoding="UTF-8" ?>
+      <?xml version="1.0" encoding="UTF-8"?>
       <PowerDeComposerConfig>
       	<Decompose>
       		<DecomposableElement>
@@ -115,9 +115,9 @@ Feature: Configure TargetFolderName
       </PowerDeComposerConfig>
       """
     When I perform a decompose
-    Then I expect a decomposed file 'Input.xml' with the following content:
+    Then I expect a decomposed file with the following content:
       """
-      <?xml version="1.0" encoding="UTF-8" ?>
+      <?xml version="1.0" encoding="UTF-8"?>
       <RootElement>
       	<ChildElements>
       		<xi:include href="<FirstFilePath><FirstFileName>.xml" />
