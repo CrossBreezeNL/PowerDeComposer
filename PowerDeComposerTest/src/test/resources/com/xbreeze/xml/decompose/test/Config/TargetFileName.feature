@@ -4,7 +4,7 @@ Feature: Configure TargetFileName
   Here we test the usage of the TargetFileNames configuration during decompose.
 
   Scenario Outline: TargetFileName is value of <Scenario>
-    Given the input file 'Input.xml':
+    Given the composed file 'Input.xml':
       """
       <?xml version="1.0" encoding="UTF-8" ?>
       <RootElement>
@@ -35,8 +35,8 @@ Feature: Configure TargetFileName
       	</Decompose>
       </PowerDeComposerConfig>
       """
-    When I execute PowerDeComposer
-    Then I expect a target file 'Input.xml' with the following content:
+    When I perform a decompose
+    Then I expect a decomposed file 'Input.xml' with the following content:
       """
       <?xml version="1.0" encoding="UTF-8" ?>
       <RootElement>
@@ -46,13 +46,13 @@ Feature: Configure TargetFileName
       	</ChildElements>
       </RootElement>
       """
-    And I expect a target file '<FirstFileName>.xml' with the following content:
+    And I expect a decomposed file '<FirstFileName>.xml' with the following content:
       """
       <ChildElement id="<FirstId>">
       			<Name><FirstName></Name>
       		</ChildElement>
       """
-    And I expect a target file '<SecondFileName>.xml' with the following content:
+    And I expect a decomposed file '<SecondFileName>.xml' with the following content:
       """
       <ChildElement id="<SecondId>">
       			<Name><SecondName></Name>
