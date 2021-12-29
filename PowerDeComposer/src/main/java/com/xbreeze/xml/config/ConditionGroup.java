@@ -4,18 +4,20 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlTransient;
 
 @XmlTransient
+@XmlSeeAlso({AllConditionGroup.class, OneOffConditionGroup.class})
 public abstract class ConditionGroup implements ElementConditionOrGroup {
 	@XmlElements({
 		@XmlElement(name = "AllConditions", type=AllConditionGroup.class),
 		@XmlElement(name = "OneOffConditions", type=OneOffConditionGroup.class),
 		@XmlElement(name = "ElementCondition", type=ElementCondition.class)
 	})
-	private List<ElementConditionOrGroup> _elementConditionsAndGroups;
+	private List<? extends ElementConditionOrGroup> _elementConditionsAndGroups;
 
-	public List<ElementConditionOrGroup> getElementConditionsAndGroups() {
+	public List<? extends ElementConditionOrGroup> getElementConditionsAndGroups() {
 		return _elementConditionsAndGroups;
 	}
 

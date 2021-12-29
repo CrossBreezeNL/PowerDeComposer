@@ -152,8 +152,6 @@
         <xs:element name="ElementCondition" type="elementCondition"/>
               
       </xs:choice>
-            
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="elementConditionsAndGroups" nillable="true" type="xs:anyType"/>
           
     </xs:sequence>
       
@@ -202,8 +200,6 @@
         <xs:element name="ElementCondition" type="elementCondition"/>
               
       </xs:choice>
-            
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="elementConditionsAndGroups" nillable="true" type="xs:anyType"/>
           
     </xs:sequence>
       
