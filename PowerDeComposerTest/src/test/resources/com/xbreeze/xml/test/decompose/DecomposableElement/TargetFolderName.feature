@@ -63,10 +63,10 @@ Feature: Configure TargetFolderName
       """
 
     Examples: 
-      | Scenario                   | FirstType | FirstName | SecondType | SecondName | FirstFileName                       | SecondFileName                        |
-      | the same                   | SameType  | FirstName | SameType   | SecondName | ChildElements\\SameType\\FirstName  | ChildElements\\SameType\\SecondName   |
-      | different                  | FirstType | FirstName | SecondType | SecondName | ChildElements\\FirstType\\FirstName | ChildElements\\SecondType\\SecondName |
-      | the same and same filename | SameType  | SameName  | SameType   | SameName   | ChildElements\\SameType\\SameName   | ChildElements\\SameType\\2            |
+      | Scenario                   | FirstType | FirstName | SecondType | SecondName | FirstFileName                     | SecondFileName                      |
+      | the same                   | SameType  | FirstName | SameType   | SecondName | ChildElements/SameType/FirstName  | ChildElements/SameType/SecondName   |
+      | different                  | FirstType | FirstName | SecondType | SecondName | ChildElements/FirstType/FirstName | ChildElements/SecondType/SecondName |
+      | the same and same filename | SameType  | SameName  | SameType   | SameName   | ChildElements/SameType/SameName   | ChildElements/SameType/2            |
 
   Scenario Outline: TargetFolderName is <Scenario> with child-elements
     Given the composed file:
@@ -157,8 +157,8 @@ Feature: Configure TargetFolderName
       """
 
     Examples: 
-      | Scenario                   | FirstType | FirstName | SecondType | SecondName | FirstFilePath                         | FirstFileName | SecondFilePath                          | SecondFileName | ThirdFileName            | FourthFileName            |
-      | the same                   | SameType  | FirstName | SameType   | SecondName | ChildElements\\SameType\\FirstName\\  | FirstName     | ChildElements\\SameType\\SecondName\\   | SecondName     | ChildElements\\ThirdName | ChildElements\\FourthName |
-      | different                  | FirstType | FirstName | SecondType | SecondName | ChildElements\\FirstType\\FirstName\\ | FirstName     | ChildElements\\SecondType\\SecondName\\ | SecondName     | ChildElements\\ThirdName | ChildElements\\FourthName |
+      | Scenario                   | FirstType | FirstName | SecondType | SecondName | FirstFilePath                      | FirstFileName | SecondFilePath                       | SecondFileName | ThirdFileName           | FourthFileName           |
+      | the same                   | SameType  | FirstName | SameType   | SecondName | ChildElements/SameType/FirstName/  | FirstName     | ChildElements/SameType/SecondName/   | SecondName     | ChildElements/ThirdName | ChildElements/FourthName |
+      | different                  | FirstType | FirstName | SecondType | SecondName | ChildElements/FirstType/FirstName/ | FirstName     | ChildElements/SecondType/SecondName/ | SecondName     | ChildElements/ThirdName | ChildElements/FourthName |
       # The problem with this last scenario is that during decompose at the time the file name is derived it's not known yet whether the file will be written into a seperate folder if the current element contains childs.
-      | the same and same filename | SameType  | SameName  | SameType   | SameName   | ChildElements\\SameType\\SameName\\   | SameName      | ChildElements\\SameType\\2\\            |              2 | ChildElements\\ThirdName | ChildElements\\FourthName |
+      | the same and same filename | SameType  | SameName  | SameType   | SameName   | ChildElements/SameType/SameName/   | SameName      | ChildElements/SameType/2/            |              2 | ChildElements/ThirdName | ChildElements/FourthName |
