@@ -90,6 +90,8 @@ public class FileUtils {
 		logger.fine(String.format("Get file contents using charset %s", fileCharset.name()));
 		// Create a String using the InputStream and the Charset.
 		String fileContents = IOUtils.toString(fileInputStream, fileCharset);
+		// Close the file input stream.
+		fileInputStream.close();
 		// Return the FileContentAndCharset object.
 		return new FileContentAndCharset(fileContents, fileCharset);
 	}

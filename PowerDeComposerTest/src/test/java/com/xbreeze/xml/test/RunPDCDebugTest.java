@@ -1,4 +1,4 @@
-package com.xbreeze.xml.decompose.test;
+package com.xbreeze.xml.test;
 
 import org.junit.platform.suite.api.ConfigurationParameter;
 import org.junit.platform.suite.api.IncludeEngines;
@@ -10,8 +10,8 @@ import static io.cucumber.junit.platform.engine.Constants.FILTER_TAGS_PROPERTY_N
 
 @Suite
 @IncludeEngines("cucumber")
-@SelectClasspathResource("com/xbreeze/xml/decompose")
+@SelectClasspathResource("com/xbreeze/xml/test")
 @ConfigurationParameter(key = PLUGIN_PROPERTY_NAME, value="pretty")
-@ConfigurationParameter(key = FILTER_TAGS_PROPERTY_NAME, value="@Unit")
-public class RunPDCUnitTest {
+@ConfigurationParameter(key = FILTER_TAGS_PROPERTY_NAME, value="@Debug")
+public class RunPDCDebugTest {
 }
