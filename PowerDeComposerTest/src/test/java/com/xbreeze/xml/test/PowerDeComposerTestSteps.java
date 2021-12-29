@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Path;
 
 import org.apache.commons.io.IOUtils;
@@ -135,7 +136,7 @@ public class PowerDeComposerTestSteps {
 	}
 	
 	public void writeXmlFile(Path targetFilePath, String fileContents) throws IOException {
-		FileWriter targetFileWrite = new FileWriter(targetFilePath.toFile());
+		FileWriter targetFileWrite = new FileWriter(targetFilePath.toFile(), Charset.forName("UTF-8"));
 		IOUtils.write(fileContents, targetFileWrite);
 		targetFileWrite.close();
 	}
