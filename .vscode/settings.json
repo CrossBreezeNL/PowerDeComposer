@@ -1,0 +1,6 @@
+{
+    "azure-pipelines.customSchemaFile": "https://dev.azure.com/x-breeze/_apis/distributedtask/yamlschema",
+    "files.associations": {
+        "**/azure-pipeline.yml": "azure-pipelines"
+    }
+}
