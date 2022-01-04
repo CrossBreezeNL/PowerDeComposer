@@ -412,9 +412,10 @@ public class XmlDecomposer {
 	        	else if (currentTokenType == VTDNav.TOKEN_PI_NAME) {
 	        		// If there is an attribute specified on the processing instruction, find the attribute in the processing instruction.
 	        		if (piAttributeToRemove != null) {
-        				// The processing instruction value is in the token after the name.
-	        			String piValue = nv.toRawString(currentNodeIndex + 1);
-	        			int piValueOffset = nv.getTokenOffset(currentNodeIndex + 1);
+        				// The processing instruction value is in the token after the name (prefix with space so the first attribute can also be found usng the attribute pattern).
+	        			String piValue = " " + nv.toRawString(currentNodeIndex + 1);
+	        			// Get the offset minus 1 (minus 1 because of the space we added in the line above here).
+	        			int piValueOffset = nv.getTokenOffset(currentNodeIndex + 1) - 1;
 	        			logger.fine(String.format(" - Processing instruction value: '%s'", piValue));
 	        			Pattern piAttributePattern = Pattern.compile(String.format(" %s=\\\"[a-zA-Z0-9]+\\\"", piAttributeToRemove));
 	        			Matcher piAttributeMatcher = piAttributePattern.matcher(piValue);

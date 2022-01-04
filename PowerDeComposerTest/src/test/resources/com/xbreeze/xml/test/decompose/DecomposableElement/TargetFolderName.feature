@@ -3,9 +3,9 @@ Feature: Configure TargetFolderName
   Here we test the usage of the TargetFolderNames configuration during decompose.
 
   Scenario Outline: TargetFolderName is <Scenario>
-    Given the input file 'Input.xml':
+    Given the composed file:
       """
-      <?xml version="1.0" encoding="UTF-8" ?>
+      <?xml version="1.0" encoding="UTF-8"?>
       <RootElement>
       	<ChildElements>
       		<ChildElement type="<FirstType>" id="1">
@@ -19,7 +19,7 @@ Feature: Configure TargetFolderName
       """
     And the config file:
       """
-      <?xml version="1.0" encoding="UTF-8" ?>
+      <?xml version="1.0" encoding="UTF-8"?>
       <PowerDeComposerConfig>
       	<Decompose>
       		<DecomposableElement>
@@ -38,10 +38,10 @@ Feature: Configure TargetFolderName
       	</Decompose>
       </PowerDeComposerConfig>
       """
-    When I execute PowerDeComposer
-    Then I expect a target file 'Input.xml' with the following content:
+    When I perform a decompose
+    Then I expect a decomposed file with the following content:
       """
-      <?xml version="1.0" encoding="UTF-8" ?>
+      <?xml version="1.0" encoding="UTF-8"?>
       <RootElement>
       	<ChildElements>
       		<xi:include href="<FirstFileName>.xml" />
@@ -49,13 +49,13 @@ Feature: Configure TargetFolderName
       	</ChildElements>
       </RootElement>
       """
-    And I expect a target file '<FirstFileName>.xml' with the following content:
+    And I expect a decomposed file '<FirstFileName>.xml' with the following content:
       """
       <ChildElement type="<FirstType>" id="1">
       			<Name><FirstName></Name>
       		</ChildElement>
       """
-    And I expect a target file '<SecondFileName>.xml' with the following content:
+    And I expect a decomposed file '<SecondFileName>.xml' with the following content:
       """
       <ChildElement type="<SecondType>" id="2">
       			<Name><SecondName></Name>
@@ -69,9 +69,9 @@ Feature: Configure TargetFolderName
       | the same and same filename | SameType  | SameName  | SameType   | SameName   | ChildElements\\SameType\\SameName   | ChildElements\\SameType\\2            |
 
   Scenario Outline: TargetFolderName is <Scenario> with child-elements
-    Given the input file 'Input.xml':
+    Given the composed file:
       """
-      <?xml version="1.0" encoding="UTF-8" ?>
+      <?xml version="1.0" encoding="UTF-8"?>
       <RootElement>
       	<ChildElements>
       		<ChildElement type="<FirstType>" id="1">
@@ -95,7 +95,7 @@ Feature: Configure TargetFolderName
       """
     And the config file:
       """
-      <?xml version="1.0" encoding="UTF-8" ?>
+      <?xml version="1.0" encoding="UTF-8"?>
       <PowerDeComposerConfig>
       	<Decompose>
       		<DecomposableElement>
@@ -114,10 +114,10 @@ Feature: Configure TargetFolderName
       	</Decompose>
       </PowerDeComposerConfig>
       """
-    When I execute PowerDeComposer
-    Then I expect a target file 'Input.xml' with the following content:
+    When I perform a decompose
+    Then I expect a decomposed file with the following content:
       """
-      <?xml version="1.0" encoding="UTF-8" ?>
+      <?xml version="1.0" encoding="UTF-8"?>
       <RootElement>
       	<ChildElements>
       		<xi:include href="<FirstFilePath><FirstFileName>.xml" />
@@ -125,7 +125,7 @@ Feature: Configure TargetFolderName
       	</ChildElements>
       </RootElement>
       """
-    And I expect a target file '<FirstFilePath><FirstFileName>.xml' with the following content:
+    And I expect a decomposed file '<FirstFilePath><FirstFileName>.xml' with the following content:
       """
       <ChildElement type="<FirstType>" id="1">
       			<Name><FirstName></Name>
@@ -134,7 +134,7 @@ Feature: Configure TargetFolderName
       			</ChildElements>
       		</ChildElement>
       """
-    And I expect a target file '<SecondFilePath><SecondFileName>.xml' with the following content:
+    And I expect a decomposed file '<SecondFilePath><SecondFileName>.xml' with the following content:
       """
       <ChildElement type="<SecondType>" id="2">
       			<Name><SecondName></Name>
@@ -143,13 +143,13 @@ Feature: Configure TargetFolderName
       			</ChildElements>
       		</ChildElement>
       """
-    And I expect a target file '<FirstFilePath><ThirdFileName>.xml' with the following content:
+    And I expect a decomposed file '<FirstFilePath><ThirdFileName>.xml' with the following content:
       """
       <ChildElement id="3">
       					<Name>ThirdName</Name>
       				</ChildElement>
       """
-    And I expect a target file '<SecondFilePath><FourthFileName>.xml' with the following content:
+    And I expect a decomposed file '<SecondFilePath><FourthFileName>.xml' with the following content:
       """
       <ChildElement id="4">
       					<Name>FourthName</Name>

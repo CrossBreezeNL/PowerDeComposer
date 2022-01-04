@@ -1,12 +1,11 @@
 @Unit
-
 Feature: Configure TargetFileName
   Here we test the usage of the TargetFileNames configuration during decompose.
 
   Scenario Outline: TargetFileName is value of <Scenario>
-    Given the input file 'Input.xml':
+    Given the composed file:
       """
-      <?xml version="1.0" encoding="UTF-8" ?>
+      <?xml version="1.0" encoding="UTF-8"?>
       <RootElement>
       	<ChildElements>
       		<ChildElement id="<FirstId>">
@@ -20,7 +19,7 @@ Feature: Configure TargetFileName
       """
     And the config file:
       """
-      <?xml version="1.0" encoding="UTF-8" ?>
+      <?xml version="1.0" encoding="UTF-8"?>
       <PowerDeComposerConfig>
       	<Decompose>
       		<DecomposableElement>
@@ -35,10 +34,10 @@ Feature: Configure TargetFileName
       	</Decompose>
       </PowerDeComposerConfig>
       """
-    When I execute PowerDeComposer
-    Then I expect a target file 'Input.xml' with the following content:
+    When I perform a decompose
+    Then I expect a decomposed file with the following content:
       """
-      <?xml version="1.0" encoding="UTF-8" ?>
+      <?xml version="1.0" encoding="UTF-8"?>
       <RootElement>
       	<ChildElements>
       		<xi:include href="<FirstFileName>.xml" />
@@ -46,13 +45,13 @@ Feature: Configure TargetFileName
       	</ChildElements>
       </RootElement>
       """
-    And I expect a target file '<FirstFileName>.xml' with the following content:
+    And I expect a decomposed file '<FirstFileName>.xml' with the following content:
       """
       <ChildElement id="<FirstId>">
       			<Name><FirstName></Name>
       		</ChildElement>
       """
-    And I expect a target file '<SecondFileName>.xml' with the following content:
+    And I expect a decomposed file '<SecondFileName>.xml' with the following content:
       """
       <ChildElement id="<SecondId>">
       			<Name><SecondName></Name>
@@ -60,7 +59,7 @@ Feature: Configure TargetFileName
       """
 
     Examples: 
-      | Scenario         | FirstId | FirstName | SecondId | SecondName | FirstFileName           | SecondFileName           |
-      | unique names     |       1 | FirstName |        2 | SecondName | ChildElements\FirstName | ChildElements\SecondName |
-      | non-unique names |       1 | FirstName |        2 | FirstName  | ChildElements\FirstName | ChildElements\2          |
-      | empty name       |       1 | FirstName |        2 |            | ChildElements\FirstName | ChildElements\2          |
+      | Scenario         | FirstId | FirstName | SecondId | SecondName | FirstFileName            | SecondFileName            |
+      | unique names     |       1 | FirstName |        2 | SecondName | ChildElements\\FirstName | ChildElements\\SecondName |
+      | non-unique names |       1 | FirstName |        2 | FirstName  | ChildElements\\FirstName | ChildElements\\2          |
+      | empty name       |       1 | FirstName |        2 |            | ChildElements\\FirstName | ChildElements\\2          |
