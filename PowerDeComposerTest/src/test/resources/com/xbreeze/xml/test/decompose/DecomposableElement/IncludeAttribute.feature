@@ -43,8 +43,8 @@ Feature: Configure IncludeAttribute
       <?xml version="1.0" encoding="UTF-8"?>
       <RootElement>
       	<ChildElements>
-      		<xi:include href="ChildElements\FirstElement.xml" <IncludeAttributeName>="<IncludeAttributeFirstValue>" />
-      		<xi:include href="ChildElements\SecondElement.xml" <IncludeAttributeName>="<IncludeAttributeSecondValue>" />
+      		<xi:include href="ChildElements/FirstElement.xml" <IncludeAttributeName>="<IncludeAttributeFirstValue>" />
+      		<xi:include href="ChildElements/SecondElement.xml" <IncludeAttributeName>="<IncludeAttributeSecondValue>" />
       	</ChildElements>
       </RootElement>
       """

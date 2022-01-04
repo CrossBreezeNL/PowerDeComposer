@@ -75,8 +75,12 @@ public class Executor {
 		// Update the log level to the lowest level.
 		logger.setLevel((consoleLogLevel.intValue() < logger.getLevel().intValue()) ? consoleLogLevel : logger.getLevel());
 		logger.addHandler(outputConsoleHandler);
+		
+		// Check the passed arguments.
 		if (args.length == 3 || args.length == 4) {
 			String operationType = args[0];
+			
+			// Parse the config.
 			PowerDeComposerConfig pdcConfig;
 			if (args.length == 4) {
 				pdcConfig = PowerDeComposerConfig.fromFile(Paths.get(args[3]).toUri());
@@ -85,6 +89,8 @@ public class Executor {
 				// Create the default PowerDeComposerConfig.
 				pdcConfig = PowerDeComposerConfig.GetDefaultConfig();
 			}
+			
+			// Perform the operation. 
 			if (operationType.equalsIgnoreCase("decompose")) {
 				String xmlFilePath = args[1].trim();
 				String targetDirectory = args[2].trim();

@@ -42,9 +42,9 @@ Feature: Configure ElementCondition
       """
 
     Examples: 
-      | Scenario                      | elementConditionXPath                               | FirstElementOutput                         | SecondElementOutput                        |
-      | attribute existence           | ./@id                                               | <xi:include href="ChildElements\\1.xml" /> | <xi:include href="ChildElements\\2.xml" /> |
-      | attribute condition           | @id &lt; 2                                          | <xi:include href="ChildElements\\1.xml" /> | <SecondElement id="2"/>                    |
-      | element condition             | starts-with(name(), 'Second')                       | <FirstElement id="1"/>                     | <xi:include href="ChildElements\\2.xml" /> |
-      | parent condition              | parent::node()[starts-with(name(), 'c:')]           | <xi:include href="ChildElements\\1.xml" /> | <xi:include href="ChildElements\\2.xml" /> |
-      | multiple conditions existence | ./@id and parent::node()[starts-with(name(), 'c:')] | <xi:include href="ChildElements\\1.xml" /> | <xi:include href="ChildElements\\2.xml" /> |
+      | Scenario                      | elementConditionXPath                               | FirstElementOutput                        | SecondElementOutput                       |
+      | attribute existence           | ./@id                                               | <xi:include href="ChildElements/1.xml" /> | <xi:include href="ChildElements/2.xml" /> |
+      | attribute condition           | @id &lt; 2                                          | <xi:include href="ChildElements/1.xml" /> | <SecondElement id="2"/>                   |
+      | element condition             | starts-with(name(), 'Second')                       | <FirstElement id="1"/>                    | <xi:include href="ChildElements/2.xml" /> |
+      | parent condition              | parent::node()[starts-with(name(), 'c:')]           | <xi:include href="ChildElements/1.xml" /> | <xi:include href="ChildElements/2.xml" /> |
+      | multiple conditions existence | ./@id and parent::node()[starts-with(name(), 'c:')] | <xi:include href="ChildElements/1.xml" /> | <xi:include href="ChildElements/2.xml" /> |

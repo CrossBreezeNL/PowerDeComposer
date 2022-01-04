@@ -581,9 +581,12 @@ public class XmlDecomposer {
 				
 				// Insert the include tag for the found object.
 				String actualRelativePath = targetDirectoryPath.relativize(childFileLocation).toString();
+				// If the file system separator is not a slash, replace the actualRelativePath file system separator with slash.
+				if (!targetDirectoryPath.getFileSystem().getSeparator().equals("/")) {
+					actualRelativePath = actualRelativePath.replace(targetDirectoryPath.getFileSystem().getSeparator(), "/");
+				}
 				// Construct the include tag contents.
 				StringBuffer includeElementStringBuffer = new StringBuffer();
-				//includeElementStringBuffer.append(String.format("<xi:include href=\"%s\" type=\"%s\"", actualRelativePath, elementName));
 				includeElementStringBuffer.append(String.format("<xi:include href=\"%s\"", actualRelativePath));
 				// Loop through the include attributes to add the min the include tag.
 				for (String includeAttributeName : includeAttributesWithValues.keySet()) {

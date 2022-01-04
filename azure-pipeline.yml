@@ -1,0 +1,23 @@
+# Build pipeline for PowerDeComposer.
+# This will build PowerDeComposer and run the test suite defined in the PowerDeComposerTest folder.
+
+trigger:
+- master
+- feature/*
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- task: Maven@3
+  inputs:
+    mavenPomFile: 'PowerDeComposer/pom.xml'
+    jdkVersionOption: '1.11'
+    goals: 'install'
+- task: Maven@3
+  inputs:
+    mavenPomFile: 'PowerDeComposerTest/pom.xml'
+    jdkVersionOption: '1.11'
+    publishJUnitResults: true
+    testResultsFiles: '**/surefire-reports/TEST-*.xml'
+    goals: 'test'

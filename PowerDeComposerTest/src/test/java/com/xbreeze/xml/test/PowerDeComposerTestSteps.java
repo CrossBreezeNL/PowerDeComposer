@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
-import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Path;
 
 import org.apache.commons.io.IOUtils;
@@ -70,7 +70,7 @@ public class PowerDeComposerTestSteps {
 	public void createDirectoryIfItDoesntExist(Path directoryPath) throws Exception {
 		File directoryFile = directoryPath.toFile();
 		if (!directoryFile.exists()) {
-			if (!directoryFile.mkdir()) {
+			if (!directoryFile.mkdirs()) {
 				throw new Exception(String.format("Couldn't create folder '%s'", directoryPath.toString()));
 			}
 			//else {
@@ -134,8 +134,16 @@ public class PowerDeComposerTestSteps {
 		this.writeXmlFile(this._decomposedFilePath, decomposedFileContents);
 	}
 	
-	public void writeXmlFile(Path targetFilePath, String fileContents) throws IOException {
-		FileWriter targetFileWrite = new FileWriter(targetFilePath.toFile());
+	public void writeXmlFile(Path targetFilePath, String fileContents) throws Exception {
+		// If the parent folder doesn't exist, create it.
+		File parentFolder = targetFilePath.getParent().toFile();
+		if (!parentFolder.exists()) {
+			if (!parentFolder.mkdirs()) {
+				throw new Exception(String.format("Error while creating directory: %s", parentFolder.toString()));
+			}
+		}
+		// Write the file.
+		FileWriter targetFileWrite = new FileWriter(targetFilePath.toFile(), Charset.forName("UTF-8"));
 		IOUtils.write(fileContents, targetFileWrite);
 		targetFileWrite.close();
 	}
