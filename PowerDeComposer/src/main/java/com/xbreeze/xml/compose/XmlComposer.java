@@ -30,7 +30,6 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.apache.xmlbeans.XmlObject;
-import org.apache.xmlbeans.XmlOptions;
 import org.apache.xmlbeans.XmlSaxHandler;
 import org.xml.sax.XMLReader;
 
@@ -82,9 +81,12 @@ public class XmlComposer {
 		XMLReader xmlReader = saxParser.getXMLReader();
 		
 		// Create a SAX handler so the SAX Parser can give the SAX events to this handler.
+		// XmlOptions can be added as argument for newXmlSaxHandler here.
 		XmlSaxHandler xmlSaxHandler = XmlObject.Factory.newXmlSaxHandler();
 		// Set the SaxHandler as the content handler for the XML Reader.
 		xmlReader.setContentHandler(xmlSaxHandler.getContentHandler());
+		// Set the xml sax handler also as the lexical handler so it can also retrieve file elements which are not passed to the content handler (like comments). 
+		xmlReader.setProperty("http://xml.org/sax/properties/lexical-handler", xmlSaxHandler);
 		// Parse the decomposed root file (which will also parse all it includes for us).
 		xmlReader.parse(xmlFile.getAbsolutePath());
 		// Get the XmlObject which was just loaded using the sax handler.
@@ -92,7 +94,8 @@ public class XmlComposer {
 		
 		try {
 			// Save the resulting composed file.
-			composedXmlObject.save(new File(xmlTargetFilePath), new XmlOptions().setSaveOptimizeForSpeed(true));
+			// XmlOption could be added as extra parameter for the save method: , new XmlOptions().setSaveOptimizeForSpeed(true)
+			composedXmlObject.save(new File(xmlTargetFilePath));
 		} catch (IOException exc) {
 			throw new Exception(
 					String.format("Error writing to target file %s: %s", xmlTargetFilePath, exc.getMessage()));

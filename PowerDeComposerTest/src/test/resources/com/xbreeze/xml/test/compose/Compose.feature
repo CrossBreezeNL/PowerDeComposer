@@ -1,4 +1,4 @@
-@Unit @Debug
+@Unit
 Feature: Compose
   Here we test the compose.
 
@@ -95,6 +95,7 @@ Feature: Compose
       """
       <?xml version="1.0" encoding="UTF-8"?>
       <RootElement xmlns:xi="http://www.w3.org/2001/XInclude">
+      
       	<ChildElements>
       		<xi:include href="FirstFileName.xml" />
       	</ChildElements>
@@ -112,10 +113,125 @@ Feature: Compose
       """
       <?xml version="1.0" encoding="UTF-8"?>
       <RootElement>
+      
       	<ChildElements>
       		<ChildElement id="FirstId">
       			<Name>FirstName</Name>
       		</ChildElement>
       	</ChildElements>
+      </RootElement>
+      """
+
+  # Isse: Newline after processing instructions is ignored.
+  @Debug
+  Scenario: Compose with processing instruction
+    Given the decomposed file:
+      """
+      <?xml version="1.0" encoding="UTF-8"?>
+      <?CustomProcessingInstruction CustomPIAttribute="SomeThing" version="0.0.1"?>
+      <RootElement>
+      	<ChildElement/>
+      </RootElement>
+      """
+    When I perform a compose
+    Then I expect a composed file with the following content:
+      """
+      <?xml version="1.0" encoding="UTF-8"?>
+      <?CustomProcessingInstruction CustomPIAttribute="SomeThing" version="0.0.1"?>
+      <RootElement>
+      	<ChildElement/>
+      </RootElement>
+      """
+
+  # Isse: Newlines after processing instructions are ignored.
+  @Debug
+  Scenario: Compose with two processing instructions
+    Given the decomposed file:
+      """
+      <?xml version="1.0" encoding="UTF-8"?>
+      <?CustomProcessingInstruction CustomPIAttribute="SomeThing" version="0.0.1"?>
+      <?SecondCustomProcessingInstruction SecondCustomPIAttribute="SomeThing" version="0.0.2"?>
+      <RootElement>
+      	<ChildElement/>
+      </RootElement>
+      """
+    When I perform a compose
+    Then I expect a composed file with the following content:
+      """
+      <?xml version="1.0" encoding="UTF-8"?>
+      <?CustomProcessingInstruction CustomPIAttribute="SomeThing" version="0.0.1"?>
+      <?SecondCustomProcessingInstruction SecondCustomPIAttribute="SomeThing" version="0.0.2"?>
+      <RootElement>
+      	<ChildElement/>
+      </RootElement>
+      """
+  
+  # Isse: All comments before the root element is not included in the output.
+  # This is solved by setting http://xml.org/sax/properties/lexical-handler.
+  Scenario: Compose with comment before root node
+    Given the decomposed file:
+      """
+      <?xml version="1.0" encoding="UTF-8"?>
+      <!-- Comment before root node. -->
+      <RootElement/>
+      """
+    When I perform a compose
+    Then I expect a composed file with the following content:
+      """
+      <?xml version="1.0" encoding="UTF-8"?>
+      <!-- Comment before root node. -->
+      <RootElement/>
+      """
+
+  # Isse: All whitespace before the root element is not included in the output (adding a space on the empty line doesn't make a difference).
+  @Debug @KnownIssue
+  Scenario: Compose with whitespace before root node
+    Given the decomposed file:
+      """
+      <?xml version="1.0" encoding="UTF-8"?>
+      
+      <RootElement/>
+      """
+    When I perform a compose
+    Then I expect a composed file with the following content:
+      """
+      <?xml version="1.0" encoding="UTF-8"?>
+      
+      <RootElement/>
+      """
+
+  Scenario: Compose with whitespace inside root node
+    Given the decomposed file:
+      """
+      <?xml version="1.0" encoding="UTF-8"?>
+      <RootElement>
+      
+      </RootElement>
+      """
+    When I perform a compose
+    Then I expect a composed file with the following content:
+      """
+      <?xml version="1.0" encoding="UTF-8"?>
+      <RootElement>
+      
+      </RootElement>
+      """
+
+	# Issue: Comment inside the document is also ignored.
+	# This is solved by setting http://xml.org/sax/properties/lexical-handler.
+  Scenario: Compose with comment inside root node
+    Given the decomposed file:
+      """
+      <?xml version="1.0" encoding="UTF-8"?>
+      <RootElement>
+      <!-- Some comment -->
+      </RootElement>
+      """
+    When I perform a compose
+    Then I expect a composed file with the following content:
+      """
+      <?xml version="1.0" encoding="UTF-8"?>
+      <RootElement>
+      <!-- Some comment -->
       </RootElement>
       """
