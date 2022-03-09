@@ -34,7 +34,7 @@ import org.apache.xmlbeans.XmlSaxHandler;
 import org.xml.sax.XMLReader;
 
 public class XmlComposer {
-	private static final Logger logger = Logger.getLogger("");
+	private static final Logger logger = Logger.getGlobal();
 
 	public XmlComposer(String xmlFilePath, String xmlTargetFilePath) throws Exception {
 		composeXml(xmlFilePath, xmlTargetFilePath);
@@ -80,13 +80,41 @@ public class XmlComposer {
 		// Create a XML Reader.
 		XMLReader xmlReader = saxParser.getXMLReader();
 		
+		
+		/**
+		// Create a PdcXmlHandler which implements ContentHandler, LexicalHandler and DeclHandler.
+		PdcXmlHandler pdcXmlHandler = new PdcXmlHandler();
+		// Set the content handler.
+		xmlReader.setContentHandler(pdcXmlHandler);
+		// Set the dtd handler.
+		xmlReader.setDTDHandler(pdcXmlHandler);
+		// Set the lexical handler.
+		xmlReader.setProperty("http://xml.org/sax/properties/lexical-handler", pdcXmlHandler);
+		// Set the declaration handler.
+		xmlReader.setProperty("http://xml.org/sax/properties/declaration-handler", pdcXmlHandler);
+		// Parse the decomposed root file (which will also parse all it includes for us).
+		xmlReader.parse(xmlFile.getAbsolutePath());
+		*/
+		
 		// Create a SAX handler so the SAX Parser can give the SAX events to this handler.
 		// XmlOptions can be added as argument for newXmlSaxHandler here.
 		XmlSaxHandler xmlSaxHandler = XmlObject.Factory.newXmlSaxHandler();
+		// new XmlOptions().setLoadUseLocaleCharUtil(false)
+		// XmlObject.Factory.newXmlSaxHandler(); -> https://github.com/apache/xmlbeans/blob/2900cf0995cba9b3ee0e460da06ac1d87e8937ec/src/main/java/org/apache/xmlbeans/impl/schema/XmlObjectFactory.java#L307
+		//  > XmlBeans.getContextTypeLoader().newXmlSaxHandler(getInnerType(), null); -> getInnerType()=null; https://github.com/apache/xmlbeans/blob/2900cf0995cba9b3ee0e460da06ac1d87e8937ec/src/main/java/org/apache/xmlbeans/impl/schema/SchemaTypeLoaderBase.java#L262
+		//   > Locale.newSaxHandler(this, type, options); -> type and options are null -> https://github.com/apache/xmlbeans/blob/2900cf0995cba9b3ee0e460da06ac1d87e8937ec/src/main/java/org/apache/xmlbeans/impl/store/Locale.java#L894
+		//    >  syncWrap(stl, options, (l) -> new XmlSaxHandlerImpl(l, type, options)) -> https://github.com/apache/xmlbeans/blob/2900cf0995cba9b3ee0e460da06ac1d87e8937ec/src/main/java/org/apache/xmlbeans/impl/store/Locale.java#L834
+		//     > saxHandlerOptions.setLoadUseLocaleCharUtil(true); -> Due to this line of code setting this on the XmlOptions during constructor will always be ignored: https://github.com/apache/xmlbeans/blob/2900cf0995cba9b3ee0e460da06ac1d87e8937ec/src/main/java/org/apache/xmlbeans/impl/store/Locale.java#L845
+		// There is a comment in the above code explaining why the CharUtils are overwritten there.
+		// I don't know why this is an issue anymore, because I haven't looked in this code in a while.
+		// If this is an issue in XmlBeans, the issue can be reported at: https://issues.apache.org/jira/browse/XMLBEANS-601?jql=project%20%3D%20XMLBEANS
+		//     > SaxHandler::initSaxHandler(l, saxHandlerOptions); -> https://github.com/apache/xmlbeans/blob/2900cf0995cba9b3ee0e460da06ac1d87e8937ec/src/main/java/org/apache/xmlbeans/impl/store/Locale.java#L2273
+		
 		// Set the SaxHandler as the content handler for the XML Reader.
 		xmlReader.setContentHandler(xmlSaxHandler.getContentHandler());
 		// Set the xml sax handler also as the lexical handler so it can also retrieve file elements which are not passed to the content handler (like comments). 
-		xmlReader.setProperty("http://xml.org/sax/properties/lexical-handler", xmlSaxHandler);
+		xmlReader.setProperty("http://xml.org/sax/properties/lexical-handler", xmlSaxHandler.getLexicalHandler());
+		xmlReader.setProperty("http://xml.org/sax/properties/declaration-handler", xmlSaxHandler);
 		// Parse the decomposed root file (which will also parse all it includes for us).
 		xmlReader.parse(xmlFile.getAbsolutePath());
 		// Get the XmlObject which was just loaded using the sax handler.

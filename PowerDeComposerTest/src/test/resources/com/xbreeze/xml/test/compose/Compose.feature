@@ -47,6 +47,7 @@ Feature: Compose
       | in Unix style subfolder    | SubFolder/  |
       | in Windows style subfolder | SubFolder\\ |
 
+	@Debug
   Scenario: Compose recursive
     Given the decomposed file:
       """
@@ -123,7 +124,7 @@ Feature: Compose
       """
 
   # Isse: Newline after processing instructions is ignored.
-  @Debug
+  @KnownIssue
   Scenario: Compose with processing instruction
     Given the decomposed file:
       """
@@ -144,7 +145,7 @@ Feature: Compose
       """
 
   # Isse: Newlines after processing instructions are ignored.
-  @Debug
+  @KnownIssue
   Scenario: Compose with two processing instructions
     Given the decomposed file:
       """
@@ -184,7 +185,7 @@ Feature: Compose
       """
 
   # Isse: All whitespace before the root element is not included in the output (adding a space on the empty line doesn't make a difference).
-  @Debug @KnownIssue
+  @KnownIssue
   Scenario: Compose with whitespace before root node
     Given the decomposed file:
       """
