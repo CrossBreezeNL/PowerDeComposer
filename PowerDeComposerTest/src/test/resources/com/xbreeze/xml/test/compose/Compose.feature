@@ -6,7 +6,7 @@ Feature: Compose
     Given the decomposed file:
       """
       <?xml version="1.0" encoding="UTF-8"?>
-      <RootElement xmlns:xi="http://www.w3.org/2001/XInclude">
+      <RootElement>
       	<ChildElements>
       		<xi:include href="<SubFolder>FirstFileName.xml" />
       		<xi:include href="<SubFolder>SecondFileName.xml" />
@@ -47,12 +47,11 @@ Feature: Compose
       | in Unix style subfolder    | SubFolder/  |
       | in Windows style subfolder | SubFolder\\ |
 
-	@Debug
   Scenario: Compose recursive
     Given the decomposed file:
       """
       <?xml version="1.0" encoding="UTF-8"?>
-      <RootElement xmlns:xi="http://www.w3.org/2001/XInclude">
+      <RootElement>
       	<ChildElements>
       		<xi:include href="ChildElements/FirstFileName.xml" />
       	</ChildElements>
@@ -60,7 +59,7 @@ Feature: Compose
       """
     And the decomposed file 'ChildElements/FirstFileName.xml':
       """
-      <ChildElement id="FirstId" xmlns:xi="http://www.w3.org/2001/XInclude">
+      <ChildElement id="FirstId">
       			<Name>FirstName</Name>
       			<ChildElements>
       				<xi:include href="FirstFileName/ChildElements/SecondFileName.xml" />
@@ -95,7 +94,7 @@ Feature: Compose
     Given the decomposed file:
       """
       <?xml version="1.0" encoding="UTF-8"?>
-      <RootElement xmlns:xi="http://www.w3.org/2001/XInclude">
+      <RootElement>
       
       	<ChildElements>
       		<xi:include href="FirstFileName.xml" />
@@ -123,8 +122,6 @@ Feature: Compose
       </RootElement>
       """
 
-  # Isse: Newline after processing instructions is ignored.
-  @KnownIssue
   Scenario: Compose with processing instruction
     Given the decomposed file:
       """
@@ -144,8 +141,6 @@ Feature: Compose
       </RootElement>
       """
 
-  # Isse: Newlines after processing instructions are ignored.
-  @KnownIssue
   Scenario: Compose with two processing instructions
     Given the decomposed file:
       """
@@ -167,8 +162,6 @@ Feature: Compose
       </RootElement>
       """
   
-  # Isse: All comments before the root element is not included in the output.
-  # This is solved by setting http://xml.org/sax/properties/lexical-handler.
   Scenario: Compose with comment before root node
     Given the decomposed file:
       """
@@ -184,8 +177,6 @@ Feature: Compose
       <RootElement/>
       """
 
-  # Isse: All whitespace before the root element is not included in the output (adding a space on the empty line doesn't make a difference).
-  @KnownIssue
   Scenario: Compose with whitespace before root node
     Given the decomposed file:
       """
@@ -218,8 +209,6 @@ Feature: Compose
       </RootElement>
       """
 
-	# Issue: Comment inside the document is also ignored.
-	# This is solved by setting http://xml.org/sax/properties/lexical-handler.
   Scenario: Compose with comment inside root node
     Given the decomposed file:
       """
