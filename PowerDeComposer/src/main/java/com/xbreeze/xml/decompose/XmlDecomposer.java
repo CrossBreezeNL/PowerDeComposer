@@ -412,17 +412,20 @@ public class XmlDecomposer {
 	        	else if (currentTokenType == VTDNav.TOKEN_PI_NAME) {
 	        		// If there is an attribute specified on the processing instruction, find the attribute in the processing instruction.
 	        		if (piAttributeToRemove != null) {
-        				// The processing instruction value is in the token after the name (prefix with space so the first attribute can also be found usng the attribute pattern).
+        				// The processing instruction value is in the token after the name (prefix with space so the first attribute can also be found using the attribute pattern).
 	        			String piValue = " " + nv.toRawString(currentNodeIndex + 1);
 	        			// Get the offset minus 1 (minus 1 because of the space we added in the line above here).
 	        			int piValueOffset = nv.getTokenOffset(currentNodeIndex + 1) - 1;
 	        			logger.fine(String.format(" - Processing instruction value: '%s'", piValue));
-	        			Pattern piAttributePattern = Pattern.compile(String.format(" %s=\\\"[a-zA-Z0-9]+\\\"", piAttributeToRemove));
+	        			// Match anything between double quotes after the attribute name and equals sign. This will also include newlines.
+	        			Pattern piAttributePattern = Pattern.compile(String.format(" %s=\\\"([^\"])*\\\"", piAttributeToRemove));
 	        			Matcher piAttributeMatcher = piAttributePattern.matcher(piValue);
 	        			if (piAttributeMatcher.find()) {
 	        				logger.fine(String.format(" - Removing processing instruction attribute: '%s'", piAttributeMatcher.group()));
 	        				// Remove the processing instruction attribute from the xml document.
 	        				xm.removeContent(piValueOffset + piAttributeMatcher.start(), piAttributeMatcher.end() - piAttributeMatcher.start());
+	        			} else {
+	        				logger.fine(String.format(" - Processing instruction attribute not found! (using regex: '%s')", piAttributePattern));
 	        			}
 	        		}
 	        		// If there is no attribute removal specified on the XPath on the processing instruction, remove the whole processing instruction.
