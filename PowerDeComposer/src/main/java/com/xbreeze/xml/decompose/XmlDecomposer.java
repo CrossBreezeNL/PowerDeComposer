@@ -392,10 +392,12 @@ public class XmlDecomposer {
 	        while ((ap.evalXPath()) != -1) {
 	        	int currentNodeIndex = nv.getCurrentIndex();
 				int currentTokenType = nv.getTokenType(currentNodeIndex);
-				logger.fine(String.format(" - Removing node '%d' (offset=%d;length=%d;type=%d)...", currentNodeIndex, nv.getTokenOffset(currentNodeIndex), nv.getTokenLength(currentNodeIndex), currentTokenType));
+				logger.fine(String.format(" - Removing node with index %d (offset=%d;length=%d;type=%d)...", currentNodeIndex, nv.getTokenOffset(currentNodeIndex), nv.getTokenLength(currentNodeIndex), currentTokenType));
 	        	// If the node is an element, expand the element offset with the leading whitespace, so we also remove whitespace before this node.
 	        	if (currentTokenType == VTDNav.TOKEN_STARTING_TAG) {
 	        		xm.remove(nv.expandWhiteSpaces(nv.getElementFragment(), VTDNav.WS_LEADING));
+	        		// Update removedNodes to true.
+	        		removedNodes = true;
 	        	}
 	        	// If the token is an attribute name, we need to remove the attribute name, the equals sign and its value (we use removeAttribute function for this).
 	        	else if (currentTokenType == VTDNav.TOKEN_ATTR_NAME) {
@@ -407,25 +409,36 @@ public class XmlDecomposer {
 	        		if (nv.toString(attributeNameIndex - 1, 1).equals(" ")) {
 	        			xm.removeContent(attributeNameIndex - 1, 1);
 	        		}
+	        		// Update removedNodes to true.
+	        		removedNodes = true;
 	        	}
 	        	// If the token is a processing-instruction name, we need to remove the token before and after as well.
 	        	else if (currentTokenType == VTDNav.TOKEN_PI_NAME) {
 	        		// If there is an attribute specified on the processing instruction, find the attribute in the processing instruction.
 	        		if (piAttributeToRemove != null) {
         				// The processing instruction value is in the token after the name (prefix with space so the first attribute can also be found using the attribute pattern).
-	        			String piValue = " " + nv.toRawString(currentNodeIndex + 1);
+	        			String piValue = nv.toString(currentNodeIndex + 1);
 	        			// Get the offset minus 1 (minus 1 because of the space we added in the line above here).
-	        			int piValueOffset = nv.getTokenOffset(currentNodeIndex + 1) - 1;
+	        			//int piValueOffset = nv.getTokenOffset(currentNodeIndex + 1) - 1;
 	        			logger.fine(String.format(" - Processing instruction value: '%s'", piValue));
 	        			// Match anything between double quotes after the attribute name and equals sign. This will also include newlines.
 	        			Pattern piAttributePattern = Pattern.compile(String.format(" %s=\\\"([^\"])*\\\"", piAttributeToRemove));
-	        			Matcher piAttributeMatcher = piAttributePattern.matcher(piValue);
+	        			Matcher piAttributeMatcher = piAttributePattern.matcher(" " + piValue);
+	        			
+	        			// Perform the replace if the regex matches at least once.
 	        			if (piAttributeMatcher.find()) {
-	        				logger.fine(String.format(" - Removing processing instruction attribute: '%s'", piAttributeMatcher.group()));
-	        				// Remove the processing instruction attribute from the xml document.
-	        				xm.removeContent(piValueOffset + piAttributeMatcher.start(), piAttributeMatcher.end() - piAttributeMatcher.start());
-	        			} else {
-	        				logger.fine(String.format(" - Processing instruction attribute not found! (using regex: '%s')", piAttributePattern));
+		        			// Replace all matches with empty string.
+		        			String newPiValue = piAttributeMatcher.replaceAll("");
+		        			// If the new pi value starts with a space, remove it (because we added a space when creating the Matcher.
+		        			if (newPiValue.length() > 0 && newPiValue.substring(0, 1).equals(" ")) {
+		        				newPiValue = newPiValue.substring(1);
+		        			}
+		        			
+		        			// Insert the new PI value and remove the old one.
+	        				xm.insertBytesAt(nv.getTokenOffset(currentNodeIndex + 1), newPiValue.getBytes());
+	        				xm.removeToken(currentNodeIndex + 1);
+	    	        		// Update removedNodes to true.
+	    	        		removedNodes = true;
 	        			}
 	        		}
 	        		// If there is no attribute removal specified on the XPath on the processing instruction, remove the whole processing instruction.
@@ -437,14 +450,16 @@ public class XmlDecomposer {
 		        		logger.fine(String.format(" - Node content: '%s'", nv.toRawString(piOffset, piLength)));
 		    	    	long piFragment = ((long)piLength)<<32| piOffset;
 		    	    	xm.remove(nv.expandWhiteSpaces(piFragment, VTDNav.WS_LEADING));
+		        		// Update removedNodes to true.
+		        		removedNodes = true;
 	        		}
 	        	}
 	        	// If the node is not an element, remove the whole token.
 	        	else {
 	        		xm.remove();
+	        		// Update removedNodes to true.
+	        		removedNodes = true;
 	        	}
-	        	// Update removedNodes to true.
-	        	removedNodes = true;
 	        }
 	        
 	        // If nodes were removed, re-init the VTDNav and reset the XMLModifier.

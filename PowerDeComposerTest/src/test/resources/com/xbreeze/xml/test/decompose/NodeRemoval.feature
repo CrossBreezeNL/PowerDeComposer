@@ -178,7 +178,6 @@ Feature: Configure NodeRemoval
       | simple          | <?RemovePI ?>                   | /processing-instruction('RemovePI') |
       | with attributes | <?RemovePI SomeAttribute="A" ?> | /processing-instruction('RemovePI') |
 
-  @Debug
   Scenario Outline: Remove processing instruction attribute <Scenario>
     Given the composed file:
       """
@@ -208,7 +207,7 @@ Feature: Configure NodeRemoval
 
     Examples: 
       | Scenario                         | InputPI                                                                             | OutputPI                                                        | RemoveXPath                                           |
-      | attribute simple                 | <?ExamplePI RemoveAttribute="A"?>                                                   | <?ExamplePI?>                                                   | /processing-instruction('ExamplePI')/@RemoveAttribute |
+      | attribute simple                 | <?ExamplePI RemoveAttribute="A"?>                                                   | <?ExamplePI ?>                                                   | /processing-instruction('ExamplePI')/@RemoveAttribute |
       | attribute first attribute        | <?ExamplePI RemoveAttribute="A" DoNotRemoveAttribute="B"?>                          | <?ExamplePI DoNotRemoveAttribute="B"?>                          | /processing-instruction('ExamplePI')/@RemoveAttribute |
       | attribute middle attribute       | <?ExamplePI DoNotRemoveAttribute="A" RemoveAttribute="B" DoNotRemoveAttribute="C"?> | <?ExamplePI DoNotRemoveAttribute="A" DoNotRemoveAttribute="C"?> | /processing-instruction('ExamplePI')/@RemoveAttribute |
       | attribute last attribute         | <?ExamplePI DoNotRemoveAttribute="A" RemoveAttribute="B"?>                          | <?ExamplePI DoNotRemoveAttribute="A"?>                          | /processing-instruction('ExamplePI')/@RemoveAttribute |
