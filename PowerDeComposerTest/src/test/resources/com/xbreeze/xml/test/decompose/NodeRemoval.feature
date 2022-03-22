@@ -206,8 +206,40 @@ Feature: Configure NodeRemoval
       """
 
     Examples: 
-      | Scenario                   | InputPI                                                                             | OutputPI                                                        | RemoveXPath                                           |
-      | attribute simple           | <?ExamplePI RemoveAttribute="A"?>                                                   | <?ExamplePI?>                                                   | /processing-instruction('ExamplePI')/@RemoveAttribute |
-      | attribute first attribute  | <?ExamplePI RemoveAttribute="A" DoNotRemoveAttribute="B"?>                          | <?ExamplePI DoNotRemoveAttribute="B"?>                          | /processing-instruction('ExamplePI')/@RemoveAttribute |
-      | attribute middle attribute | <?ExamplePI DoNotRemoveAttribute="A" RemoveAttribute="B" DoNotRemoveAttribute="C"?> | <?ExamplePI DoNotRemoveAttribute="A" DoNotRemoveAttribute="C"?> | /processing-instruction('ExamplePI')/@RemoveAttribute |
-      | attribute last attribute   | <?ExamplePI DoNotRemoveAttribute="A" RemoveAttribute="B"?>                          | <?ExamplePI DoNotRemoveAttribute="A"?>                          | /processing-instruction('ExamplePI')/@RemoveAttribute |
+      | Scenario                         | InputPI                                                                             | OutputPI                                                        | RemoveXPath                                           |
+      | attribute simple                 | <?ExamplePI RemoveAttribute="A"?>                                                   | <?ExamplePI ?>                                                   | /processing-instruction('ExamplePI')/@RemoveAttribute |
+      | attribute first attribute        | <?ExamplePI RemoveAttribute="A" DoNotRemoveAttribute="B"?>                          | <?ExamplePI DoNotRemoveAttribute="B"?>                          | /processing-instruction('ExamplePI')/@RemoveAttribute |
+      | attribute middle attribute       | <?ExamplePI DoNotRemoveAttribute="A" RemoveAttribute="B" DoNotRemoveAttribute="C"?> | <?ExamplePI DoNotRemoveAttribute="A" DoNotRemoveAttribute="C"?> | /processing-instruction('ExamplePI')/@RemoveAttribute |
+      | attribute last attribute         | <?ExamplePI DoNotRemoveAttribute="A" RemoveAttribute="B"?>                          | <?ExamplePI DoNotRemoveAttribute="A"?>                          | /processing-instruction('ExamplePI')/@RemoveAttribute |
+      | attribute with special character | <?ExamplePI DoNotRemoveAttribute="Special’s" RemoveAttribute="B"?>                  | <?ExamplePI DoNotRemoveAttribute="Special’s"?>                  | /processing-instruction('ExamplePI')/@RemoveAttribute |
+
+  Scenario: Remove multiline processing instruction attribute
+    Given the composed file:
+      """
+      <?xml version="1.0" encoding="UTF-8"?>
+      <?ExamplePI AttributeBefore="A" Label="This is
+      some text
+      which spreads accross
+      multiple lines
+      " AttributeAfter="B" ?>
+      <RootElement/>
+      """
+    And the config file:
+      """
+      <?xml version="1.0" encoding="UTF-8"?>
+      <PowerDeComposerConfig>
+      	<Decompose>
+      		<NodeRemovals>
+      			<NodeRemoval xpath="/processing-instruction('ExamplePI')/@Label" />
+      		</NodeRemovals>
+      		<DecomposableElement />
+      	</Decompose>
+      </PowerDeComposerConfig>
+      """
+    When I perform a decompose
+    Then I expect a decomposed file with the following content:
+      """
+      <?xml version="1.0" encoding="UTF-8"?>
+      <?ExamplePI AttributeBefore="A" AttributeAfter="B" ?>
+      <RootElement/>
+      """

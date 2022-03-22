@@ -58,9 +58,8 @@ public class PowerDeComposerTestSteps {
 		_decomposedFolderPath = this._featureFileResourcePath.resolve("Decomposed");
 		this.createDirectoryIfItDoesntExist(this._decomposedFolderPath);
 		
-		// Set the default compose and decompose file paths.
-		this._composedFilePath = this._composedFolderPath.resolve("InlineFile.xml");
-		this._decomposedFilePath = this._decomposedFolderPath.resolve("InlineFile.xml");
+		// Init the file paths (these can be overridden when the composed or decompose folder path is changes using a phrase.
+		initFilePaths();
 		
 		// Log  the paths.
 		scenario.log(String.format("Feature resource path: %s", _featureResourcePath.toString()));
@@ -80,6 +79,29 @@ public class PowerDeComposerTestSteps {
 		//else {
 		//	scenario.log(String.format("Scenario folder already exists: '%s'", _featureResourcePath.toString()));
 		//}
+	}
+	
+	private void initFilePaths() {
+		// Set the default compose and decompose file paths.
+		this._composedFilePath = this._composedFolderPath.resolve("InlineFile.xml");
+		this._decomposedFilePath = this._decomposedFolderPath.resolve("InlineFile.xml");
+	}
+	
+	@Given("^the config folder location '(.*)'$")
+	public void givenTheConfigFolderLocation(String configFolderLocation) throws Throwable {
+		this._configFolderPath = this._featureResourcePath.resolve(configFolderLocation);
+	}
+	
+	@Given("^the composed folder location '(.*)'$")
+	public void givenTheComposedFolderLocation(String composedFolderLocation) throws Throwable {
+		this._composedFolderPath = this._featureResourcePath.resolve(composedFolderLocation);
+		initFilePaths();
+	}
+
+	@Given("^the decomposed folder location '(.*)'$")
+	public void givenTheDecomposedFolderLocation(String decomposedFolderLocation) throws Throwable {
+		this._decomposedFolderPath = this._featureResourcePath.resolve(decomposedFolderLocation);
+		initFilePaths();
 	}
 
 	@Given("^the config file '(.*)'$")
@@ -146,21 +168,6 @@ public class PowerDeComposerTestSteps {
 		FileWriter targetFileWrite = new FileWriter(targetFilePath.toFile(), Charset.forName("UTF-8"));
 		IOUtils.write(fileContents, targetFileWrite);
 		targetFileWrite.close();
-	}
-	
-	@Given("^the config folder location '(.*)'$")
-	public void givenTheConfigFolderLocation(String configFolderLocation) throws Throwable {
-		this._configFolderPath = this._featureResourcePath.resolve(configFolderLocation);
-	}
-	
-	@Given("^the composed folder location '(.*)'$")
-	public void givenTheComposedFolderLocation(String composedFolderLocation) throws Throwable {
-		this._composedFolderPath = this._featureResourcePath.resolve(composedFolderLocation);
-	}
-
-	@Given("^the decomposed folder location '(.*)'$")
-	public void givenTheDecomposedFolderLocation(String decomposedFolderLocation) throws Throwable {
-		this._decomposedFolderPath = this._featureResourcePath.resolve(decomposedFolderLocation);
 	}
 	
 	@When("^I perform a compose$")

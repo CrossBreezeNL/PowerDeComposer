@@ -100,13 +100,14 @@ When no configuration file is specified on the command, the following configurat
 <PowerDeComposerConfig>
 	<Decompose>
 	
+		<!-- Specify a XPath to execute on both sides (composed and decomposed) to decide whether the decompose. -->
+		<!-- The value of the XPath must be found in the root XML document of the decomposed model, so it can be in a decompose part of the model. -->
+		<!-- If the value doesn't exist on both sides we do nothing. -->
+		<!-- If the value exists on one side but not on the other side, we decompose. -->
+		<!-- If the value exists on both sides, we decompose if the value is different. -->
 		<ChangeDetection xpath="/processing-instruction('PowerDesigner')/@LastModificationDate" />
 	
-		<IdentifierReplacements>
-			<IdentifierReplacement identifierNodeXPath="//*/@Id[../ObjectID]" replacementValueXPath="../ObjectID" referencingNodeXPath="//*/@Ref" />
-			<IdentifierReplacement identifierNodeXPath="//Symbols/*/@Id[../Object/*/@Ref]" replacementValueXPath="concat('Symbol_', ../Object/*/@Ref)" />
-		</IdentifierReplacements>
-	
+		<!-- Specify the nodes to remove before decomposing. -->
 		<NodeRemovals>
 			<!-- Remove the object count on the PowerDesigner processing instruction. -->
 			<NodeRemoval xpath="/processing-instruction('PowerDesigner')/@Objects" />
@@ -124,7 +125,15 @@ When no configuration file is specified on the command, the following configurat
 			<!-- Remove the TargetModelLastModificationDate from all TargetModels. -->
 			<NodeRemoval xpath="//TargetModel/TargetModelLastModificationDate" />
 		</NodeRemovals>
+
+		<!-- Configuration on how to replace identifiers. -->
+		<IdentifierReplacements>
+			<IdentifierReplacement identifierNodeXPath="//*/@Id[../ObjectID]" replacementValueXPath="../ObjectID" referencingNodeXPath="//*/@Ref" />
+			<IdentifierReplacement identifierNodeXPath="//Symbols/*/@Id[../Object/*/@Ref]" replacementValueXPath="concat('Symbol_', ../Object/*/@Ref)" />
+		</IdentifierReplacements>
 		
+		<!-- Specify which elements should be decomposed. -->
+		<!-- The DecomposableElement is implicitly a AllConditions group. -->
 		<DecomposableElement>
 			<!-- The element must have a ObjectID and a Code element as childs. -->
 			<ElementCondition xpath="./ObjectID and ./Code" />
@@ -159,6 +168,7 @@ When no configuration file is specified on the command, the following configurat
 			</OneOffConditions>
 			 -->
 			 
+            <!-- Here we specify the xpath to execute on a decomposable element to get the folder name to store the file in. -->
             <TargetFolderNames>
             	<!-- For items with a Stereotype element, we use the Stereotype. -->
             	<TargetFolderName xpath="./Stereotype" condition="string-length(./Stereotype) > 0" />
@@ -168,6 +178,13 @@ When no configuration file is specified on the command, the following configurat
             	<TargetFolderName xpath="translate(name(), ':', '_')" />
             </TargetFolderNames>
 			
+			<!-- Here we specify the xpath to execute on a decomposable element to get the file name (without .xml). -->
+            <!-- Target target file names are considered in order of appearance in the config. Once a value has been found which hasen't been written before in the current run, the value is used. -->
+            <!-- For example if the first TargetFileName would lead to the same file name (in the same target folder) for 2 decomposed elements,
+                 the first one would get the name of the TargetFileName specified
+                 and the second one will get the TargetFileName of the next configuration which leads to a value.
+             -->
+            <!-- If no value is found using any configuration an exception is thrown. -->
             <TargetFileNames>
             	<!-- For items with a Code element and it is unique for the given TargetFolder, we use the Code. -->
             	<TargetFileName xpath="translate(normalize-space(./Code), ' ', '_')" condition="string-length(./Code) > 0" />
