@@ -151,7 +151,7 @@ public class XmlComposer {
 
 						// If the file contains an XML declaration, remove it
 						if (includeContents.startsWith("<?xml")) {
-							includeContents = includeContents.replaceFirst("^<\\?xml.*\\?>", "");
+							includeContents = includeContents.replaceFirst("^<\\?xml.*\\?>\r?\n?", "");
 						}
 
 						// Replace the node with the include contents
