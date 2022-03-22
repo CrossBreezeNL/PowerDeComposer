@@ -27,6 +27,7 @@ Click on the header of a version number to go to the documentation of that speci
 > !!! warning "Bug fixes"
 >     * [ ] Decompose model
 >         - [X] Fixed error in NodeRemoval on processing-instruction attribute.
+>         - [X] Fixed error in deriving folder and file names based on TargetFolderName and TargetFileName configuration.
 
 ## Version 1.3.2
 

@@ -691,23 +691,29 @@ public class XmlDecomposer {
 	    						foundFileName = String.format("%s.%s", foundValue, targetFileExtension);
 	    					
 	    					// If the current element is decompose without children, the file will be as follows.
-	    					URI targetFilePath = targetDirectoryPath.resolve(foundFileName).normalize().toUri();
+	    					URI targetFilePath = targetDirectoryPath.resolve(foundFileName).toAbsolutePath().normalize().toUri();
 	    					logger.fine(String.format("Resolved target file name: '%s'", targetFilePath.toString()));
 	    					// If the current element is decomposed with children (so the current element has children which are decomposed as well) the file path will be as follows.
 	    					// The difference between for former is that when the current element has children the element file is written into it's own subfolder.
 	    					URI targetFileWithChildrenPath = null;
 	    					// Only set the targetFileWithChildrenPath if the targetFileExtension is set (cause then it is a file, otherwise this function is used for a folder).
 	    					if (targetFileExtension != null) {
-	    						targetFileWithChildrenPath = targetDirectoryPath.resolve(foundValue).resolve(foundFileName).normalize().toUri();
+	    						targetFileWithChildrenPath = targetDirectoryPath.resolve(foundValue).resolve(foundFileName).toAbsolutePath().normalize().toUri();
 	    						logger.fine(String.format("Resolved target file name with children: '%s'", targetFileWithChildrenPath.toString()));
 	    					}
 	    					// If the found file path is valid, return the found value (not the file name!).
 	    					if (!unallowedFilePaths.contains(targetFilePath) && !unallowedFilePaths.contains(targetFileWithChildrenPath)) {
 	    						logger.fine("The resolved target file name doesn't exist yet, so returning value.");
 	    						return foundValue;
+	    					} else {
+	    						logger.fine("The resolved target file name already exists.");
 	    					}
 	    				}
+	    			} else {
+	    				logger.fine("No value found for option.");
 	    			}
+	    		} else {
+	    			logger.fine("Option skipped due to condition.");
 	    		}
 	    	}
 		}
