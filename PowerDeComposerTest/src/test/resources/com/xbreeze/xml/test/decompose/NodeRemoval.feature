@@ -213,7 +213,6 @@ Feature: Configure NodeRemoval
       | attribute last attribute         | <?ExamplePI DoNotRemoveAttribute="A" RemoveAttribute="B"?>                          | <?ExamplePI DoNotRemoveAttribute="A"?>                          | /processing-instruction('ExamplePI')/@RemoveAttribute |
       | attribute with special character | <?ExamplePI DoNotRemoveAttribute="Special’s" RemoveAttribute="B"?>                  | <?ExamplePI DoNotRemoveAttribute="Special’s"?>                  | /processing-instruction('ExamplePI')/@RemoveAttribute |
 
-
   Scenario: Remove multiline processing instruction attribute
     Given the composed file:
       """

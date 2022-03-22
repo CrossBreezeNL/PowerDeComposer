@@ -20,6 +20,14 @@ Click on the header of a version number to go to the documentation of that speci
 [//]: # (>     * [ ] Binding)
 [//]: # (>         * [X] Some issue...)
 
+
+## Version 1.3.3
+
+- [ ] 1.3.3 <sup>22-03-2022</sup>
+> !!! warning "Bug fixes"
+>     * [ ] Decompose model
+>         - [X] Fixed error in NodeRemoval on processing-instruction attribute.
+
 ## Version 1.3.2
 
 - [ ] 1.3.2 <sup>20-10-2021</sup>
