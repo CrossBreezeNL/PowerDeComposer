@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.logging.Logger;
 
@@ -120,13 +119,15 @@ public class FileUtils {
 		} else {
 			basePath = file.toPath();
 		}
-		// Resolve basePath to absolute/real path
-		try {
-			basePath = basePath.toRealPath(LinkOption.NOFOLLOW_LINKS);
-		} catch (IOException e) {
-			throw new Exception(
-					String.format("Error resolving config basePath %s to canonical path", basePath.toString()), e);
-		}
+		// Disabled to below code to solve problems with resolving real paths where directories don't exist.
+		// In XmlDecomposer the path is also relative, as long as all paths are relative detecting already written files work.
+		// // Resolve basePath to absolute/real path
+		// try {
+		// 	basePath = basePath.toRealPath(LinkOption.NOFOLLOW_LINKS);
+		// } catch (IOException e) {
+		// 	throw new Exception(
+		// 			String.format("Error resolving config basePath %s to canonical path", basePath.toString()), e);
+		// }
 		return basePath;
 	}
 }

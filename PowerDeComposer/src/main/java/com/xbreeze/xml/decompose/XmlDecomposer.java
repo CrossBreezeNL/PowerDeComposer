@@ -25,7 +25,6 @@ package com.xbreeze.xml.decompose;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.charset.Charset;
-import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
@@ -89,8 +88,10 @@ public class XmlDecomposer {
 			throw new Exception(String.format("Error while parsing Xml document: %s", e.getMessage()), e);
 		}
 		
-		// Construct a Path from the target directory and convert it to a real path (this way the paths are always in full).
-		Path targetDirectoryPath = Paths.get(targetDirectory).toRealPath(LinkOption.NOFOLLOW_LINKS);
+		// Construct a Path from the target directory.
+		// We don't convert it to a real path (this way the paths are always in full), because this fails if a directory doesn't exist at this point.
+		// As long as all uses of the File object use this relative path it works.
+		Path targetDirectoryPath = Paths.get(targetDirectory);
 		logger.fine(String.format("Target directory path: '%s'", targetDirectoryPath));
 		File targetFile = targetDirectoryPath.resolve(xmlFile.getName()).toFile();
 		logger.fine(String.format("Target file: '%s'", targetFile));
