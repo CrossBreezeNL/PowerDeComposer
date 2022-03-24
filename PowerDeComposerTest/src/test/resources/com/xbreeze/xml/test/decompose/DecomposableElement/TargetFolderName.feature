@@ -3,8 +3,7 @@ Feature: Configure TargetFolderName
   Here we test the usage of the TargetFolderNames configuration during decompose.
 
   Scenario Outline: TargetFolderName is <Scenario>
-    Given the decomposed folder location '<DecomposedFolder>'
-    And the composed file:
+    Given the composed file:
       """
       <?xml version="1.0" encoding="UTF-8"?>
       <RootElement>
@@ -64,10 +63,11 @@ Feature: Configure TargetFolderName
       """
 
     Examples: 
-      | Scenario                                        | DecomposedFolder                     | FirstType | FirstName | SecondType | SecondName | FirstFileName                     | SecondFileName                      |
-      | the same                                        |                                      | SameType  | FirstName | SameType   | SecondName | ChildElements/SameType/FirstName  | ChildElements/SameType/SecondName   |
-      | different                                       |                                      | FirstType | FirstName | SecondType | SecondName | ChildElements/FirstType/FirstName | ChildElements/SecondType/SecondName |
-      | the same and same filename                      |                                      | SameType  | SameName  | SameType   | SameName   | ChildElements/SameType/SameName   | ChildElements/SameType/2            |
+      | Scenario                         | FirstType | FirstName | SecondType | SecondName | FirstFileName                     | SecondFileName                      |
+      | the same                         | SameType  | FirstName | SameType   | SecondName | ChildElements/SameType/FirstName  | ChildElements/SameType/SecondName   |
+      | different                        | FirstType | FirstName | SecondType | SecondName | ChildElements/FirstType/FirstName | ChildElements/SecondType/SecondName |
+      | the same and same filename       | SameType  | SameName  | SameType   | SameName   | ChildElements/SameType/SameName   | ChildElements/SameType/2            |
+      | different case and same filename | sametype  | SameName  | SameType   | SameName   | ChildElements/sametype/SameName   | ChildElements/SameType/2            |
 
   Scenario Outline: TargetFolderName is <Scenario> with child-elements
     Given the decomposed folder location '<DecomposedFolder>'

@@ -53,12 +53,15 @@
 			</OneOffConditions>
 			 -->
 			 
+			<!-- Here we specify the xpath to execute on a decomposable element to get the file name (without .xml). -->
+			<TargetFileNames>
+				<TargetFileName xpath="./Code" />
+			</TargetFileNames>
+
 			<!-- Here we specify which information to include as an attribute on the xi:include tag. -->
 			<IncludeAttributes>
 				<IncludeAttribute name="ObjectID" xpath="./ObjectID" />
 			</IncludeAttributes>
-			<!-- Here we specify the xpath to execute on a decomposable element to get the file name (without .xml). -->
-			<TargetFileName xpath="./Code" />
 		</DecomposableElement>
 
 	</Decompose>

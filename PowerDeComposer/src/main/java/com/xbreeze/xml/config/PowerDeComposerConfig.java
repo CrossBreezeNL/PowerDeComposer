@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 CrossBreeze
+ * Copyright (c) 2022 CrossBreeze
  *
  * This file is part of PowerDeComposer.
  *
@@ -27,7 +27,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.InputStream;
 import java.io.StringReader;
-import java.net.URI;
 import java.net.URL;
 import java.util.logging.Logger;
 
@@ -100,21 +99,20 @@ public class PowerDeComposerConfig {
 	
 	/**
 	 * Unmarshal a file into a PowerDeComposerConfig object.
-	 * @param configFileUri The file to unmarshal.
+	 * @param pdcConfigFile The file to unmarshal.
 	 * @return The unmarshalled PowerDeComposerConfig object.
 	 * @throws ConfigException 
 	 */
-	public static PowerDeComposerConfig fromFile(URI pdcConfigFileUri) throws ConfigException {
-		logger.fine(String.format("Creating PowerDeComposerConfigFile object from '%s'", pdcConfigFileUri));
-		File pdcConfigFile = new File(pdcConfigFileUri);
+	public static PowerDeComposerConfig fromFile(File pdcConfigFile) throws ConfigException {
+		logger.fine(String.format("Creating PowerDeComposerConfigFile object from '%s'", pdcConfigFile));
 		PowerDeComposerConfig pdcConfig;
 		try {
 			pdcConfig = fromInputSource(new InputSource(new FileReader(pdcConfigFile)));
 		} catch (ConfigException e) {
 			// Catch the config exception here to add the filename in the exception text.
-			throw new ConfigException(String.format("%s (%s)", e.getMessage(), pdcConfigFileUri.toString()), e.getCause());
+			throw new ConfigException(String.format("%s (%s)", e.getMessage(), pdcConfigFile.toString()), e.getCause());
 		} catch (FileNotFoundException e) {
-			throw new ConfigException(String.format("Couldn't find the config file (%s)", pdcConfigFileUri.toString()), e);
+			throw new ConfigException(String.format("Couldn't find the config file (%s)", pdcConfigFile.toString()), e);
 		}
 
 		return pdcConfig;

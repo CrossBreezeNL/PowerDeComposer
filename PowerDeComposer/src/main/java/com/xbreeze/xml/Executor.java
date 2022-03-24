@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 CrossBreeze
+ * Copyright (c) 2022 CrossBreeze
  *
  * This file is part of PowerDeComposer.
  *
@@ -83,7 +83,7 @@ public class Executor {
 			// Parse the config.
 			PowerDeComposerConfig pdcConfig;
 			if (args.length == 4) {
-				pdcConfig = PowerDeComposerConfig.fromFile(Paths.get(args[3]).toUri());
+				pdcConfig = PowerDeComposerConfig.fromFile(Paths.get(args[3]).toFile());
 			}
 			else {
 				// Create the default PowerDeComposerConfig.

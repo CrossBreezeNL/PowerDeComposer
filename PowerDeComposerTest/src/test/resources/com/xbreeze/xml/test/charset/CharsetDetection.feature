@@ -2,7 +2,7 @@ Feature: Character set detection
   Here we test whether PowerDeComposer can handle the characters sets needed.
 
   # KnownIssue: Currently with VTD-Nav we can't handle certain special characters.
-  @KnownIssue
+  @KnownIssue @Debug
   Scenario: UTF-16 character set
   	# In Eclipse you don't see any special characters here, but the Name contains a special character. You can see this in VS Code.
     Given the composed file:

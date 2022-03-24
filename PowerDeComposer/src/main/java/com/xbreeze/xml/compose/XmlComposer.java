@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 CrossBreeze
+ * Copyright (c) 2022 CrossBreeze
  *
  * This file is part of PowerDeComposer.
  *
@@ -24,10 +24,7 @@ package com.xbreeze.xml.compose;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
-import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
@@ -62,10 +59,10 @@ public class XmlComposer {
 			throw new Exception(String.format("The specified xml file doesn't exist '%s'.", xmlFilePath));
 
 		// Read the xml file into a string.
-		FileContentAndCharset fcac = FileUtils.getFileContent(xmlFile.toURI()); 
-		HashMap<URI, Integer> resolvedIncludes = new HashMap<URI, Integer>();
+		FileContentAndCharset fcac = FileUtils.getFileContent(xmlFile); 
+		HashMap<File, Integer> resolvedIncludes = new HashMap<File, Integer>();
 		// Resolve all includes
-		String resolvedXmlFileContents = this.resolveIncludes(fcac, xmlFile.toURI(), 0, resolvedIncludes);
+		String resolvedXmlFileContents = this.resolveIncludes(fcac, xmlFile, 0, resolvedIncludes);
 
 		try {
 			Files.write(
@@ -88,22 +85,20 @@ public class XmlComposer {
 
 	}
 
-	private String resolveIncludes(FileContentAndCharset xmlFileContentsAndCharset, URI xmlFileUri, int level, HashMap<URI, Integer> resolvedIncludes) throws Exception {
-		logger.fine(String.format("Scanning file %s for includes", xmlFileUri.toString()));
-		// Check for cycle detection, e.g. an include that is already included
-		// previously
-		if (resolvedIncludes.containsKey(xmlFileUri) && resolvedIncludes.get(xmlFileUri) != level) {
-			throw new Exception(
-					String.format("Include cycle detected at level %d, file %s is already included previously", level,
-							xmlFileUri.toString()));
-		} else if (!resolvedIncludes.containsKey(xmlFileUri)) {
-			resolvedIncludes.put(xmlFileUri, level);
+	private String resolveIncludes(FileContentAndCharset xmlFileContentsAndCharset, File xmlFile, int level, HashMap<File, Integer> resolvedIncludes) throws Exception {
+		logger.fine(String.format("Scanning file %s for includes", xmlFile.toString()));
+		
+		// Check for cycle detection, e.g. an include that is already included previously
+		if (resolvedIncludes.containsKey(xmlFile) && resolvedIncludes.get(xmlFile) != level) {
+			throw new Exception(String.format("Include cycle detected at level %d, file %s is already included previously", level, xmlFile.toString()));
+		} else if (!resolvedIncludes.containsKey(xmlFile)) {
+			resolvedIncludes.put(xmlFile, level);
 		}
 
-		// Get basePath of the file. If the provided URI refers to a file, use its
+		// Get basePath of the file. If the provided File refers to a file, use its
 		// parent path, if it refers to a folder use it as base path
 		try {
-			Path basePath = FileUtils.getBasePath(Path.of(xmlFileUri));
+			Path basePath = FileUtils.getBasePath(xmlFile);
 
 			// Open the file and look for includes
 			// TODO: Make this XPath namespace aware so it actually looks for xi:include instead of include in all namespaces
@@ -122,23 +117,15 @@ public class XmlComposer {
 					AutoPilot ap_href = new AutoPilot(nav);
 					ap_href.selectXPath("@href");
 					String includeFileLocation = ap_href.evalXPathToString();
-					logger.fine(String.format("Found include for %s in config file %s", includeFileLocation,
-							xmlFileUri.toString()));
+					logger.fine(String.format("Found include for %s in config file %s", includeFileLocation, xmlFile.toString()));
 					// Resolve include to a valid path against the basePath
 					logger.fine(String.format("base path %s", basePath.toString()));
-					URI includeFileUri = null;
-					try {
-						includeFileUri = basePath.resolve(includeFileLocation).toRealPath(LinkOption.NOFOLLOW_LINKS).toUri();
-					} catch (IOException e) {
-						throw new Exception(String.format("Error resolving found include %s for %s to canonical path",
-								includeFileLocation, xmlFileUri.toString()), e);
-					}
-					logger.fine(String.format("Resolved include to %s", includeFileUri.toString()));
+					File includeFile = basePath.resolve(includeFileLocation).toFile();
+					logger.fine(String.format("Resolved include to %s", includeFile.toString()));
 
 					try {
-						// get file contents, recursively processing any includes found
-						String includeContents = this.resolveIncludes(FileUtils.getFileContent(includeFileUri, xmlFileContentsAndCharset.getFileCharset()),
-								includeFileUri, level + 1, resolvedIncludes);
+						// Get file contents, recursively processing any includes found
+						String includeContents = this.resolveIncludes(FileUtils.getFileContent(includeFile, xmlFileContentsAndCharset.getFileCharset()), includeFile, level + 1, resolvedIncludes);
 
 						/* XPointer is not needed for now */
 						/*
@@ -159,18 +146,16 @@ public class XmlComposer {
 						// Then remove the include node
 						vm.remove();
 					} catch (IOException e) {
-						throw new Exception(
-								String.format("Could not read contents of included file %s", includeFileUri.toString()),
-								e);
+						throw new Exception(String.format("Could not read contents of included file %s", includeFile.toString()), e);
 					}
 					includeCount++;
 				}
-				logger.fine(String.format("Found %d includes in XML file %s", includeCount, xmlFileUri.toString()));
+				logger.fine(String.format("Found %d includes in XML file %s", includeCount, xmlFile.toString()));
 				// if includes were found, output and parse the modifier and return it,
 				// otherwise return the original one
 				if (includeCount > 0) {
 					String resolvedXML = XMLUtils.getResultingXml(vm);
-					logger.fine(String.format("XML file %s with includes resolved:", xmlFileUri.toString()));
+					logger.fine(String.format("XML file %s with includes resolved:", xmlFile.toString()));
 					logger.fine("**** Begin of XML file ****");
 					logger.fine(resolvedXML);
 					logger.fine("**** End of XML file ****");
@@ -179,15 +164,12 @@ public class XmlComposer {
 					return xmlFileContentsAndCharset.getFileContents();
 				}
 			} catch (NavException e) {
-				throw new Exception(String.format("Error scanning %s for includes", xmlFileUri.toString()), e);
+				throw new Exception(String.format("Error scanning %s for includes", xmlFile.toString()), e);
 			} catch (ModifyException e) {
-				throw new Exception(String.format("Error modifying config file %s", xmlFileUri.toString()), e);
+				throw new Exception(String.format("Error modifying config file %s", xmlFile.toString()), e);
 			}
-		} catch (URISyntaxException e) {
-			throw new Exception(String.format("Could not extract base path from XML file %s", xmlFileUri.toString()),
-					e);
 		} catch (XPathParseException | XPathEvalException e) {
-			throw new Exception(String.format("XPath error scanning for includes in %s", xmlFileUri.toString()), e);
+			throw new Exception(String.format("XPath error scanning for includes in %s", xmlFile.toString()), e);
 		}
 	}
 
