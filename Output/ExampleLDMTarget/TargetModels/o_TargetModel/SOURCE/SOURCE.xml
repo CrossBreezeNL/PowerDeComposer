@@ -34,6 +34,6 @@
 <o:SubReplication Ref="1782A797-D337-476D-9C90-662D7FD736F5"/>
 </c:SessionReplications>
 <c:FullShortcutModel>
-<xi:include href="FullShortcutModel\o_Model\SOURCE\SOURCE.xml" />
+<xi:include href="FullShortcutModel/o_Model/SOURCE/SOURCE.xml" />
 </c:FullShortcutModel>
 </o:TargetModel>
