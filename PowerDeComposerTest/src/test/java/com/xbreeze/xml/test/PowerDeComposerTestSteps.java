@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BOMInputStream;
 
@@ -52,11 +53,8 @@ public class PowerDeComposerTestSteps {
 		
 		// Initialize the paths to the default values.
 		_configFolderPath = this._featureFileResourcePath.resolve("Config");
-		this.createDirectoryIfItDoesntExist(this._configFolderPath);
 		_composedFolderPath = this._featureFileResourcePath.resolve("Composed");
-		this.createDirectoryIfItDoesntExist(this._composedFolderPath);
 		_decomposedFolderPath = this._featureFileResourcePath.resolve("Decomposed");
-		this.createDirectoryIfItDoesntExist(this._decomposedFolderPath);
 		
 		// Init the file paths (these can be overridden when the composed or decompose folder path is changes using a phrase.
 		initFilePaths();
@@ -68,39 +66,44 @@ public class PowerDeComposerTestSteps {
 	
 	public void createDirectoryIfItDoesntExist(Path directoryPath) throws Exception {
 		File directoryFile = directoryPath.toFile();
-		if (!directoryFile.exists()) {
-			if (!directoryFile.mkdirs()) {
-				throw new Exception(String.format("Couldn't create folder '%s'", directoryPath.toString()));
-			}
-			//else {
-			//	scenario.log(String.format("Created scenario folder '%s'", _featureResourcePath.toString()));
-			//}
+		// If the directory exists, remove it.
+		if (directoryFile.exists() && directoryFile.isDirectory()) {
+			FileUtils.deleteDirectory(directoryFile);
+		} else if (directoryFile.exists() && directoryFile.isFile()) {
+			FileUtils.delete(directoryFile);
 		}
-		//else {
-		//	scenario.log(String.format("Scenario folder already exists: '%s'", _featureResourcePath.toString()));
-		//}
+		
+		if (!directoryFile.mkdirs()) {
+			throw new Exception(String.format("Couldn't create folder '%s'", directoryPath.toString()));
+		}
 	}
 	
-	private void initFilePaths() {
+	private void initFilePaths() throws Exception {
 		// Set the default compose and decompose file paths.
 		this._composedFilePath = this._composedFolderPath.resolve("InlineFile.xml");
 		this._decomposedFilePath = this._decomposedFolderPath.resolve("InlineFile.xml");
+		
+		// Create the directories if they don't exist yet (and empty if they do).
+		this.createDirectoryIfItDoesntExist(this._configFolderPath);
+		this.createDirectoryIfItDoesntExist(this._composedFolderPath);
+		this.createDirectoryIfItDoesntExist(this._decomposedFolderPath);
 	}
 	
 	@Given("^the config folder location '(.*)'$")
 	public void givenTheConfigFolderLocation(String configFolderLocation) throws Throwable {
-		this._configFolderPath = this._featureResourcePath.resolve(configFolderLocation);
+		this._configFolderPath = this._featureFileResourcePath.resolve(configFolderLocation);
+		initFilePaths();
 	}
 	
 	@Given("^the composed folder location '(.*)'$")
 	public void givenTheComposedFolderLocation(String composedFolderLocation) throws Throwable {
-		this._composedFolderPath = this._featureResourcePath.resolve(composedFolderLocation);
+		this._composedFolderPath = this._featureFileResourcePath.resolve(composedFolderLocation);
 		initFilePaths();
 	}
 
 	@Given("^the decomposed folder location '(.*)'$")
 	public void givenTheDecomposedFolderLocation(String decomposedFolderLocation) throws Throwable {
-		this._decomposedFolderPath = this._featureResourcePath.resolve(decomposedFolderLocation);
+		this._decomposedFolderPath = this._featureFileResourcePath.resolve(decomposedFolderLocation);
 		initFilePaths();
 	}
 
