@@ -24,13 +24,15 @@ package com.xbreeze.xml.decompose;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
+import java.util.TreeSet;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -156,14 +158,14 @@ public class XmlDecomposer {
 		}
 		
 		// Get the existing list of files in the decomposed model (if it exists). This is needed to track files which are written and which need to be deleted.
-		HashSet<File> formerDecomposedFiles = new HashSet<File>();
+		TreeSet<File> formerDecomposedFiles = GetCaseInsensitiveFileSet();
 		addFormerFilePaths(targetFile, formerDecomposedFiles, null);
 		
 		// Parse and write document parts, if specified in the config.
 		// Keep track of the decomposed files, so we can:
 		// - Detect whether a file is written multiple times in one run
 		// - Detect which files were in the previous decomposed file, but aren't anymore.
-		HashSet<File> currentDecomposedFiles = new HashSet<File>();
+		TreeSet<File> currentDecomposedFiles = GetCaseInsensitiveFileSet();
 		if (decomposeConfig.getDecomposableElementConfig() != null) {
 			logger.info("Parsing and writing document parts...");
 			parseAndWriteDocumentParts(nv, xmlFileContentsAndCharset.getFileCharset(), null, xmlFile.getName(), targetDirectoryPath, 0, decomposeConfig.getDecomposableElementConfig(), currentDecomposedFiles);
@@ -197,13 +199,38 @@ public class XmlDecomposer {
 	}
 	
 	/**
+	 * Static function to get a TreeSet containing File objects which are case insensitively compared.
+	 * @return The case-insensitive TreeSet for File objects.
+	 */
+	private static TreeSet<File> GetCaseInsensitiveFileSet() {
+		return new TreeSet<File>(new Comparator<File>() {
+			@Override
+			public int compare(File f1, File f2) {
+				// First try to use the canonical path to compare.
+				try {
+					logger.fine(String.format("Trying to compare files using canonical path. f1: '%s'; f2: '%s'", f1.toString(), f2.toString()));
+					return f1.getCanonicalPath().compareToIgnoreCase(f2.getCanonicalPath());
+				}
+				// If this doesn't work, use the string version of the file (which can be a relative path.
+				// For PowerDeComposer this won't be an issue, since all paths are relative to the same base path.
+				catch (IOException e) {
+					logger.warning(String.format("Can't resolve file to canonical path, comparing with relative path. Error: %s", e.getMessage()));
+					e.printStackTrace();
+					return f1.toString().compareToIgnoreCase(f2.toString());
+				}
+				
+			}
+		});
+	}
+	
+	/**
 	 * Add the former decompose file paths to the filePathsSet collection.
 	 * @param fileWithIncludesPath The current file.
 	 * @param filesSet The collection of file paths found this far.
 	 * @param fileCharset The file charset to use.
 	 * @throws Exception
 	 */
-	private void addFormerFilePaths(File fileWithIncludes, HashSet<File> filesSet, Charset fileCharset) throws Exception {
+	private void addFormerFilePaths(File fileWithIncludes, TreeSet<File> filesSet, Charset fileCharset) throws Exception {
 		// Only go further when the file exists.
 		if (fileWithIncludes.exists()) {
 			// Check whether the file is already in the set.
@@ -495,7 +522,7 @@ public class XmlDecomposer {
 	 * @param currentPartIsRoot
 	 * @throws Exception
 	 */
-	private static Path parseAndWriteDocumentParts(VTDNav nv, Charset fileCharset, String currentObjectName, String currentTargetFileName, Path targetDirectoryPath, int depth, DecomposableElementConfig decomposableElementConfig, HashSet<File> currentDecomposedFiles) throws Exception {
+	private static Path parseAndWriteDocumentParts(VTDNav nv, Charset fileCharset, String currentObjectName, String currentTargetFileName, Path targetDirectoryPath, int depth, DecomposableElementConfig decomposableElementConfig, TreeSet<File> currentDecomposedFiles) throws Exception {
 		// Create the prefix string based on the depth.
 		String prefix = String.join("", Collections.nCopies(depth, STR_PREFIX_SPACER));
 		logger.fine(String.format("%s> %s", prefix, targetDirectoryPath));
@@ -667,7 +694,7 @@ public class XmlDecomposer {
 		return deriveFirstValidConfiguredValue(nv, configuredOptions, null, null, null);
 	}
 	
-	private static String deriveFirstValidConfiguredValue(VTDNav nv, List<? extends AbstractConfigElementWithXPathAttributeAndCondition> configuredOptions, Path targetDirectoryPath, String targetFileExtension, HashSet<File> unallowedFiles) throws XPathParseException {
+	private static String deriveFirstValidConfiguredValue(VTDNav nv, List<? extends AbstractConfigElementWithXPathAttributeAndCondition> configuredOptions, Path targetDirectoryPath, String targetFileExtension, TreeSet<File> unallowedFiles) throws XPathParseException {
 		if (configuredOptions != null && configuredOptions.size() > 0) {
 	    	AutoPilot sap = new AutoPilot(nv);
 	    	for (AbstractConfigElementWithXPathAttributeAndCondition co : configuredOptions) {
