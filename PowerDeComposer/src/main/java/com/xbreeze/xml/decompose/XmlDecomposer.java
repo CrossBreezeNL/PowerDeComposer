@@ -37,12 +37,15 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.FilenameUtils;
+
 import com.xbreeze.xml.config.AbstractConfigElementWithXPathAttributeAndCondition;
 import com.xbreeze.xml.decompose.config.DecomposableElementConfig;
 import com.xbreeze.xml.decompose.config.DecomposeConfig;
 import com.xbreeze.xml.decompose.config.IdentifierReplacementConfig;
 import com.xbreeze.xml.decompose.config.IncludeAttributeConfig;
 import com.xbreeze.xml.decompose.config.NodeRemovalConfig;
+import com.xbreeze.xml.decompose.config.TargetFolderNameConfig;
 import com.xbreeze.xml.utils.FileContentAndCharset;
 import com.xbreeze.xml.utils.FileUtils;
 import com.xbreeze.xml.utils.XMLUtils;
@@ -97,6 +100,16 @@ public class XmlDecomposer {
 		logger.fine(String.format("Target directory path: '%s'", targetDirectoryPath));
 		File targetFile = targetDirectoryPath.resolve(xmlFile.getName()).toFile();
 		logger.fine(String.format("Target file: '%s'", targetFile));
+		
+		// Create the TargetFileInfo object for the original file.
+		TargetFileInfo targetFileInfo = new TargetFileInfo();
+		targetFileInfo.FileNameWithoutExtension = FilenameUtils.getBaseName(xmlFile.getName());
+		targetFileInfo.FileExtension = FilenameUtils.getExtension(xmlFile.getName());
+		targetFileInfo.FolderPath = targetDirectoryPath;
+		targetFileInfo.FilePathWithoutChildren = targetDirectoryPath.resolve(xmlFile.getName());
+		logger.fine(String.format("File path without children: '%s'", targetFileInfo.FilePathWithoutChildren));
+		targetFileInfo.FilePathWithChildren = targetDirectoryPath.resolve(xmlFile.getName());
+		logger.fine(String.format("File path with children: '%s'", targetFileInfo.FilePathWithChildren));
 		
 		// If configured, perform changes detection here before doing anything else.
 		if (decomposeConfig.getChangeDetectionConfig() != null) {
@@ -168,7 +181,7 @@ public class XmlDecomposer {
 		TreeSet<File> currentDecomposedFiles = GetCaseInsensitiveFileSet();
 		if (decomposeConfig.getDecomposableElementConfig() != null) {
 			logger.info("Parsing and writing document parts...");
-			parseAndWriteDocumentParts(nv, xmlFileContentsAndCharset.getFileCharset(), null, xmlFile.getName(), targetDirectoryPath, 0, decomposeConfig.getDecomposableElementConfig(), currentDecomposedFiles);
+			parseAndWriteDocumentParts(nv, xmlFileContentsAndCharset.getFileCharset(), targetFileInfo, 0, decomposeConfig.getDecomposableElementConfig(), currentDecomposedFiles);
 			logger.info("Done parsing and writing document parts.");
 		}
 
@@ -208,7 +221,7 @@ public class XmlDecomposer {
 			public int compare(File f1, File f2) {
 				// First try to use the canonical path to compare.
 				try {
-					logger.fine(String.format("Trying to compare files using canonical path. f1: '%s'; f2: '%s'", f1.toString(), f2.toString()));
+					//logger.fine(String.format("Trying to compare files using canonical path. f1: '%s'; f2: '%s'", f1.toString(), f2.toString()));
 					return f1.getCanonicalPath().compareToIgnoreCase(f2.getCanonicalPath());
 				}
 				// If this doesn't work, use the string version of the file (which can be a relative path.
@@ -522,10 +535,10 @@ public class XmlDecomposer {
 	 * @param currentPartIsRoot
 	 * @throws Exception
 	 */
-	private static Path parseAndWriteDocumentParts(VTDNav nv, Charset fileCharset, String currentObjectName, String currentTargetFileName, Path targetDirectoryPath, int depth, DecomposableElementConfig decomposableElementConfig, TreeSet<File> currentDecomposedFiles) throws Exception {
+	private Path parseAndWriteDocumentParts(VTDNav nv, Charset fileCharset, TargetFileInfo currentFileInfo, int depth, DecomposableElementConfig decomposableElementConfig, TreeSet<File> currentDecomposedFiles) throws Exception {
 		// Create the prefix string based on the depth.
 		String prefix = String.join("", Collections.nCopies(depth, STR_PREFIX_SPACER));
-		logger.fine(String.format("%s> %s", prefix, targetDirectoryPath));
+		logger.fine(String.format("%s> %s", prefix, currentFileInfo.FolderPath.toString()));
 		
 		// We are going to remove all nodes which are included, so we need a XmlModifier.
 		XMLModifier xm;
@@ -576,22 +589,12 @@ public class XmlDecomposer {
 		    	// Get the target folder name for the current decomposable element.
 		    	// If the parent element name contains a namespace part, remove it.
 				String childTargetFolderName = FileUtils.getLegalFileName(XMLUtils.getElementNameWithoutNameSpace(parentElementName));
-		    	// Derive the target folder name using the configuration.
-		    	String childTargetSubFolderName = deriveFirstValidConfiguredValue(nv, decomposableElementConfig.getTargetFolderNameConfigs());
-		    	// If the target sub folder is found using the configuration, we concatenate it with the parent element name folder.
-		    	if (childTargetSubFolderName != null && childTargetSubFolderName.length() > 0) {
-		    		childTargetFolderName = childTargetFolderName.concat("/").concat(FileUtils.getLegalFileName(childTargetSubFolderName));
-		    	}
-		    	// If a target sub folder can't be found, we use the parent element name only.
-		    	else {
-		    		logger.fine(String.format("The target folder name is not found for %s at %d, using parent element name %s.", elementName, elementOffset, parentElementName));
-		    	}
+		    	Path childTargetSubFolderPath = deriveTargetFolderPath(nv, decomposableElementConfig.getTargetFolderNameConfigs(), currentFileInfo.FolderPath, childTargetFolderName);
 		    	
 		    	// Derive the target file name for the current decomposable element.
-		    	Path targetSubFolderPath = targetDirectoryPath.resolve(childTargetFolderName);
-				String childTargetFileName = deriveFirstValidConfiguredValue(nv, decomposableElementConfig.getTargetFileNameConfigs(), targetSubFolderPath, "xml", currentDecomposedFiles);
+				TargetFileInfo childFileInfo = deriveTargetFileAndFolderPath(nv, decomposableElementConfig.getTargetFileNameConfigs(), childTargetSubFolderPath, "xml", currentDecomposedFiles);
 		    	// If the target folder configuration doesn't yield a valid result, throw an exception.
-		    	if (childTargetFileName == null || childTargetFileName.length() == 0) {
+		    	if (childFileInfo == null) {
 		    		throw new Exception(String.format("A valid child target file name is not found for element %s at %s", elementName, elementOffset));
 		    	}
 		    	
@@ -611,7 +614,7 @@ public class XmlDecomposer {
 		    	// Get the contents of the XML Fragment.
 		    	String objectXmlPart = nv.toRawString(elementOffset, elementLength);
 		    	// Parse the XML Fragment and write it to its own file.
-		    	logger.fine(String.format("Target folder name: '%s'; child target file name: '%s'", childTargetFolderName, childTargetFileName));
+		    	//logger.fine(String.format("Target folder name: '%s'; child target file name: '%s'", childTargetFolderName, childTargetFileName));
 		    	
 				// Remove the xml node which is being referenced.
 				xm.removeContent(elementOffset, elementLength);
@@ -625,16 +628,16 @@ public class XmlDecomposer {
 				}
 				
 				// Set the relative path with a parent folder of the current element name.
-				Path childTargetDirectory = targetSubFolderPath.resolve(childTargetFileName);
+				//Path childTargetDirectory = targetSubFolderPath.resolve(childTargetFileName);
 				// Derive the object file name.
-				String childObjectFileNameWithExtension = String.format("%s.xml", childTargetFileName);
-				Path childFileLocation = parseAndWriteDocumentParts(partNv, fileCharset, childTargetFileName, childObjectFileNameWithExtension, childTargetDirectory, depth + 1, decomposableElementConfig, currentDecomposedFiles);
+				//String childObjectFileNameWithExtension = String.format("%s.xml", childTargetFileName);
+				Path childFileLocation = parseAndWriteDocumentParts(partNv, fileCharset, childFileInfo, depth + 1, decomposableElementConfig, currentDecomposedFiles);
 				
 				// Insert the include tag for the found object.
-				String actualRelativePath = targetDirectoryPath.relativize(childFileLocation).toString();
+				String actualRelativePath = currentFileInfo.FolderPath.relativize(childFileLocation).toString();
 				// If the file system separator is not a slash, replace the actualRelativePath file system separator with slash.
-				if (!targetDirectoryPath.getFileSystem().getSeparator().equals("/")) {
-					actualRelativePath = actualRelativePath.replace(targetDirectoryPath.getFileSystem().getSeparator(), "/");
+				if (!currentFileInfo.FolderPath.getFileSystem().getSeparator().equals("/")) {
+					actualRelativePath = actualRelativePath.replace(currentFileInfo.FolderPath.getFileSystem().getSeparator(), "/");
 				}
 				// Construct the include tag contents.
 				StringBuffer includeElementStringBuffer = new StringBuffer();
@@ -656,11 +659,11 @@ public class XmlDecomposer {
 			logger.fine(String.format("%s - Found %d childs", prefix, extractedChildCount));
 		}
 		
-        // Get the current file path based on the derived currentTargetFileName.
-		Path targetFilePath = targetDirectoryPath.resolve(currentTargetFileName);
+        // Get the current file path from the currentFileInfo object and whether children where decomposed.
+		Path targetFilePath = currentFileInfo.FilePathWithChildren;
 		// If the current element doesn't have extracted child elements, store the file in the parent folder.
 		if (depth != 0 && extractedChildCount == 0) {
-			targetFilePath = targetDirectoryPath.getParent().resolve(currentTargetFileName);
+			targetFilePath = currentFileInfo.FilePathWithoutChildren;
 		}
 		
 		// Add the file to the list of decomposed file paths of the current run.
@@ -683,23 +686,19 @@ public class XmlDecomposer {
 			}
 		}
 		// Write the target Xml file.
-		logger.fine(String.format("%s - Writing file: %s", prefix, currentTargetFileName));
+		logger.fine(String.format("%s - Writing file: %s", prefix, targetFile.toString()));
 		xm.output(new FileOutputStream(targetFilePath.toString()));
 		//logger.fine(String.format("%s< %s", prefix, targetDirectoryPath));
 		
 		return targetFilePath;
 	}
 	
-	private static String deriveFirstValidConfiguredValue(VTDNav nv, List<? extends AbstractConfigElementWithXPathAttributeAndCondition> configuredOptions) throws XPathParseException {
-		return deriveFirstValidConfiguredValue(nv, configuredOptions, null, null, null);
-	}
-	
-	private static String deriveFirstValidConfiguredValue(VTDNav nv, List<? extends AbstractConfigElementWithXPathAttributeAndCondition> configuredOptions, Path targetDirectoryPath, String targetFileExtension, TreeSet<File> unallowedFiles) throws XPathParseException {
+	private static Path deriveTargetFolderPath(VTDNav nv, List<? extends AbstractConfigElementWithXPathAttributeAndCondition> configuredOptions, Path targetDirectoryPath, String parentElementFolderName) throws XPathParseException {
 		if (configuredOptions != null && configuredOptions.size() > 0) {
 	    	AutoPilot sap = new AutoPilot(nv);
 	    	for (AbstractConfigElementWithXPathAttributeAndCondition co : configuredOptions) {
 	    		logger.fine(String.format("Checking configured option '%s' with condition '%s'", co.getXPath(), co.getCondition()));
-	    		// Check whether the condition of the TargetFileName config is met.
+	    		// Check whether the condition of the TargetFileName or TargetFolderName config is met.
 	    		if (co.getCondition() != null)
 	    			sap.selectXPath(co.getCondition());
 	    		if (co.getCondition() == null || sap.evalXPathToBoolean()) {
@@ -711,37 +710,13 @@ public class XmlDecomposer {
 	    				// Strip the found value of illegal file characters.
 	    				foundValue = FileUtils.getLegalFileName(foundValue);
 	    				logger.fine(String.format("Found value: '%s'", foundValue));
-	    				// If there are no unallowedValues, return the found value.
-	    				if (unallowedFiles == null) {
-	    					logger.fine("There are no unallowed values, so returning found value.");
-	    					return foundValue;
-	    				// Otherwise, check whether the value is unallowed, if not return the value.
-	    				} else {
-	    					// Derive the object file name.
-	    					String foundFileName = foundValue;
-	    					// If the target file extensions is defined, use it.
-	    					if (targetFileExtension != null && targetFileExtension.length() > 0)
-	    						foundFileName = String.format("%s.%s", foundValue, targetFileExtension);
-	    					
-	    					// If the current element is decompose without children, the file will be as follows.
-	    					File targetFile = targetDirectoryPath.resolve(foundFileName).toFile();
-	    					logger.fine(String.format("Resolved target file name: '%s'", targetFile.toString()));
-	    					// If the current element is decomposed with children (so the current element has children which are decomposed as well) the file path will be as follows.
-	    					// The difference between for former is that when the current element has children the element file is written into it's own subfolder.
-	    					File targetFileWithChildren = null;
-	    					// Only set the targetFileWithChildren if the targetFileExtension is set (cause then it is a file, otherwise this function is used for a folder).
-	    					if (targetFileExtension != null) {
-	    						targetFileWithChildren = targetDirectoryPath.resolve(foundValue).resolve(foundFileName).toFile();
-	    						logger.fine(String.format("Resolved target file name with children: '%s'", targetFileWithChildren.toString()));
-	    					}
-	    					// If the found file path is valid, return the found value (not the file name!).
-	    					if (!unallowedFiles.contains(targetFile) && !unallowedFiles.contains(targetFileWithChildren)) {
-	    						logger.fine("The resolved target file name doesn't exist yet, so returning value.");
-	    						return foundValue;
-	    					} else {
-	    						logger.fine("The resolved target file name already exists.");
-	    					}
+	    				Path baseTargetDirectory = targetDirectoryPath;
+	    				// If the configuration is a TargetFolderNameConfig and the setting override parent is set to false, then we include the parent element as folder.
+	    				if (co instanceof TargetFolderNameConfig && ((TargetFolderNameConfig)co).getOverrideParent().equals(Boolean.FALSE)) {
+	    					baseTargetDirectory = baseTargetDirectory.resolve(parentElementFolderName);
 	    				}
+	    				// Resolve the found value as folder on the base target directory.
+						return baseTargetDirectory.resolve(foundValue);
 	    			} else {
 	    				logger.fine("No value found for option.");
 	    			}
@@ -750,8 +725,84 @@ public class XmlDecomposer {
 	    		}
 	    	}
 		}
+		// If a target sub folder can't be found, we use the parent element name only.
+		logger.fine(String.format("The target folder name is not found, using parent element name %s.", parentElementFolderName));
+		return targetDirectoryPath.resolve(parentElementFolderName);
+	}
+	
+	private TargetFileInfo deriveTargetFileAndFolderPath(VTDNav nv, List<? extends AbstractConfigElementWithXPathAttributeAndCondition> configuredOptions, Path targetDirectoryPath, String targetFileExtension, TreeSet<File> unallowedFiles) throws XPathParseException {
+		if (configuredOptions != null && configuredOptions.size() > 0) {
+	    	AutoPilot sap = new AutoPilot(nv);
+	    	for (AbstractConfigElementWithXPathAttributeAndCondition co : configuredOptions) {
+	    		logger.fine(String.format("Checking configured option '%s' with condition '%s'", co.getXPath(), co.getCondition()));
+	    		// Check whether the condition of the TargetFileName or TargetFolderName config is met.
+	    		if (co.getCondition() != null)
+	    			sap.selectXPath(co.getCondition());
+	    		if (co.getCondition() == null || sap.evalXPathToBoolean()) {
+	    			// If the condition is met, try to get the value.
+	    			sap.selectXPath(co.getXPath());
+	    			String foundValue = sap.evalXPathToString();
+	    			// If the value is found go on.
+	    			if (foundValue != null && foundValue.length() > 0) {
+	    				// Strip the found value of illegal file characters.
+	    				foundValue = FileUtils.getLegalFileName(foundValue);
+	    				logger.fine(String.format("Found value: '%s'", foundValue));
+	    				
+    					// Create the object type to return.
+    					TargetFileInfo fileAndFolderPath = new TargetFileInfo();
+    					fileAndFolderPath.FileNameWithoutExtension = foundValue;
+    					fileAndFolderPath.FileExtension = targetFileExtension;
+    					fileAndFolderPath.FolderPath = targetDirectoryPath.resolve(fileAndFolderPath.FileNameWithoutExtension);
+    					// If the current element is decompose without children, the file will be as follows.
+						fileAndFolderPath.FilePathWithoutChildren = targetDirectoryPath.resolve(fileAndFolderPath.getTargetFileName());
+						logger.fine(String.format("Resolved target file name: '%s'", fileAndFolderPath.FilePathWithoutChildren.toString()));
+    					// If the current element is decomposed with children (so the current element has children which are decomposed as well) the file path will be as follows.
+    					// The difference between for former is that when the current element has children the element file is written into it's own subfolder.
+						fileAndFolderPath.FilePathWithChildren = fileAndFolderPath.FolderPath.resolve(fileAndFolderPath.getTargetFileName());
+						logger.fine(String.format("Resolved target file name with children: '%s'", fileAndFolderPath.FilePathWithChildren.toString()));
+	    				
+	    				// If there are no unallowedValues, return the found value.
+	    				// unallowedValues is always empty for TargetFolderName configurations.
+	    				if (unallowedFiles == null) {
+	    					logger.fine("There are no unallowed values, so returning found value.");
+	    					return fileAndFolderPath;
+	    				// Otherwise, check whether the value is unallowed, if not return the value.
+	    				} else {
+	    					// If the found file path is valid, return the found value (not the file name!).
+	    					if (!unallowedFiles.contains(fileAndFolderPath.FilePathWithoutChildren.toFile()) && !unallowedFiles.contains(fileAndFolderPath.FilePathWithChildren.toFile())) {
+	    						logger.fine("The resolved target file name doesn't exist yet, so returning value.");
+	    						return fileAndFolderPath;
+	    					} else {
+	    						logger.fine("The resolved target file name already exists.");
+	    					}
+	    				}
+	    			} else {
+	    				logger.fine("No value found for option.");
+	    			}
+	    		}
+	    		else {
+	    			logger.fine("Option skipped due to condition.");
+	    		}
+	    	}
+		}
     	// If we reach this point, no (allowed) value has been found, so we return null;
     	return null;
+	}
+	
+	private class TargetFileInfo {
+		public Path FolderPath;
+		public Path FilePathWithoutChildren;
+		public Path FilePathWithChildren;
+		
+		public String FileNameWithoutExtension;
+		public String FileExtension;
+		
+		public String getTargetFileName() {
+			// If the target file extensions is defined, use it.
+			if (this.FileExtension != null && this.FileExtension.length() > 0)
+				return String.format("%s.%s", this.FileNameWithoutExtension, this.FileExtension);
+			return null;
+		}
 	}
 
 }

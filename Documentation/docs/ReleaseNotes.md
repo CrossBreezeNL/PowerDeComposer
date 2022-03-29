@@ -20,6 +20,12 @@ Click on the header of a version number to go to the documentation of that speci
 [//]: # (>     * [ ] Binding)
 [//]: # (>         * [X] Some issue...)
 
+## Version 1.4.0
+
+- [ ] 1.4.0 <sup>30-03-2022</sup>
+> !!! success "Enhanced features"
+>     * [ ] Decompose model
+>         - [X] Added option on TargetFolderName to overrideParent so the parent element name is overriden with the configuration, is stead of nesting the configured target folder name in a folder named to the parent element.
 
 ## Version 1.3.4
 

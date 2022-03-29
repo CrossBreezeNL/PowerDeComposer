@@ -1,6 +1,7 @@
 package com.xbreeze.xml.test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -236,9 +237,15 @@ public class PowerDeComposerTestSteps {
 	// Compare the actual and expected file contents. If it differs throw an assertion error.
 	public void thenIExpectTheFileWithFollowingContent(File targetFile, String expectedFileContents)
 			throws Throwable {
+		// Check the file exists.
+		assertTrue(
+				targetFile.exists(),
+				String.format("The expected file '%s' doesn't exist!", targetFile)
+		);
+		
 		//Open the expected output file and read to string
 		FileInputStream fis = new FileInputStream(targetFile);
-		BOMInputStream bomInputStream = new BOMInputStream(fis);		
+		BOMInputStream bomInputStream = new BOMInputStream(fis);
 		String actualResultContent = IOUtils.toString(bomInputStream, bomInputStream.getBOMCharsetName());
 		// Assert the expected and actual file contents are the same.
 		assertEquals(
