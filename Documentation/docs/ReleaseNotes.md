@@ -21,6 +21,13 @@ Click on the header of a version number to go to the documentation of that speci
 [//]: # (>         * [X] Some issue...)
 
 
+## Version 1.3.4
+
+- [ ] 1.3.4 <sup>29-03-2022</sup>
+> !!! warning "Bug fixes"
+>     * [ ] Decompose model
+>         - [X] Fixed case sensitivity issues with folders and files. All filepath compares are now case-insensitive.
+
 ## Version 1.3.3
 
 - [ ] 1.3.3 <sup>22-03-2022</sup>
