@@ -414,17 +414,17 @@ IndxFKName=%REFR%_FK
 IndxThreshold=</a:ModelOptionsText>
 <a:RepositoryFilename>C:\GIT\Repos\CrossBreeze\PowerDeComposer_Public\Output\ExampleLDMSource.ldm</a:RepositoryFilename>
 <c:LogicalDiagrams>
-<xi:include href="LogicalDiagrams\o_LogicalDiagram\SOURCE.xml" />
+<xi:include href="LogicalDiagrams/o_LogicalDiagram/SOURCE.xml" />
 </c:LogicalDiagrams>
 <c:DefaultDiagram>
 <o:LogicalDiagram Ref="5CED08F1-1E4D-4579-B9B4-64BB4FB6D327"/>
 </c:DefaultDiagram>
 <c:Entities>
-<xi:include href="Entities\o_Entity\SALESORDER.xml" />
-<xi:include href="Entities\o_Entity\CUSTOMER.xml" />
+<xi:include href="Entities/o_Entity/SALESORDER.xml" />
+<xi:include href="Entities/o_Entity/CUSTOMER.xml" />
 </c:Entities>
 <c:Relationships>
-<xi:include href="Relationships\o_Relationship\CUSTOMER_SALESORDER.xml" />
+<xi:include href="Relationships/o_Relationship/CUSTOMER_SALESORDER.xml" />
 </c:Relationships>
 </o:Model>
 </c:Children>

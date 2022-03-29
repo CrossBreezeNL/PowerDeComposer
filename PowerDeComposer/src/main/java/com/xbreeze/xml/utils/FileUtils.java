@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 CrossBreeze
+ * Copyright (c) 2022 CrossBreeze
  *
  * This file is part of PowerDeComposer.
  *
@@ -26,10 +26,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.logging.Logger;
 
@@ -42,9 +40,9 @@ public class FileUtils {
 	
 	private static final String XML_PROCESSING_INSTRUCTION_UTF8 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 	
-	public static FileContentAndCharset getFileContent(URI fileLocation) throws IOException {
+	public static FileContentAndCharset getFileContent(File file) throws IOException {
 		// Create a input stream from the template file.
-		FileInputStream fis = new FileInputStream(new File(fileLocation));
+		FileInputStream fis = new FileInputStream(file);
 		// Wrap the input stream in a BOMInputStream so it is invariant for the BOM.
 		BOMInputStream bomInputStream = new BOMInputStream(fis);
 		
@@ -71,7 +69,7 @@ public class FileUtils {
 
 		// If the charset hasen't been set yet, we aren't sure what the encoding is, defaulting to UTF-8.
 		if (fileCharset == null) {
-			logger.warning(String.format("The encoding of the file can't be detected, defaulting to UTF-8 (%s)", fileLocation.toString()));
+			logger.warning(String.format("The encoding of the file can't be detected, defaulting to UTF-8 (%s)", file.getCanonicalPath()));
 			fileCharset = StandardCharsets.UTF_8;
 		}
 		
@@ -79,9 +77,9 @@ public class FileUtils {
 		return getFileContent(bomInputStream, fileCharset);
 	}
 	
-	public static FileContentAndCharset getFileContent(URI fileLocation, Charset fileCharset) throws IOException {
+	public static FileContentAndCharset getFileContent(File file, Charset fileCharset) throws IOException {
 		// Create a input stream from the template file.
-		FileInputStream fis = new FileInputStream(new File(fileLocation));
+		FileInputStream fis = new FileInputStream(file);
 		// Read the file using the given charset.
 		return getFileContent(fis, fileCharset);
 	}
@@ -106,26 +104,30 @@ public class FileUtils {
 	}
 	
 	/**
-	 * Function to get the base path of an URI.
-	 * Get basePath of the file. If the provided URI refers to a file, use its parent path.
-	 * If it refers to a folder use it as base path
-	 * @param fileUri The file URI
-	 * @return The base path URI
+	 * Function to get the base path of a File.
+	 * Get basePath of the file. If the provided File refers to a real file (not a directory), use its parent path.
+	 * If it refers to a directory use it as base path
+	 * @param file The file to get the base path for
+	 * @return The base path
 	 * @throws Exception
 	 */
-	public static Path getBasePath(Path filePath) throws Exception {
-		Path basePath = filePath;
+	public static Path getBasePath(File file) throws Exception {
+		Path basePath;
 		// Check whether the path points to a file, and if so get the parent path.
-		if (filePath.toFile().isFile()) {
-			basePath = filePath.getParent();
+		if (file.isFile()) {
+			basePath = file.getParentFile().toPath();
+		} else {
+			basePath = file.toPath();
 		}
-		// Resolve basePath to absolute/real path
-		try {
-			basePath = basePath.toRealPath(LinkOption.NOFOLLOW_LINKS);
-		} catch (IOException e) {
-			throw new Exception(
-					String.format("Error resolving config basePath %s to canonical path", basePath.toString()), e);
-		}
+		// Disabled to below code to solve problems with resolving real paths where directories don't exist.
+		// In XmlDecomposer the path is also relative, as long as all paths are relative detecting already written files work.
+		// // Resolve basePath to absolute/real path
+		// try {
+		// 	basePath = basePath.toRealPath(LinkOption.NOFOLLOW_LINKS);
+		// } catch (IOException e) {
+		// 	throw new Exception(
+		// 			String.format("Error resolving config basePath %s to canonical path", basePath.toString()), e);
+		// }
 		return basePath;
 	}
 }
