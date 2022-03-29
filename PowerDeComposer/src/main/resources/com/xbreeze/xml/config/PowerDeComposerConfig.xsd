@@ -163,6 +163,8 @@
         
     <xs:attribute name="condition" type="xs:string"/>
         
+    <xs:attribute name="overrideParent" type="xs:boolean"/>
+        
     <xs:attribute name="xpath" type="xs:string"/>
       
   </xs:complexType>
