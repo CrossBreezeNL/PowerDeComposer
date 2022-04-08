@@ -6,11 +6,16 @@ To simplify running PowerDeComposer a PowerShell module, scripts and sample conf
 
 When you want to simply use all the scripts here, follow these steps:
 
-1. Copy the whole contents of the 'PowerShell' folder into the location where you want to manage your PowerDesigner models.
+> Make sure you have PowerShell 7 or higher installed.
+> Download it [here](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-windows#msi)
+
+1. Download the 'PowerShell' folder (click on the dots in the right top corner, next to the '+ New' button, and choose 'Download as Zip').
+1. Copy the whole contents of the 'PowerShell' folder into the location where you want to manage your PowerDesigner models (a git managed folder).
 1. Create a folder 'composed' (next to the 'pdc' folder).
 1. Create/move all your PowerDesigner models into the composed folder.
-1. Copy the latest PowerDeComposer jar file into the 'pdc' folder.
+1. Copy the latest PowerDeComposer jar file into the 'pdc' folder (download it [here](https://dev.azure.com/x-breeze/PowerDeComposer_Public/_git/PowerDeComposer_Public?path=%2FRun)).
 1. Execute the 'decompose_all.ps1' PowerShell script to decompose all models in the composed folder.
+1. Add the 'composed' folder to gitignore (only the decomposed models need to be checked in).
 
 If for example the folder where you want to store you models is called 'models' and we have a ExampleSource.ldm model in a SourceSystems folder, the folder structure will be as follows:
 
