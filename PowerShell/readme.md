@@ -1,10 +1,44 @@
 # PowerDeComposer PowerShell module
 
-To simplify running PowerDeComposer a PowerShell module was developed. This module provides simple cmdlets to invoke a decompose or compose.
+To simplify running PowerDeComposer a PowerShell module, scripts and sample configurations were developed. With this set you can get a kick-start into using PowerDeComposer, simply follow the steps in the 'Quick start' section and you're good to go.
+
+## Quick start
+
+When you want to simply use all the scripts here, follow these steps:
+
+1. Copy the whole contents of the 'PowerShell' folder into the location where you want to manage your PowerDesigner models.
+1. Create a folder 'composed' (next to the 'pdc' folder).
+1. Create/move all your PowerDesigner models into the composed folder.
+1. Copy the latest PowerDeComposer jar file into the 'pdc' folder.
+1. Execute the 'decompose_all.ps1' PowerShell script to decompose all models in the composed folder.
+
+If for example the folder where you want to store you models is called 'models' and we have a ExampleSource.ldm model in a SourceSystems folder, the folder structure will be as follows:
+
+- models
+   - composed
+      - SourceSystems
+         - ExampleSource.ldm
+   - decomposed
+      - SourceSystems
+         - ExampleSource
+            - Entities
+               - ...
+            - ...
+            - ExampleSource.ldm
+   - pdc
+      - decompose.ps1
+      - pdc_config_ldm.xml
+      - pdc_config_sws.xml
+      - pdc_config_xem.xml
+      - PowerDeComposer.jar
+      - PowerDeComposer.psm1
+   - compose_all.ps1
+   - decompose_all.ps1
+
 
 ## PowerShell module
 
-The PowerShell module itself can be found [here](./pdc/PowerDeComposer.psm1).
+The module provides simple cmdlets to invoke a decompose or compose. The PowerShell module itself can be found [here](./pdc/PowerDeComposer.psm1).
 
 To use the module it needs to be imported using the Import-Module cmdlet. For example:
 
@@ -42,36 +76,3 @@ As part of this PowerShell module example configurations are provided for PowerD
 - [pdc/pdc_config_ldm.xml](./pdc/pdc_config_ldm.xml) - LDM (logical data model) decompose configuration
 - [pdc/pdc_config_sws.xml](./pdc/pdc_config_sws.xml) - SWS (workspace) decompose configuration
 - [pdc/pdc_config_xem.xml](./pdc/pdc_config_xem.xml) - XEM (extension) decompose configuration
-
-## Quick start
-
-When you want to simply use all the scripts here, follow these steps:
-
-1. Copy the whole contents of the 'PowerShell' folder into the location where you want to manage your PowerDesigner models.
-1. Create a folder 'composed' (next to the 'pdc' folder).
-1. Create/move all your PowerDesigner models into the composed folder.
-1. Copy the latest PowerDeComposer jar file into the 'pdc' folder.
-1. Execute the 'decompose_all.ps1' PowerShell script to decompose all models in the composed folder.
-
-If for example the folder where you want to store you models is called 'models' and we have a ExampleSource.ldm model in a SourceSystems folder, the folder structure will be as follows:
-
-- models
-   - composed
-      - SourceSystems
-         - ExampleSource.ldm
-   - decomposed
-      - SourceSystems
-         - ExampleSource
-            - Entities
-               - ...
-            - ...
-            - ExampleSource.ldm
-   - pdc
-      - decompose.ps1
-      - pdc_config_ldm.xml
-      - pdc_config_sws.xml
-      - pdc_config_xem.xml
-      - PowerDeComposer.jar
-      - PowerDeComposer.psm1
-   - compose_all.ps1
-   - decompose_all.ps1

@@ -26,10 +26,8 @@ Click on the header of a version number to go to the documentation of that speci
 > !!! success "Enhanced features"
 >     * [ ] Decompose model
 >         - [X] Added option on TargetFolderName to overrideParent so the parent element name is overriden with the configuration, is stead of nesting the configured target folder name in a folder named to the parent element.
-
-## Version 1.3.4
-
-- [ ] 1.3.4 <sup>29-03-2022</sup>
+>     * [ ] PowerShell module
+>         - [X] Added a PowerShell module to simplify PowerDeComposer execution.
 > !!! warning "Bug fixes"
 >     * [ ] Decompose model
 >         - [X] Fixed case sensitivity issues with folders and files. All filepath compares are now case-insensitive.
