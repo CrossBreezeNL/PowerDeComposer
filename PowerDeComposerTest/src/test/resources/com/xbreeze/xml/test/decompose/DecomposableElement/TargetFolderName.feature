@@ -27,7 +27,7 @@ Feature: Configure TargetFolderName
       			<ElementCondition xpath="./Name" />
       			<!-- The target file name should be the value of the Name element. -->
       			<TargetFolderNames>
-      				<TargetFolderName xpath="./@type" />
+      				<TargetFolderName xpath="./@type" <ConfigOverrideParent> />
       			</TargetFolderNames>
       			<!-- The target file name should be the value of the Name element. -->
       			<TargetFileNames>
@@ -63,11 +63,13 @@ Feature: Configure TargetFolderName
       """
 
     Examples: 
-      | Scenario                         | FirstType | FirstName | SecondType | SecondName | FirstFileName                     | SecondFileName                      |
-      | the same                         | SameType  | FirstName | SameType   | SecondName | ChildElements/SameType/FirstName  | ChildElements/SameType/SecondName   |
-      | different                        | FirstType | FirstName | SecondType | SecondName | ChildElements/FirstType/FirstName | ChildElements/SecondType/SecondName |
-      | the same and same filename       | SameType  | SameName  | SameType   | SameName   | ChildElements/SameType/SameName   | ChildElements/SameType/2            |
-      | different case and same filename | sametype  | SameName  | SameType   | SameName   | ChildElements/sametype/SameName   | ChildElements/SameType/2            |
+      | Scenario                         | ConfigOverrideParent   | FirstType | FirstName | SecondType | SecondName | FirstFileName                     | SecondFileName                      |
+      | the same                         |                        | SameType  | FirstName | SameType   | SecondName | ChildElements/SameType/FirstName  | ChildElements/SameType/SecondName   |
+      | different                        |                        | FirstType | FirstName | SecondType | SecondName | ChildElements/FirstType/FirstName | ChildElements/SecondType/SecondName |
+      | the same and same filename       |                        | SameType  | SameName  | SameType   | SameName   | ChildElements/SameType/SameName   | ChildElements/SameType/2            |
+      | different case and same filename |                        | sametype  | SameName  | SameType   | SameName   | ChildElements/sametype/SameName   | ChildElements/SameType/2            |
+      | the same dont override parent    | overrideParent="false" | SameType  | FirstName | SameType   | SecondName | ChildElements/SameType/FirstName  | ChildElements/SameType/SecondName   |
+      | the same override parent         | overrideParent="true"  | SameType  | FirstName | SameType   | SecondName | SameType/FirstName                | SameType/SecondName                 |
 
   Scenario Outline: TargetFolderName is <Scenario> with child-elements
     Given the decomposed folder location '<DecomposedFolder>'
@@ -105,7 +107,7 @@ Feature: Configure TargetFolderName
       			<ElementCondition xpath="./Name" />
       			<!-- The target file name should be the value of the Name element. -->
       			<TargetFolderNames>
-      				<TargetFolderName xpath="./@type" />
+      				<TargetFolderName xpath="./@type" <ConfigOverrideParent> />
       			</TargetFolderNames>
       			<!-- The target file name should be the value of the Name element. -->
       			<TargetFileNames>
@@ -159,11 +161,13 @@ Feature: Configure TargetFolderName
       """
 
     Examples: 
-      | Scenario                                                       | DecomposedFolder                                 | FirstType | FirstName | SecondType | SecondName | FirstFilePath                      | FirstFileName | SecondFilePath                       | SecondFileName | ThirdFileName           | FourthFileName           |
-      | the same                                                       | Decomposed                                       | SameType  | FirstName | SameType   | SecondName | ChildElements/SameType/FirstName/  | FirstName     | ChildElements/SameType/SecondName/   | SecondName     | ChildElements/ThirdName | ChildElements/FourthName |
-      | different                                                      | Decomposed                                       | FirstType | FirstName | SecondType | SecondName | ChildElements/FirstType/FirstName/ | FirstName     | ChildElements/SecondType/SecondName/ | SecondName     | ChildElements/ThirdName | ChildElements/FourthName |
+      | Scenario                                                       | ConfigOverrideParent   | DecomposedFolder                                 | FirstType | FirstName | SecondType | SecondName | FirstFilePath                      | FirstFileName | SecondFilePath                       | SecondFileName | ThirdFileName           | FourthFileName           |
+      | the same                                                       |                        | Decomposed                                       | SameType  | FirstName | SameType   | SecondName | ChildElements/SameType/FirstName/  | FirstName     | ChildElements/SameType/SecondName/   | SecondName     | ChildElements/ThirdName | ChildElements/FourthName |
+      | different                                                      |                        | Decomposed                                       | FirstType | FirstName | SecondType | SecondName | ChildElements/FirstType/FirstName/ | FirstName     | ChildElements/SecondType/SecondName/ | SecondName     | ChildElements/ThirdName | ChildElements/FourthName |
       # The problem with this last scenario is that during decompose at the time the file name is derived it's not known yet whether the file will be written into a seperate folder if the current element contains childs.
-      | the same and same filename                                     | Decomposed                                       | SameType  | SameName  | SameType   | SameName   | ChildElements/SameType/SameName/   | SameName      | ChildElements/SameType/2/            |              2 | ChildElements/ThirdName | ChildElements/FourthName |
-      | the same and same filename with relative backward slash folder | Decomposed\\dummySubFolder\\..\\realTargetFolder | SameType  | SameName  | SameType   | SameName   | ChildElements/SameType/SameName/   | SameName      | ChildElements/SameType/2/            |              2 | ChildElements/ThirdName | ChildElements/FourthName |
+      | the same and same filename                                     |                        | Decomposed                                       | SameType  | SameName  | SameType   | SameName   | ChildElements/SameType/SameName/   | SameName      | ChildElements/SameType/2/            |              2 | ChildElements/ThirdName | ChildElements/FourthName |
+      | the same and same filename with relative backward slash folder |                        | Decomposed\\dummySubFolder\\..\\realTargetFolder | SameType  | SameName  | SameType   | SameName   | ChildElements/SameType/SameName/   | SameName      | ChildElements/SameType/2/            |              2 | ChildElements/ThirdName | ChildElements/FourthName |
       # Disabled the test below, since it fails in linux.
-      #| the same and same filename with relative forward slash folder  | Decomposed\\dummySubFolder/../realTargetFolder   | SameType  | SameName  | SameType   | SameName   | ChildElements/SameType/SameName/   | SameName      | ChildElements/SameType/2/            |              2 | ChildElements/ThirdName | ChildElements/FourthName |
+      #| the same and same filename with relative forward slash folder  | |Decomposed\\dummySubFolder/../realTargetFolder   | SameType  | SameName  | SameType   | SameName   | ChildElements/SameType/SameName/   | SameName      | ChildElements/SameType/2/            |              2 | ChildElements/ThirdName | ChildElements/FourthName |
+      | the same dont override parent                                  | overrideParent="false" | Decomposed                                       | SameType  | FirstName | SameType   | SecondName | ChildElements/SameType/FirstName/  | FirstName     | ChildElements/SameType/SecondName/   | SecondName     | ChildElements/ThirdName | ChildElements/FourthName |
+      | the same override parent                                       | overrideParent="true"  | Decomposed                                       | SameType  | FirstName | SameType   | SecondName | SameType/FirstName/                | FirstName     | SameType/SecondName/                 | SecondName     | ChildElements/ThirdName | ChildElements/FourthName |
