@@ -20,10 +20,10 @@ $DecomposedFolder = "$PSScriptRoot\decomposed"
         # Construct the Decomposed folder for the model based on the location of the composed model.
         $TargetFileLocation = Join-Path -Path $_.Directory.Parent.FullName.Replace($using:DecomposedFolder, $using:ComposedFolder) -ChildPath $_.Name
         # Log the start of the compose.
-        Write-Output "$(Get-Date -format 'dd-MM-yyyy HH:mm') ## Composing $ModelFileLocation to $TargetFileLocation..."
+        Write-Host "$(Get-Date -format 'dd-MM-yyyy HH:mm') ## Composing $ModelFileLocation to $TargetFileLocation..."
         # Invoke the Decompose on the LDM.
         Invoke-ComposeModel -ModelFileLocation $ModelFileLocation -TargetFileLocation $TargetFileLocation
     } -ThrottleLimit 5
  #| Out-Default }
 
-Write-Output "Done."
+ Write-Host "Done."

@@ -20,7 +20,7 @@ $DecomposedFolder = "$PSScriptRoot\decomposed"
         $ModelFileLocation = $_.FullName
         # Construct the Decomposed folder for the model based on the location of the composed model.
         $TargetFolderLocation = Join-Path -Path $_.Directory.FullName.Replace($using:ComposedFolder, $using:DecomposedFolder) -ChildPath $_.BaseName
-        Write-Output "$(Get-Date -format 'dd-MM-yyyy HH:mm') ## Decomposing $ModelFileLocation to $TargetFolderLocation..."
+        Write-Host "$(Get-Date -format 'dd-MM-yyyy HH:mm') ## Decomposing $ModelFileLocation to $TargetFolderLocation..."
         # Invoke the Decompose on the file based on the file extension.
         switch ($_.Extension) {
             ".xem" {
@@ -44,4 +44,4 @@ $DecomposedFolder = "$PSScriptRoot\decomposed"
     } -ThrottleLimit 5
  #| Out-Default }
 
-Write-Output "Done."
+ Write-Host "Done."
