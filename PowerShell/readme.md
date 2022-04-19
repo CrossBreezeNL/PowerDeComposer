@@ -6,8 +6,15 @@ To simplify running PowerDeComposer a PowerShell module, scripts and sample conf
 
 When you want to simply use all the scripts here, follow these steps:
 
+> Make sure you have Java JRE/JDK >= 11 installed.
 > Make sure you have PowerShell 7 or higher installed.
 > Download it [here](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-windows#msi)
+
+In order to exucute the PowerShell scripts, make sure you run the following command once in PowerShell:
+
+``` powershell
+Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser
+```
 
 1. Download the 'PowerShell' folder (click on the dots in the right top corner, next to the '+ New' button, and choose 'Download as Zip').
 1. Copy the whole contents of the 'PowerShell' folder into the location where you want to manage your PowerDesigner models (a git managed folder).
