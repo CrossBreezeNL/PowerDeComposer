@@ -8,6 +8,8 @@ $PDCJarLocation = "$PSScriptRoot\PowerDeComposer.jar"
 $JavaArguments = @("-Xms128M", "-Xmx2G", "-jar", "-Dfile.encoding=UTF-8", "`"$PDCJarLocation`"")
 # The location of the PowerDeComposer LDM config file.
 $LdmConfigFileLocation = "$PSScriptRoot\pdc_config_ldm.xml"
+# The location of the PowerDeComposer LDM config file.
+$RqmConfigFileLocation = "$PSScriptRoot\pdc_config_rqm.xml"
 # The location of the PowerDeComposer XEM config file.
 $XemConfigFileLocation = "$PSScriptRoot\pdc_config_xem.xml"
 # The location of the PowerDeComposer SWS config file.
@@ -108,10 +110,20 @@ function Invoke-DecomposeLDM {
         $TargetFolderLocation
     )
 
-    #Write-Host "[Invoke-DecomposeLDM] ModelFileLocation='$ModelFileLocation'; TargetFolderLocation='$TargetFolderLocation'"
     Invoke-DecomposeModel -ModelFileLocation $ModelFileLocation -TargetFolderLocation $TargetFolderLocation -ConfigFileLocation $LdmConfigFileLocation
 }
 Export-ModuleMember -Function Invoke-DecomposeLDM
+
+# Function to invoke a RQM model decompose.
+function Invoke-DecomposeRQM {
+    param (
+        $ModelFileLocation,
+        $TargetFolderLocation
+    )
+
+    Invoke-DecomposeModel -ModelFileLocation $ModelFileLocation -TargetFolderLocation $TargetFolderLocation -ConfigFileLocation $RqmConfigFileLocation
+}
+Export-ModuleMember -Function Invoke-DecomposeRQM
 
 # Function to invoke a XEM decompose.
 function Invoke-DecomposeXEM {
