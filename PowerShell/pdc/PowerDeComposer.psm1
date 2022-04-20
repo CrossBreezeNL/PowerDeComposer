@@ -56,6 +56,13 @@ function Invoke-DecomposeModel {
         $ConfigFileLocation
     )
 
+    $TargetFolderLocation_Exists = Test-Path $TargetFolderLocation
+    # If the target folder doesn't exist, create it.
+    If (!$TargetFolderLocation_Exists) {
+        Write-Host "$(Get-Date -format 'dd-MM-yyyy HH:mm') ## The target folder location ($TargetFolderLocation) doesn't exist, so creating it."
+        New-Item -ItemType "Directory" -Path $TargetFolderLocation | Out-Null # Ignore the output.
+    }
+
     # Store a decompose.log in the target folder.
     $LogFileName = (Split-Path -Path $ModelFileLocation -LeafBase) + ".decompose.log"
     $LogFileLocation = Join-Path -Path $TargetFolderLocation -ChildPath $LogFileName
@@ -101,6 +108,7 @@ function Invoke-DecomposeLDM {
         $TargetFolderLocation
     )
 
+    #Write-Host "[Invoke-DecomposeLDM] ModelFileLocation='$ModelFileLocation'; TargetFolderLocation='$TargetFolderLocation'"
     Invoke-DecomposeModel -ModelFileLocation $ModelFileLocation -TargetFolderLocation $TargetFolderLocation -ConfigFileLocation $LdmConfigFileLocation
 }
 Export-ModuleMember -Function Invoke-DecomposeLDM
