@@ -5,9 +5,11 @@
 # The location of the PowerDeComposer jar file.
 $PDCJarLocation = "$PSScriptRoot\PowerDeComposer.jar"
 # Set minimum memory to 64MB and maximum to 2GB.
-$JavaArguments = "-Xms128M -Xmx2G"
+$JavaArguments = @("-Xms128M", "-Xmx2G", "-jar", "-Dfile.encoding=UTF-8", "`"$PDCJarLocation`"")
 # The location of the PowerDeComposer LDM config file.
 $LdmConfigFileLocation = "$PSScriptRoot\pdc_config_ldm.xml"
+# The location of the PowerDeComposer LDM config file.
+$RqmConfigFileLocation = "$PSScriptRoot\pdc_config_rqm.xml"
 # The location of the PowerDeComposer XEM config file.
 $XemConfigFileLocation = "$PSScriptRoot\pdc_config_xem.xml"
 # The location of the PowerDeComposer SWS config file.
@@ -19,51 +21,33 @@ Function Invoke-PowerDeComposer {
         $Mode,
         $InputLocation,
         $OutputLocation,
-        $ConfigFileLocation
+        $ConfigFileLocation,
+        $LogFileLocation
     )
 
     # Create the Java call arguments list.
-    $JavaCall = "$JavaArguments -jar -Dfile.encoding=UTF-8 $PDCJarLocation $Mode `"$InputLocation`" `"$OutputLocation`""
+    $JavaCall = $JavaArguments + @($Mode, "`"$InputLocation`"", "`"$OutputLocation`"")
     # If the config file locatin is set, add it to the java call.
     if ($ConfigFileLocation.Length -gt 0) {
-        $JavaCall += " `"$ConfigFileLocation`""
+        $JavaCall = $JavaCall + @("`"$ConfigFileLocation`"")
     }
 
-    try
-    {
-        $pinfo = New-Object System.Diagnostics.ProcessStartInfo
-        $pinfo.FileName = "java"
-        $pinfo.RedirectStandardError = $true
-        $pinfo.RedirectStandardOutput = $true
-        $pinfo.UseShellExecute = $false
-        $pinfo.Arguments = $JavaCall
-        $pInfo.CreateNoWindow = $true
-        $pdcProcess = New-Object System.Diagnostics.Process
-        $pdcProcess.StartInfo = $pinfo
-        $pdcProcess.Start() # | Out-Null
-        #$pdcProcess.WaitForExit()
-
-        # Write the process standard out for debug purposes.
-        Write-Debug "Process standard out:"
-        Write-Debug "--------------------------------------------------"
-        Write-Debug $pdcProcess.StandardOutput.ReadToEnd()
-        Write-Debug "--------------------------------------------------"
-
-        [pscustomobject]@{
-            #StandardOut = $pdcProcess.StandardOutput.ReadToEnd()
-            StandardError = $pdcProcess.StandardError.ReadToEnd()
-            ExitCode = $pdcProcess.ExitCode
+    # Start the java process for PowerDeComposer and wait for it to finish.
+    if ($LogFileLocation.Length -gt 0) {
+        $pdcProcess = Start-Process -FilePath "java" -ArgumentList $JavaCall -PassThru -Wait -NoNewWindow -RedirectStandardOutput $LogFileLocation
+    } else {
+        $pdcProcess = Start-Process -FilePath "java" -ArgumentList $JavaCall -PassThru -Wait -NoNewWindow
+    }
+    # If the PowerDeComposer process hasn't excited yet at this point, close it.
+    if (!$pdcProcess.HasExited) {
+        $pdcProcess.Close()
+        # If the ExitCode is 0, return 1, because we had to stop the process ourselves.
+        if ($pdcProcess.ExitCode.Equals(0)) {
+            return 1
         }
     }
-    catch [Exception]
-    {
-        #Write-Host $_
-        [pscustomobject]@{
-            #StandardOut = $null
-            StandardError = $_
-            ExitCode = 1
-        }
-    }
+    # Return the exit code of the java process.
+    return $pdcProcess.ExitCode
 }
 
 # Function to invoke a decompose.
@@ -74,11 +58,21 @@ function Invoke-DecomposeModel {
         $ConfigFileLocation
     )
 
+    $TargetFolderLocation_Exists = Test-Path $TargetFolderLocation
+    # If the target folder doesn't exist, create it.
+    If (!$TargetFolderLocation_Exists) {
+        Write-Host "$(Get-Date -format 'dd-MM-yyyy HH:mm') ## The target folder location ($TargetFolderLocation) doesn't exist, so creating it."
+        New-Item -ItemType "Directory" -Path $TargetFolderLocation | Out-Null # Ignore the output.
+    }
+
+    # Store a decompose.log in the target folder.
+    $LogFileName = (Split-Path -Path $ModelFileLocation -LeafBase) + ".decompose.log"
+    $LogFileLocation = Join-Path -Path $TargetFolderLocation -ChildPath $LogFileName
     # Use the Invoke-PowerDeComposer function to perform the decompose.
-    $ProcessResults = Invoke-PowerDeComposer -Mode "decompose" -InputLocation $ModelFileLocation -OutputLocation $TargetFolderLocation -ConfigFileLocation $ConfigFileLocation
+    $ProcessResults = Invoke-PowerDeComposer -Mode "decompose" -InputLocation $ModelFileLocation -OutputLocation $TargetFolderLocation -ConfigFileLocation $ConfigFileLocation -LogFileLocation $LogFileLocation
     # If the process failed, throw the error.
-    if (!$ProcessResults.ExitCode.Equals(0)) {
-        throw "Decomposing '$ModelFileLocation' failed: $($ProcessResults.StandardError)"
+    if (!$ProcessResults.Equals(0)) {
+        throw "Decomposing '$ModelFileLocation' failed. Check the log file for errors."
     }
 }
 
@@ -93,15 +87,18 @@ function Invoke-ComposeModel {
     $TargetFolderLocation_Exists = Test-Path $TargetFolderLocation
     # If the target folder doesn't exist, create it.
     If (!$TargetFolderLocation_Exists) {
-        Write-Host "The target folder location ($TargetFolderLocation) doesn't exist, so creating it."
-        New-Item -Path $TargetFolderLocation -ItemType Directory
+        Write-Host "$(Get-Date -format 'dd-MM-yyyy HH:mm') ## The target folder location ($TargetFolderLocation) doesn't exist, so creating it."
+        New-Item -ItemType "Directory" -Path $TargetFolderLocation | Out-Null # Ignore the output.
     }
 
+    # Store a decompose.log in the target folder.
+    $LogFileName = (Split-Path -Path $TargetFileLocation -LeafBase) + ".compose.log"
+    $LogFileLocation = Join-Path -Path $TargetFolderLocation -ChildPath $LogFileName
     # Use the Invoke-PowerDeComposer function to perform the decompose.
-    $ProcessResults = Invoke-PowerDeComposer -Mode "compose" -InputLocation $ModelFileLocation -OutputLocation $TargetFileLocation
+    $ProcessResults = Invoke-PowerDeComposer -Mode "compose" -InputLocation $ModelFileLocation -OutputLocation $TargetFileLocation -LogFileLocation $LogFileLocation
     # If the process failed, throw the error.
-    if (!$ProcessResults.ExitCode.Equals(0)) {
-        throw "Composing '$ModelFileLocation' failed: $($ProcessResults.StandardError)"
+    if (!$ProcessResults.Equals(0)) {
+        throw "Composing '$ModelFileLocation' failed"
     }
 }
 Export-ModuleMember -Function Invoke-ComposeModel
@@ -116,6 +113,17 @@ function Invoke-DecomposeLDM {
     Invoke-DecomposeModel -ModelFileLocation $ModelFileLocation -TargetFolderLocation $TargetFolderLocation -ConfigFileLocation $LdmConfigFileLocation
 }
 Export-ModuleMember -Function Invoke-DecomposeLDM
+
+# Function to invoke a RQM model decompose.
+function Invoke-DecomposeRQM {
+    param (
+        $ModelFileLocation,
+        $TargetFolderLocation
+    )
+
+    Invoke-DecomposeModel -ModelFileLocation $ModelFileLocation -TargetFolderLocation $TargetFolderLocation -ConfigFileLocation $RqmConfigFileLocation
+}
+Export-ModuleMember -Function Invoke-DecomposeRQM
 
 # Function to invoke a XEM decompose.
 function Invoke-DecomposeXEM {

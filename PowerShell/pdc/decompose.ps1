@@ -1,44 +1,45 @@
-# Define arguments to be populated by the method in Powerdesigner
-$Extension=$args[0] # For Example "LDM"
-$ModelSubFolder=$args[1] # For Example "SourceSystems"
-$ModelName=$args[2] # For Example "ExampleSource"
+# Define arguments to be populated by the method in PowerDesigner
+$ComposedFileLocation=$args[0] # For Example "LDM"
 
 # Set the debug preference to Continue so the debug output is printed. Default is SilentlyContinue.
 $DebugPreference = "SilentlyContinue"
 #$DebugPreference = "Continue"
 
 # Include PowerDeComposer PowerShell Functions.
-Import-Module  $PSScriptRoot\PowerDeComposer.psm1 -Force
-
-# Extension argument will be used as the actual extension of the file, so make it lowercase.
-$Extension = $Extension.ToLower()
+Import-Module -Name "$PSScriptRoot\PowerDeComposer.psm1" -Force
 
 # Variables used for PowerDeComposer.
-$ComposedFolder = [System.IO.DirectoryInfo]"$PSScriptRoot\..\composed"
-$DecomposedFolder = [System.IO.DirectoryInfo]"$PSScriptRoot\..\decomposed"
+$PDCBasePath = Split-Path -Path $PSScriptRoot -Parent
+$ComposedFolder = Join-Path -Path $PDCBasePath -ChildPath "composed"
+$DecomposedFolder = Join-Path -Path $PDCBasePath -ChildPath "decomposed"
 
-# Given the base ComposedFolder, DecomposedFolder and the arguments
-# Construct the ModelFileLocation and TargetFolderLocation.
-$ModelFileLocation = Join-Path -Path $ComposedFolder -childPath "$ModelSubFolder\$ModelName.$Extension"
-$TargetFolderLocation = Join-Path -Path $DecomposedFolder -childPath "$ModelSubFolder\$ModelName"
+# Construct the TargetFolderLocation using the parent folder of the composed file and replacing the ComposedFolder with the decomposed folder.
+$TargetFolderLocation = Join-Path -Path (Split-Path -Path $ComposedFileLocation -Parent).Replace($ComposedFolder, $DecomposedFolder) -ChildPath (Split-Path -Path $ComposedFileLocation -LeafBase)
 
-switch ($Extension) {
-    "xem" {  
+# Extension argument will be used as the actual extension of the file, so make it lowercase.
+$FileExtension = (Split-Path -Path $ComposedFileLocation -Extension).ToLower()
+
+Write-Host "Decomposing $ComposedFileLocation to $TargetFolderLocation..."
+
+switch ($FileExtension) {
+    ".xem" {  
         # Invoke the Decompose on the XEM.
-        Invoke-DecomposeXEM -ModelFileLocation $ModelFileLocation -TargetFolderLocation $TargetFolderLocation
+        Invoke-DecomposeXEM -ModelFileLocation $ComposedFileLocation -TargetFolderLocation $TargetFolderLocation
     }
-    "ldm" { 
+    ".ldm" { 
         # Invoke the Decompose on the LDM.
-        Invoke-DecomposeLDM -ModelFileLocation $ModelFileLocation -TargetFolderLocation $TargetFolderLocation
+        Invoke-DecomposeLDM -ModelFileLocation $ComposedFileLocation -TargetFolderLocation $TargetFolderLocation
      }
-    "pdm" {
+    ".pdm" {
         # Invoke the Decompose on the PDM using the LDM config.
         # TODO: Change this to call a DecomposePDM function and have a specific configuration for this.
-        Invoke-DecomposeLDM -ModelFileLocation $ModelFileLocation -TargetFolderLocation $TargetFolderLocation
+        Invoke-DecomposeLDM -ModelFileLocation $ComposedFileLocation -TargetFolderLocation $TargetFolderLocation
     }
-    "sws" {  
+    ".sws" {  
         # Invoke the Decompose on the SWS.
-        Invoke-DecomposeSWS -ModelFileLocation $ModelFileLocation -TargetFolderLocation $TargetFolderLocation
+        Invoke-DecomposeSWS -ModelFileLocation $ComposedFileLocation -TargetFolderLocation $TargetFolderLocation
     }    
     Default {}
 }
+
+Write-Host "Done"

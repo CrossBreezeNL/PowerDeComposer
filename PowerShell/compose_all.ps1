@@ -12,7 +12,7 @@ $DecomposedFolder = "$PSScriptRoot\decomposed"
 # Compose all decomposed model files.
 # Enable the Measure-Command to measure the run times (uncomment line 14 and 27).
 #Measure-Command -Expression {
-    Get-ChildItem -Path "$DecomposedFolder" -Include "*.ldm", "*.pdm", "*.sws", "*.xem" -Recurse -Depth 2 |
+    Get-ChildItem -Path "$DecomposedFolder" -Include "*.ldm", "*.pdm", "*.rqm", "*.sws", "*.xem" -Recurse -Depth 2 |
     ForEach-Object -Parallel {
         Import-Module -Name $using:PDCModuleLocation -Force
         # The model file location is the full name of the found file.
@@ -20,10 +20,10 @@ $DecomposedFolder = "$PSScriptRoot\decomposed"
         # Construct the Decomposed folder for the model based on the location of the composed model.
         $TargetFileLocation = Join-Path -Path $_.Directory.Parent.FullName.Replace($using:DecomposedFolder, $using:ComposedFolder) -ChildPath $_.Name
         # Log the start of the compose.
-        Write-Output "$(Get-Date -format 'dd-MM-yyyy HH:mm') ## Composing $ModelFileLocation to $TargetFileLocation..."
+        Write-Host "$(Get-Date -format 'dd-MM-yyyy HH:mm') ## Composing $ModelFileLocation to $TargetFileLocation..."
         # Invoke the Decompose on the LDM.
         Invoke-ComposeModel -ModelFileLocation $ModelFileLocation -TargetFileLocation $TargetFileLocation
     } -ThrottleLimit 5
  #| Out-Default }
 
-Write-Output "Done."
+ Write-Host "Done."

@@ -9,10 +9,10 @@ $PDCModuleLocation = "$PSScriptRoot\pdc\PowerDeComposer.psm1"
 $ComposedFolder = "$PSScriptRoot\composed"
 $DecomposedFolder = "$PSScriptRoot\decomposed"
 
-# Decompose all ldm, pdm, xem and sws files.
-# Enable the Measure-Command to measure the run times (uncomment line 14 and 45).
+# Decompose all ldm, pdm, rqm, xem and sws files.
+# Enable the Measure-Command to measure the run times (uncomment line 14 and 48).
 #Measure-Command -Expression {
-    Get-ChildItem -Path $ComposedFolder -Include "*.ldm", "*.pdm","*.xem","*.sws" -Recurse -Depth 2 |
+    Get-ChildItem -Path $ComposedFolder -Include "*.ldm", "*.pdm", "*.rqm", "*.xem", "*.sws" -Recurse -Depth 2 |
     ForEach-Object -Parallel {
         # Include PowerDeComposer PowerShell Functions.
         Import-Module -Name $using:PDCModuleLocation -Force
@@ -20,7 +20,7 @@ $DecomposedFolder = "$PSScriptRoot\decomposed"
         $ModelFileLocation = $_.FullName
         # Construct the Decomposed folder for the model based on the location of the composed model.
         $TargetFolderLocation = Join-Path -Path $_.Directory.FullName.Replace($using:ComposedFolder, $using:DecomposedFolder) -ChildPath $_.BaseName
-        Write-Output "$(Get-Date -format 'dd-MM-yyyy HH:mm') ## Decomposing $ModelFileLocation to $TargetFolderLocation..."
+        Write-Host "$(Get-Date -format 'dd-MM-yyyy HH:mm') ## Decomposing $ModelFileLocation to $TargetFolderLocation..."
         # Invoke the Decompose on the file based on the file extension.
         switch ($_.Extension) {
             ".xem" {
@@ -32,8 +32,12 @@ $DecomposedFolder = "$PSScriptRoot\decomposed"
                 Invoke-DecomposeLDM -ModelFileLocation $ModelFileLocation -TargetFolderLocation $TargetFolderLocation
             }
             ".pdm" {
-                # Currently this should only be called for DWA_Control and DWA_Configuration models.
+                # Invoke the Decompose on the PDM.
                 Invoke-DecomposeLDM -ModelFileLocation $ModelFileLocation -TargetFolderLocation $TargetFolderLocation
+            }
+            ".rqm" {
+                # Invoke the Decompose on the RQM.
+                Invoke-DecomposeRQM -ModelFileLocation $ModelFileLocation -TargetFolderLocation $TargetFolderLocation
             }
             ".sws" {
                 # Invoke the Decompose on the SWS.
@@ -44,4 +48,4 @@ $DecomposedFolder = "$PSScriptRoot\decomposed"
     } -ThrottleLimit 5
  #| Out-Default }
 
-Write-Output "Done."
+ Write-Host "Done."
