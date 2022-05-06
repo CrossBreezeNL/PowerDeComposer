@@ -221,5 +221,5 @@ Feature: Compose
       """
     When I perform a compose then I expect the following exception:
       """
-      Error while composing InlineFile.xml: Error attempting to parse XML file (href='ChildElements/FirstFileName.xml'). Reason: An include with href 'FirstFileName/ChildElements/SecondFileName.xml'failed, and no fallback element was found.
+      Error while reading InlineFile.xml: Error attempting to parse XML file (href='ChildElements/FirstFileName.xml'). Reason: An include with href 'FirstFileName/ChildElements/SecondFileName.xml'failed, and no fallback element was found.
       """

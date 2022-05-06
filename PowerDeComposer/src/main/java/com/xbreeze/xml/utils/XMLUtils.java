@@ -23,12 +23,26 @@
 package com.xbreeze.xml.utils;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
+import org.apache.xmlbeans.XmlException;
+import org.apache.xmlbeans.XmlObject;
+import org.apache.xmlbeans.XmlSaxHandler;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXNotRecognizedException;
+import org.xml.sax.SAXNotSupportedException;
+import org.xml.sax.XMLReader;
+
+import com.xbreeze.xml.DeComposerException;
 import com.ximpleware.AutoPilot;
 import com.ximpleware.ModifyException;
 import com.ximpleware.NavException;
@@ -51,6 +65,49 @@ public class XMLUtils {
 	 */
 	public static String excapeXMLChars(String input) {
 		return input.replaceAll("\\<", "&lt;").replaceAll("\\>", "&gt;");
+	}
+	
+	public static XmlObject parseXmlFile(File xmlFile) throws DeComposerException {
+		try {
+			// Create a XmlReader.
+			SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
+			// Enable namespaces.
+			saxParserFactory.setNamespaceAware(true);
+			// Enable XInclude on the SAX parser factory.
+			saxParserFactory.setXIncludeAware(true);
+			// Don't fixup base URI's and language. Otherwise the resulting XML file will contain extra (unwanted) attributes.
+			saxParserFactory.setFeature("http://apache.org/xml/features/xinclude/fixup-base-uris", false);
+			saxParserFactory.setFeature("http://apache.org/xml/features/xinclude/fixup-language", false);
+			// Create a new SAX Parser.
+			SAXParser saxParser = saxParserFactory.newSAXParser();
+			// Create a XML Reader.
+			XMLReader xmlReader = saxParser.getXMLReader();
+			
+			// Create a SAX handler so the SAX Parser can give the SAX events to this handler.
+			// XmlOptions can be added as argument for newXmlSaxHandler here.
+			XmlSaxHandler xmlSaxHandler = XmlObject.Factory.newXmlSaxHandler();
+			// Set the SaxHandler as the content handler for the XML Reader.
+			xmlReader.setContentHandler(xmlSaxHandler.getContentHandler());
+			
+			// Set the xml sax handler also as the lexical and declaration handler so it can also retrieve file elements which are not passed to the content handler (like comments).
+			xmlReader.setProperty("http://xml.org/sax/properties/lexical-handler", xmlSaxHandler.getLexicalHandler());
+			xmlReader.setProperty("http://xml.org/sax/properties/declaration-handler", xmlSaxHandler);
+			
+			// Parse the decomposed root file (which will also parse all it includes for us).
+			// If an include can't be found a SAXParseException will be thrown, we will wrap this into our own exception.
+			xmlReader.parse(xmlFile.getAbsolutePath());
+			
+			// Get the XmlObject which was just loaded using the SAX handler (this can throw a XmlException).
+			return xmlSaxHandler.getObject();
+		} catch (ParserConfigurationException pce) {
+			throw new DeComposerException(String.format("Error while configuring XML Parser: %s", pce.getMessage()));
+		} catch (SAXNotRecognizedException | SAXNotSupportedException sae) {
+			throw new DeComposerException(String.format("Error while configuring SAX: %s", sae.getMessage()));			
+		} catch (IOException | SAXException ise) {
+			throw new DeComposerException(String.format("Error while reading %s: %s", xmlFile.getName(), ise.getMessage()));
+		} catch (XmlException xme) {
+			throw new DeComposerException(String.format("Error while loading %s: %s", xmlFile.getName(), xme.getMessage()));
+		}
 	}
 	
 	/**
