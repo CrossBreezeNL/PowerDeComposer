@@ -24,19 +24,18 @@ package com.xbreeze.xml.compose;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
-import java.util.HashMap;
 import java.util.logging.Logger;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.apache.xmlbeans.XmlObject;
+import org.apache.xmlbeans.XmlOptions;
 import org.apache.xmlbeans.XmlSaxHandler;
+import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
+
+import com.xbreeze.xml.DeComposerException;
 
 public class XmlComposer {
 	private static final Logger logger = Logger.getGlobal();
@@ -53,6 +52,9 @@ public class XmlComposer {
 		if (!xmlFile.exists())
 			throw new Exception(String.format("The specified xml file doesn't exist '%s'.", xmlFilePath));
 		
+		// Set the system line seperator to only newline (so on Windows it doesn't include the carriage return).
+		System.setProperty("line.separator", "\n");
+		
 		// Compose using Xml Beans.
 		composeXml(xmlFile, xmlTargetFilePath);
 		
@@ -63,9 +65,6 @@ public class XmlComposer {
 	
 	/**
 	 * Use the Apache XmlBeans for resolving all includes.
-	 * For some strange reason it will add a carriage return after the XML declaration.
-	 * It seems this is OS dependent, because after checkin and running the build on linux the tests succeed.
-	 * Anyway I think the XmlDocument object shouldn't change the XML declaration.
 	 * @param xmlFile
 	 * @param xmlTargetFilePath
 	 * @throws Exception
@@ -85,53 +84,30 @@ public class XmlComposer {
 		// Create a XML Reader.
 		XMLReader xmlReader = saxParser.getXMLReader();
 		
-		
-		/**
-		// Create a PdcXmlHandler which implements ContentHandler, LexicalHandler and DeclHandler.
-		PdcXmlHandler pdcXmlHandler = new PdcXmlHandler();
-		// Set the content handler.
-		xmlReader.setContentHandler(pdcXmlHandler);
-		// Set the dtd handler.
-		xmlReader.setDTDHandler(pdcXmlHandler);
-		// Set the lexical handler.
-		xmlReader.setProperty("http://xml.org/sax/properties/lexical-handler", pdcXmlHandler);
-		// Set the declaration handler.
-		xmlReader.setProperty("http://xml.org/sax/properties/declaration-handler", pdcXmlHandler);
-		// Parse the decomposed root file (which will also parse all it includes for us).
-		xmlReader.parse(xmlFile.getAbsolutePath());
-		*/
-		
 		// Create a SAX handler so the SAX Parser can give the SAX events to this handler.
 		// XmlOptions can be added as argument for newXmlSaxHandler here.
 		XmlSaxHandler xmlSaxHandler = XmlObject.Factory.newXmlSaxHandler();
-		// new XmlOptions().setLoadUseLocaleCharUtil(false)
-		// XmlObject.Factory.newXmlSaxHandler(); -> https://github.com/apache/xmlbeans/blob/2900cf0995cba9b3ee0e460da06ac1d87e8937ec/src/main/java/org/apache/xmlbeans/impl/schema/XmlObjectFactory.java#L307
-		//  > XmlBeans.getContextTypeLoader().newXmlSaxHandler(getInnerType(), null); -> getInnerType()=null; https://github.com/apache/xmlbeans/blob/2900cf0995cba9b3ee0e460da06ac1d87e8937ec/src/main/java/org/apache/xmlbeans/impl/schema/SchemaTypeLoaderBase.java#L262
-		//   > Locale.newSaxHandler(this, type, options); -> type and options are null -> https://github.com/apache/xmlbeans/blob/2900cf0995cba9b3ee0e460da06ac1d87e8937ec/src/main/java/org/apache/xmlbeans/impl/store/Locale.java#L894
-		//    >  syncWrap(stl, options, (l) -> new XmlSaxHandlerImpl(l, type, options)) -> https://github.com/apache/xmlbeans/blob/2900cf0995cba9b3ee0e460da06ac1d87e8937ec/src/main/java/org/apache/xmlbeans/impl/store/Locale.java#L834
-		//     > saxHandlerOptions.setLoadUseLocaleCharUtil(true); -> Due to this line of code setting this on the XmlOptions during constructor will always be ignored: https://github.com/apache/xmlbeans/blob/2900cf0995cba9b3ee0e460da06ac1d87e8937ec/src/main/java/org/apache/xmlbeans/impl/store/Locale.java#L845
-		// There is a comment in the above code explaining why the CharUtils are overwritten there.
-		// I don't know why this is an issue anymore, because I haven't looked in this code in a while.
-		// If this is an issue in XmlBeans, the issue can be reported at: https://issues.apache.org/jira/browse/XMLBEANS-601?jql=project%20%3D%20XMLBEANS
-		//     > SaxHandler::initSaxHandler(l, saxHandlerOptions); -> https://github.com/apache/xmlbeans/blob/2900cf0995cba9b3ee0e460da06ac1d87e8937ec/src/main/java/org/apache/xmlbeans/impl/store/Locale.java#L2273
-		
 		// Set the SaxHandler as the content handler for the XML Reader.
 		xmlReader.setContentHandler(xmlSaxHandler.getContentHandler());
-		// Set the xml sax handler also as the lexical handler so it can also retrieve file elements which are not passed to the content handler (like comments). 
+		// Set the xml sax handler also as the lexical and declaration handler so it can also retrieve file elements which are not passed to the content handler (like comments). 
 		xmlReader.setProperty("http://xml.org/sax/properties/lexical-handler", xmlSaxHandler.getLexicalHandler());
 		xmlReader.setProperty("http://xml.org/sax/properties/declaration-handler", xmlSaxHandler);
 		// Parse the decomposed root file (which will also parse all it includes for us).
-		xmlReader.parse(xmlFile.getAbsolutePath());
+		// If an include can't be found a SAXParseException will be thrown, we will wrap this into our own exception.
+		try {
+			xmlReader.parse(xmlFile.getAbsolutePath());
+		} catch (SAXParseException spe) {
+			throw new DeComposerException(String.format("Error while composing %s: %s", xmlFile.getName(), spe.getMessage()));
+		}
 		// Get the XmlObject which was just loaded using the sax handler.
 		XmlObject composedXmlObject = xmlSaxHandler.getObject();
 		
 		try {
 			// Save the resulting composed file.
 			// XmlOption could be added as extra parameter for the save method: , new XmlOptions().setSaveOptimizeForSpeed(true)
-			composedXmlObject.save(new File(xmlTargetFilePath));
-		} catch (IOException exc) {
-			throw new Exception(
-					String.format("Error writing to target file %s: %s", xmlTargetFilePath, exc.getMessage()));
+			composedXmlObject.save(new File(xmlTargetFilePath), new XmlOptions().setSavePrettyPrint());
+		} catch (IOException ioe) {
+			throw new DeComposerException(String.format("Error writing to target file %s: %s", xmlTargetFilePath, ioe.getMessage()));
 		}
 	}
 

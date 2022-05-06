@@ -13,6 +13,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BOMInputStream;
 
+import com.xbreeze.xml.DeComposerException;
 import com.xbreeze.xml.Executor;
 
 import io.cucumber.java.Before;
@@ -194,6 +195,15 @@ public class PowerDeComposerTestSteps {
 					this._composedFilePath.toString()
 				}
 			);
+		}
+	}
+	
+	@When("^I perform a compose then I expect the following exception:$")
+	public void iExecuteCompose(String exceptionMessage) throws Throwable {
+		try {
+			iExecuteCompose();
+		} catch (DeComposerException dce) {
+			assertEquals(dce.getMessage(), exceptionMessage, "The expected and actual exception message is different");
 		}
 	}
 

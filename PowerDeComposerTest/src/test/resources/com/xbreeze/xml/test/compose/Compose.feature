@@ -7,37 +7,37 @@ Feature: Compose
       """
       <?xml version="1.0" encoding="UTF-8"?>
       <RootElement xmlns:xi="http://www.w3.org/2001/XInclude">
-      	<ChildElements>
-      		<xi:include href="<SubFolder>FirstFileName.xml" />
-      		<xi:include href="<SubFolder>SecondFileName.xml" />
-      	</ChildElements>
+        <ChildElements>
+          <xi:include href="<SubFolder>FirstFileName.xml" />
+          <xi:include href="<SubFolder>SecondFileName.xml" />
+        </ChildElements>
       </RootElement>
       """
     And the decomposed file '<SubFolder>FirstFileName.xml':
       """
       <ChildElement id="FirstId">
-      			<Name>FirstName</Name>
-      		</ChildElement>
+            <Name>FirstName</Name>
+          </ChildElement>
       """
     And the decomposed file '<SubFolder>SecondFileName.xml':
       """
       <ChildElement id="SecondId">
-      			<Name>SecondName</Name>
-      		</ChildElement>
+            <Name>SecondName</Name>
+          </ChildElement>
       """
     When I perform a compose
     Then I expect a composed file with the following content:
       """
       <?xml version="1.0" encoding="UTF-8"?>
       <RootElement>
-      	<ChildElements>
-      		<ChildElement id="FirstId">
-      			<Name>FirstName</Name>
-      		</ChildElement>
-      		<ChildElement id="SecondId">
-      			<Name>SecondName</Name>
-      		</ChildElement>
-      	</ChildElements>
+        <ChildElements>
+          <ChildElement id="FirstId">
+            <Name>FirstName</Name>
+          </ChildElement>
+          <ChildElement id="SecondId">
+            <Name>SecondName</Name>
+          </ChildElement>
+        </ChildElements>
       </RootElement>
       """
 
@@ -47,47 +47,46 @@ Feature: Compose
       | in Unix style subfolder    | SubFolder/  |
       | in Windows style subfolder | SubFolder\\ |
 
-	@Debug
   Scenario: Compose recursive
     Given the decomposed file:
       """
       <?xml version="1.0" encoding="UTF-8"?>
       <RootElement xmlns:xi="http://www.w3.org/2001/XInclude">
-      	<ChildElements>
-      		<xi:include href="ChildElements/FirstFileName.xml" />
-      	</ChildElements>
+        <ChildElements>
+          <xi:include href="ChildElements/FirstFileName.xml" />
+        </ChildElements>
       </RootElement>
       """
     And the decomposed file 'ChildElements/FirstFileName.xml':
       """
       <ChildElement id="FirstId" xmlns:xi="http://www.w3.org/2001/XInclude">
-      			<Name>FirstName</Name>
-      			<ChildElements>
-      				<xi:include href="FirstFileName/ChildElements/SecondFileName.xml" />
-      			</ChildElements>
-      		</ChildElement>
+        <Name>FirstName</Name>
+        <ChildElements>
+          <xi:include href="FirstFileName/ChildElements/SecondFileName.xml" />
+        </ChildElements>
+      </ChildElement>
       """
     And the decomposed file 'ChildElements/FirstFileName/ChildElements/SecondFileName.xml':
       """
       <ChildElement id="SecondId">
-      					<Name>SecondName</Name>
-      				</ChildElement>
+        <Name>SecondName</Name>
+      </ChildElement>
       """
     When I perform a compose
     Then I expect a composed file with the following content:
       """
       <?xml version="1.0" encoding="UTF-8"?>
       <RootElement>
-      	<ChildElements>
-      		<ChildElement id="FirstId">
-      			<Name>FirstName</Name>
-      			<ChildElements>
-      				<ChildElement id="SecondId">
-      					<Name>SecondName</Name>
-      				</ChildElement>
-      			</ChildElements>
-      		</ChildElement>
-      	</ChildElements>
+        <ChildElements>
+          <ChildElement id="FirstId">
+            <Name>FirstName</Name>
+            <ChildElements>
+              <ChildElement id="SecondId">
+                <Name>SecondName</Name>
+              </ChildElement>
+            </ChildElements>
+          </ChildElement>
+        </ChildElements>
       </RootElement>
       """
 
@@ -96,42 +95,40 @@ Feature: Compose
       """
       <?xml version="1.0" encoding="UTF-8"?>
       <RootElement xmlns:xi="http://www.w3.org/2001/XInclude">
-      
-      	<ChildElements>
-      		<xi:include href="FirstFileName.xml" />
-      	</ChildElements>
+        <ChildElements>
+          <xi:include href="FirstFileName.xml" />
+        </ChildElements>
       </RootElement>
       """
     And the decomposed file 'FirstFileName.xml':
       """
       <?xml version="1.0" encoding="UTF-8"?>
       <ChildElement id="FirstId">
-      			<Name>FirstName</Name>
-      		</ChildElement>
+        <Name>FirstName</Name>
+      </ChildElement>
       """
     When I perform a compose
     Then I expect a composed file with the following content:
       """
       <?xml version="1.0" encoding="UTF-8"?>
       <RootElement>
-      
-      	<ChildElements>
-      		<ChildElement id="FirstId">
-      			<Name>FirstName</Name>
-      		</ChildElement>
-      	</ChildElements>
+        <ChildElements>
+          <ChildElement id="FirstId">
+            <Name>FirstName</Name>
+          </ChildElement>
+        </ChildElements>
       </RootElement>
       """
 
-  # Isse: Newline after processing instructions is ignored.
-  @KnownIssue
+  # Issue: Newline after processing instructions is ignored.
+  # This issue is solved when using pretty-print option.
   Scenario: Compose with processing instruction
     Given the decomposed file:
       """
       <?xml version="1.0" encoding="UTF-8"?>
       <?CustomProcessingInstruction CustomPIAttribute="SomeThing" version="0.0.1"?>
       <RootElement>
-      	<ChildElement/>
+        <ChildElement/>
       </RootElement>
       """
     When I perform a compose
@@ -140,12 +137,12 @@ Feature: Compose
       <?xml version="1.0" encoding="UTF-8"?>
       <?CustomProcessingInstruction CustomPIAttribute="SomeThing" version="0.0.1"?>
       <RootElement>
-      	<ChildElement/>
+        <ChildElement/>
       </RootElement>
       """
 
   # Isse: Newlines after processing instructions are ignored.
-  @KnownIssue
+  # This issue is solved when using pretty-print option.
   Scenario: Compose with two processing instructions
     Given the decomposed file:
       """
@@ -153,7 +150,7 @@ Feature: Compose
       <?CustomProcessingInstruction CustomPIAttribute="SomeThing" version="0.0.1"?>
       <?SecondCustomProcessingInstruction SecondCustomPIAttribute="SomeThing" version="0.0.2"?>
       <RootElement>
-      	<ChildElement/>
+        <ChildElement/>
       </RootElement>
       """
     When I perform a compose
@@ -163,7 +160,7 @@ Feature: Compose
       <?CustomProcessingInstruction CustomPIAttribute="SomeThing" version="0.0.1"?>
       <?SecondCustomProcessingInstruction SecondCustomPIAttribute="SomeThing" version="0.0.2"?>
       <RootElement>
-      	<ChildElement/>
+        <ChildElement/>
       </RootElement>
       """
   
@@ -173,59 +170,25 @@ Feature: Compose
     Given the decomposed file:
       """
       <?xml version="1.0" encoding="UTF-8"?>
-      <!-- Comment before root node. -->
+      <!--Comment before root node.-->
       <RootElement/>
       """
     When I perform a compose
     Then I expect a composed file with the following content:
       """
       <?xml version="1.0" encoding="UTF-8"?>
-      <!-- Comment before root node. -->
+      <!--Comment before root node.-->
       <RootElement/>
       """
 
-  # Isse: All whitespace before the root element is not included in the output (adding a space on the empty line doesn't make a difference).
-  @KnownIssue
-  Scenario: Compose with whitespace before root node
-    Given the decomposed file:
-      """
-      <?xml version="1.0" encoding="UTF-8"?>
-      
-      <RootElement/>
-      """
-    When I perform a compose
-    Then I expect a composed file with the following content:
-      """
-      <?xml version="1.0" encoding="UTF-8"?>
-      
-      <RootElement/>
-      """
-
-  Scenario: Compose with whitespace inside root node
-    Given the decomposed file:
-      """
-      <?xml version="1.0" encoding="UTF-8"?>
-      <RootElement>
-      
-      </RootElement>
-      """
-    When I perform a compose
-    Then I expect a composed file with the following content:
-      """
-      <?xml version="1.0" encoding="UTF-8"?>
-      <RootElement>
-      
-      </RootElement>
-      """
-
-	# Issue: Comment inside the document is also ignored.
-	# This is solved by setting http://xml.org/sax/properties/lexical-handler.
+  # Issue: Comment inside the document is also ignored.
+  # This is solved by setting http://xml.org/sax/properties/lexical-handler.
   Scenario: Compose with comment inside root node
     Given the decomposed file:
       """
       <?xml version="1.0" encoding="UTF-8"?>
       <RootElement>
-      <!-- Some comment -->
+        <!--Some comment-->
       </RootElement>
       """
     When I perform a compose
@@ -233,6 +196,30 @@ Feature: Compose
       """
       <?xml version="1.0" encoding="UTF-8"?>
       <RootElement>
-      <!-- Some comment -->
+        <!--Some comment-->
       </RootElement>
+      """
+
+  Scenario: Compose with non-existing include
+    Given the decomposed file:
+      """
+      <?xml version="1.0" encoding="UTF-8"?>
+      <RootElement xmlns:xi="http://www.w3.org/2001/XInclude">
+        <ChildElements>
+          <xi:include href="ChildElements/FirstFileName.xml" />
+        </ChildElements>
+      </RootElement>
+      """
+    And the decomposed file 'ChildElements/FirstFileName.xml':
+      """
+      <ChildElement id="FirstId" xmlns:xi="http://www.w3.org/2001/XInclude">
+        <Name>FirstName</Name>
+        <ChildElements>
+          <xi:include href="FirstFileName/ChildElements/SecondFileName.xml" />
+        </ChildElements>
+      </ChildElement>
+      """
+    When I perform a compose then I expect the following exception:
+      """
+      Error while composing InlineFile.xml: Error attempting to parse XML file (href='ChildElements/FirstFileName.xml'). Reason: An include with href 'FirstFileName/ChildElements/SecondFileName.xml'failed, and no fallback element was found.
       """

@@ -9,6 +9,14 @@ public class DeComposerException extends Exception {
 	 * Generated serial version UID. 
 	 */
 	private static final long serialVersionUID = 3172138596951617184L;
+	
+	public DeComposerException(String message) {
+		super(message);
+	}
+	
+	public DeComposerException(String message, Throwable cause) {
+		super(message, cause);
+	}
 
 	public DeComposerException(String message, XmlCursor xmlCursor) {
 		this(message, (XmlLineNumber)xmlCursor.getBookmark(XmlLineNumber.class), xmlCursor.documentProperties().getSourceName());
