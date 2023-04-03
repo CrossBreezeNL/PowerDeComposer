@@ -164,6 +164,9 @@
 								<goals>
 									<goal>sign</goal>
 								</goals>
+								<configuration>
+									<passphraseServerId>pgp</passphraseServerId>
+								</configuration>
 							</execution>
 						</executions>
 					</plugin>

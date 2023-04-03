@@ -25,7 +25,34 @@ In order to make the usage of PowerDeComposer a bit simplier a PowerShell module
 
 
 # How to publish to sonatype nexus using Maven
+In order to release PowerDeComposer into Maven Central we use a docker container and a local certificate. Follow the sections below to publish a new release.
 
-For this we use a docker image for maven
-- https://hub.docker.com/_/maven
-    -> docker pull maven
+## Setup PGP certificate locally
+In order to sign code for nexus, you need to have PGP certificates locally and public key shared with a keyserver. Follow the steps on [this](https://central.sonatype.org/publish/requirements/gpg/) website to setup PGP and generate a key-pair.
+
+## Configure maven
+You don't need to have Maven installed locally, it will be ran via Docker. We do need a Maven settings file for the authentication details.
+For this, create the file .m2/settings.xml with the following contents and replace the placeholders with your credentials:
+
+```xml
+<settings>
+    <servers>
+        <server>
+            <id>ossrh</id>
+            <username>{NEXUS/JIRA USERNAME}</username>
+            <password>{NEXUS/JIRA PASSWORD}</password>
+        </server>
+        <server>
+            <id>pgp</id>
+            <passphrase>{PGP KEY PASSPHRASE}</passphrase>
+        </server>
+    </servers>
+</settings>
+```
+
+## Publish the release
+In order to publish the release, execute the following command in the root of the repository:
+
+```powershell
+./publish-to-maven.ps1
+```
