@@ -26,16 +26,19 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -172,8 +175,22 @@ public class XmlDecomposer {
 		
 		// Get the existing list of files in the decomposed model (if it exists). This is needed to track files which are written and which need to be deleted.
 		TreeSet<File> formerDecomposedFiles = GetCaseInsensitiveFileSet();
-		addFormerFilePaths(targetFile, formerDecomposedFiles, null);
-		
+
+		logger.info("Collecting previously decomposed files for potential removal...");
+		//Based on configuration, decide what strategy to use for removing old files.
+		switch(decomposeConfig.getFileRemovalStrategy()){
+			case "files":
+				logger.info("- Using the files strategy...");
+				formerDecomposedFiles.addAll(getFormerFilesTree(targetFile.getParent()));
+				break;
+			case "includes":
+			default:
+				logger.info("- Using the includes strategy...");
+				addFormerFilePaths(targetFile, formerDecomposedFiles, null);
+				break;
+		}
+		logger.info("Done collecting previously decomposed files for potential removal...");
+
 		// Parse and write document parts, if specified in the config.
 		// Keep track of the decomposed files, so we can:
 		// - Detect whether a file is written multiple times in one run
@@ -235,7 +252,20 @@ public class XmlDecomposer {
 			}
 		});
 	}
-	
+
+	 /**
+	 * Return a TreeSet containing all filepaths from the base decompose folder.
+	 * It collects the toFile value and filters out all directories.
+	 * @param fileWithIncludesPath The base decompose folder.
+	 */
+	private TreeSet<File> getFormerFilesTree(String baseFolder) throws Exception {
+		TreeSet<File> filePathsSet = Files.walk(Paths.get(baseFolder))
+									.filter(file -> !Files.isDirectory(file))
+									.map(Path::toFile)
+									.collect(Collectors.toCollection(TreeSet::new));
+		return filePathsSet;
+	}
+
 	/**
 	 * Add the former decompose file paths to the filePathsSet collection.
 	 * @param fileWithIncludesPath The current file.
@@ -317,6 +347,12 @@ public class XmlDecomposer {
 		
 		// Create a list of local and global ids.
 		HashMap<String, String> localToGlobalIds = new HashMap<String, String>();
+
+		//Create a list of global Id's to verify for duplicates
+		//This needs to be added for performance reasons, since containsValue is slow in a HashMap structure.
+		HashSet<String> globalIds = new HashSet<String>();
+
+		// Loop thru the set of identifier nodes.
 		while ((ap.evalXPath()) != -1) {
 			// Get the current index
 			int identifierNodeIndex = nv.getCurrentIndex();
@@ -328,16 +364,20 @@ public class XmlDecomposer {
 	    	String identifierReplacementValue = XMLUtils.getXPathText(nv, identifierReplacementConfig.getReplacementValueXPath());
 
 	    	logger.fine(String.format("Found identifier '%s' and replaced with value '%s'", identifierOriginalValue, identifierReplacementValue));
-	    	if (!localToGlobalIds.containsKey(identifierOriginalValue) && !localToGlobalIds.containsValue(identifierReplacementValue)) {
-	    		localToGlobalIds.put(identifierOriginalValue, identifierReplacementValue);
-	    	}
-	    	// If we reach this code, there is a duplicate identifier found, which should never happen.
-	    	else {
-	    		if (localToGlobalIds.containsKey(identifierOriginalValue))
-	    			throw new Exception(String.format("A duplicate identifier was found while replacing identifiers (%s). This should never happen!", identifierOriginalValue));
-	    		if (localToGlobalIds.containsValue(identifierReplacementValue))
-	    			throw new Exception(String.format("A duplicate replacement-identifier was found while replacing identifiers (%s). This should never happen!", identifierReplacementValue));
-	    	}
+
+			// If there is a duplicate key, throw an exception
+			if (localToGlobalIds.containsKey(identifierOriginalValue))
+				throw new Exception(String.format("A duplicate identifier was found while replacing identifiers (%s). This should never happen!", identifierOriginalValue));
+			// Throw an exception if a duplicate replacement value has been found.
+			else if (globalIds.contains(identifierReplacementValue))
+			 	throw new Exception(String.format("A duplicate replacement-identifier was found while replacing identifiers (%s). This should never happen!", identifierReplacementValue));
+			// Otherwise store the key and value in the hashmap data structure.
+			else {
+				//Add the key-value combination to the map.
+				localToGlobalIds.put(identifierOriginalValue, identifierReplacementValue);
+				//Add the identifier replacement value to the HashSet for duplicate check.
+				globalIds.add(identifierReplacementValue);
+			}
 	    	
 	    	// Update the value of the identifier node.
 	    	xm.updateToken(identifierNodeIndex, identifierReplacementValue);
@@ -655,7 +695,7 @@ public class XmlDecomposer {
 				// Increase the extracted child count.
 				extractedChildCount++;
 			}
-			
+
 			logger.fine(String.format("%s - Found %d childs", prefix, extractedChildCount));
 		}
 		

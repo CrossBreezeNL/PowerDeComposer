@@ -7,9 +7,9 @@
 	<version>0.0.1-SNAPSHOT</version>
 
 	<properties>
-		<pdc.version>1.4.0</pdc.version>
-		<cucumber.version>7.0.0</cucumber.version>
-		<junit.version>5.8.1</junit.version>
+		<pdc.version>1.5.0</pdc.version>
+		<cucumber.version>7.11.2</cucumber.version>
+		<junit.version>5.9.2</junit.version>
 		<java.version>1.8</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
@@ -72,7 +72,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.11.0</version>
                 <configuration>
                     <encoding>UTF-8</encoding>
                     <source>${java.version}</source>
@@ -82,7 +82,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M5</version>
+                <version>3.0.0</version>
                 <configuration>
 					<includes>**/*UnitTest.java</includes>
                     <properties>

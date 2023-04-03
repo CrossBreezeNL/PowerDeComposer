@@ -7,8 +7,10 @@ The PowerDeComposer configuration for composing and decomposing model files.
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <PowerDeComposerConfig>
-
-	<Decompose>
+	<!-- Specify a file removal strategy that is used to remove previously decomposed files. -->
+	<!-- "includes" will traverse the includes tree of the decomposed folder and build the list based on them. This is also the default value that is used if not specified. -->
+	<!-- "files" will traverse the decomposed directory and build the list based on the files that are present. -->
+	<Decompose fileRemovalStrategy="...">
 
 		<!-- Specify a XPath to execute on both sides (composed and decomposed) to decide whether the decompose. -->
 		<!-- The value of the XPath must be found in the root XML document of the decomposed model, so it can be in a decompose part of the model. -->
@@ -84,6 +86,7 @@ The PowerDeComposer configuration for composing and decomposing model files.
 ### Config elements
 | Config element           | Description |
 |:---                      |:---         |
+| fileRemovalStrategy      | Specify a file removal strategy that is used to remove previously decomposed files. "includes" will traverse the includes tree of the decomposed files and build the list based on them. This is also the default value that is used if not specified. "files" will traverse the decomposed directory and build the list based on the files that are present. |
 | ChangeDetection          | Node to evaluate on the composed and decomposed models. Of the value is empty on at least one side or the value differs the decompose is executed. |
 | IdentifierReplacement    | Instruction to replace identifiers with alternative values. The identifierNodeXPath is the node which contains the identifier in the composed model. The replacementValueXPath must be executed to get the new identifier value. The referencingNodeXPath value is optional, it if specified the value in these nodes will also be replaced using the value of the old identifier and the new identifier. |
 | NodeRemoval              | Instruction to remove nodes before decomposing. The XPath is evaluated to find the nodes to remove. An example for such an instruction is to remove the modification date on referenced objects. |
@@ -98,7 +101,7 @@ When no configuration file is specified on the command, the following configurat
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <PowerDeComposerConfig>
-	<Decompose>
+	<Decompose fileRemovalStrategy="includes">
 	
 		<!-- Specify a XPath to execute on both sides (composed and decomposed) to decide whether the decompose. -->
 		<!-- The value of the XPath must be found in the root XML document of the decomposed model, so it can be in a decompose part of the model. -->

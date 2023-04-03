@@ -2,8 +2,8 @@ package com.xbreeze.xml.config;
 
 import java.util.logging.Logger;
 
-import javax.xml.bind.ValidationEvent;
-import javax.xml.bind.ValidationEventHandler;
+import jakarta.xml.bind.ValidationEvent;
+import jakarta.xml.bind.ValidationEventHandler;
 
 public class UnmarshallValidationEventHandler implements ValidationEventHandler {
 	// The logger for the XGenConfig class.

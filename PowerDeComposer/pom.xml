@@ -24,7 +24,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.x-breeze.powerdecomposer</groupId>
 	<artifactId>PowerDeComposer</artifactId>
-	<version>1.4.0</version>
+	<version>1.5.0</version>
 	<packaging>jar</packaging>
 	<name>CrossBreeze PowerDeComposer</name>
 	<description>PowerDeComposer is a utility that enables integrating PowerDesigner with the version control system of your choice.</description>
@@ -85,19 +85,19 @@
 		</dependency>
 		<!-- JAX-B for the config. -->
 		<dependency>
-			<groupId>javax.xml.bind</groupId>
-			<artifactId>jaxb-api</artifactId>
-			<version>2.3.1</version>
+			<groupId>jakarta.xml.bind</groupId>
+			<artifactId>jakarta.xml.bind-api</artifactId>
+			<version>4.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.sun.xml.bind</groupId>
 			<artifactId>jaxb-core</artifactId>
-			<version>2.3.0.1</version>
+			<version>4.0.2</version>
 		</dependency>
 		<dependency>
 			<groupId>com.sun.xml.bind</groupId>
 			<artifactId>jaxb-impl</artifactId>
-			<version>2.3.5</version>
+			<version>4.0.2</version>
 		</dependency>
 	</dependencies>
 	<profiles>
@@ -109,7 +109,7 @@
 						<!-- Build an executable JAR -->
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-jar-plugin</artifactId>
-						<version>3.2.0</version>
+						<version>3.3.0</version>
 						<configuration>
 							<archive>
 								<manifest>
@@ -138,7 +138,7 @@
 						<!-- Build jar file with javadocs (Sonatype requirement) -->
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-javadoc-plugin</artifactId>
-						<version>3.3.1</version>
+						<version>3.5.0</version>
 						<configuration>
 							<show>protected</show>
 							<failOnError>false</failOnError>
@@ -177,7 +177,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-assembly-plugin</artifactId>
-						<version>3.3.0</version>
+						<version>3.5.0</version>
 						<configuration>
 							<archive>
 								<manifest>
@@ -206,7 +206,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.1</version>
+				<version>3.11.0</version>
 			</plugin>
 
 
@@ -214,7 +214,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>jaxb2-maven-plugin</artifactId>
-				<version>2.5.0</version>
+				<version>3.1.0</version>
                 <executions>
                     <execution>
                         <id>schemagen</id>

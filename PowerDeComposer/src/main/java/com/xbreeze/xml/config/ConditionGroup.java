@@ -2,10 +2,10 @@ package com.xbreeze.xml.config;
 
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElements;
-import javax.xml.bind.annotation.XmlSeeAlso;
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElements;
+import jakarta.xml.bind.annotation.XmlSeeAlso;
+import jakarta.xml.bind.annotation.XmlTransient;
 
 @XmlTransient
 @XmlSeeAlso({AllConditionGroup.class, OneOffConditionGroup.class})

@@ -2,6 +2,7 @@ package com.xbreeze.xml.test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -253,6 +254,25 @@ public class PowerDeComposerTestSteps {
 				actualResultContent,
 				"The expected and actual file content is different"
 		);
+	}
+	
+	@Then("^I (do not|do) expect the file '(.*)'$")
+	public void thenIDoExpectTheFile(String doOrDont,String targetFile)
+			throws Throwable {
+		
+		File expectedFile = this._decomposedFolderPath.resolve(targetFile).toFile();
+		
+		if (doOrDont.equalsIgnoreCase("do")){
+			assertTrue(
+					expectedFile.exists(),
+					String.format("The expected file '%s' doesn't exist!", targetFile)
+			);
+		}else if (doOrDont.equalsIgnoreCase("do not")){
+			assertFalse(
+					expectedFile.exists(),
+					String.format("The not expected file '%s' does exist!", targetFile)
+			);
+		}
 	}
 
 }
