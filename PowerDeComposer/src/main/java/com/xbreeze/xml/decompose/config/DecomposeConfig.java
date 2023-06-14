@@ -2,12 +2,15 @@ package com.xbreeze.xml.decompose.config;
 
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElementWrapper;
+import jakarta.xml.bind.annotation.XmlType;
 
 @XmlType(propOrder = {"changeDetectionConfig", "nodeRemovalConfigs", "identifierReplacementConfigs", "decomposableElementConfig"})
 public class DecomposeConfig {
+	// The default value for the file removal strategy is includes (since this is the safest option, choose files for speed).
+	private String _fileRemovalStrategy = "includes";
 	private ChangeDetectionConfig _changeDetectionConfig;
 	private List<IdentifierReplacementConfig> _identifierReplacementConfigs;
 	private List<NodeRemovalConfig> _nodeRemovalConfigs;
@@ -17,6 +20,15 @@ public class DecomposeConfig {
 		super();
 	}
 	
+	@XmlAttribute(name = "fileRemovalStrategy")
+	public String getFileRemovalStrategy() {
+		return _fileRemovalStrategy;
+	}
+
+	public void setFileRemovalStrategy(String fileRemovalStrategy) {
+		this._fileRemovalStrategy = fileRemovalStrategy;
+	}
+
 	@XmlElement(name = "ChangeDetection")
 	public ChangeDetectionConfig getChangeDetectionConfig() {
 		return _changeDetectionConfig;

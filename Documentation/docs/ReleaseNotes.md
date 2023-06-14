@@ -20,6 +20,16 @@ Click on the header of a version number to go to the documentation of that speci
 [//]: # (>     * [ ] Binding)
 [//]: # (>         * [X] Some issue...)
 
+## Version 1.5.0
+
+- [ ] 1.5.0 <sup>03-04-2023</sup>
+> !!! success "Enhanced features"
+>     * [ ] Decompose model
+>         - [X] Added configuration option for file removal strategy based on files instead of the includes.
+> !!! warning "Bug fixes"
+>     * [ ] Performance
+>         - [X] Faster search for duplicate identifier replacement values.
+
 ## Version 1.4.0
 
 - [ ] 1.4.0 <sup>30-03-2022</sup>
