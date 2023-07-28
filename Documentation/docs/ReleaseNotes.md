@@ -20,6 +20,15 @@ Click on the header of a version number to go to the documentation of that speci
 [//]: # (>     * [ ] Binding)
 [//]: # (>         * [X] Some issue...)
 
+## Version 1.6.0
+
+- [ ] 1.6.0 <sup>22-06-2023</sup>
+> !!! success "Enhanced features"
+>     * [ ] Decompose model
+>         - [X] Added logic to formalize extended attributes text.
+>     * [ ] Compose model
+>         - [X] Added logic to de-formalize extended attributes text.
+
 ## Version 1.5.0
 
 - [ ] 1.5.0 <sup>03-04-2023</sup>

@@ -22,6 +22,7 @@
  *******************************************************************************/
 package com.xbreeze.xml.decompose;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -78,11 +79,11 @@ public class XmlDecomposer {
 		// Read the xml file into a string.
 		logger.fine("Getting file contents...");
 		FileContentAndCharset xmlFileContentsAndCharset = FileUtils.getFileContent(xmlFile);
-		//logger.fine("Start of file contents:");
-		//logger.fine("--------------------------------------------------");
-		//logger.fine(xmlFileContents);
-		//logger.fine("--------------------------------------------------");
-		//logger.fine("End of file contents:");
+		logger.fine("Start of file contents:");
+		logger.fine("--------------------------------------------------");
+		logger.fine(xmlFileContentsAndCharset.getFileContents().replaceAll("\n", "[LF]\n").replaceAll("\r", "[CR]"));
+		logger.fine("--------------------------------------------------");
+		logger.fine("End of file contents:");
 		
 		// Create a VTDNav for navigating the document.
 		VTDNav nv;
@@ -171,6 +172,11 @@ public class XmlDecomposer {
 			for (IdentifierReplacementConfig identifierReplacementConfig : decomposeConfig.getIdentifierReplacementConfigs()) {
 				nv = replaceIdentifiers(nv, identifierReplacementConfig);
 			}
+		}
+		
+		// Transform the ExtendedAttributeText elements to separate XML elements.
+		if (decomposeConfig.formalizeExtendedAtrributes()) {
+			nv = formalizeExtendedAttributesText(nv);
 		}
 		
 		// Get the existing list of files in the decomposed model (if it exists). This is needed to track files which are written and which need to be deleted.
@@ -416,6 +422,102 @@ public class XmlDecomposer {
 		}
 		
 		logger.info("Done replacing identifiers in document.");
+		
+		// Output and reparse the modifier xml to the VtdNav.
+		return xm.outputAndReparse();
+	}
+	
+	private VTDNav formalizeExtendedAttributesText(VTDNav nv) throws Exception {
+		logger.info("Formalizing extended attributes in document...");
+		
+		// We are going to replace all ExtnededAttributeText elements with it's formal representation, so we need an XmlModifier.
+		XMLModifier xm;
+		try {
+			xm = new XMLModifier(nv);
+		} catch (Exception e) {
+			throw new Exception("Error while initializing XMLModifier");
+		}
+		
+		AutoPilot ap = getAutoPilot(nv);
+		// Select all a:ExtendedAttributesText elements.
+		ap.selectXPath("//ExtendedAttributesText");
+		
+		// Loop thru the set of identifier nodes.
+		while ((ap.evalXPath()) != -1) {
+			int extAttrsTextNodeIndex = nv.getCurrentIndex();
+			// The found token should be a starting tag.
+			if (nv.getTokenType(extAttrsTextNodeIndex) == VTDNav.TOKEN_STARTING_TAG) {
+				// Get the extended attribute text.
+				// Replace LF with CRLF, since VTD-Nav removes the carriage returns in the file (and PowerDesigner always has CRLF).
+				String extendedAttributesText = nv.toString(nv.getText()).replace("\n", "\r\n");
+				logger.fine(String.format("Found extended attributes text: %s", extendedAttributesText.replaceAll("\n", "[LF]\n").replaceAll("\r", "[CR]")));
+				
+				// The extended attribute text needs to be parsed so we can create the new XML elements.
+				// The format of the text is as follows:
+				// {<extension-guid>},<extension-name>,<length>=<extension-extended-attribute[s]>\n
+				// The format of <extension-extended-attribute[s]> is as follows:
+				// {<extended-attr-guid>},<ext-attr-name>,<length>=<ext-attr-value>\n
+				// Both patterns are almost the same, so we can use the same regex recursively.
+				String extAttrRegex = "\\{([0-9A-F-]{36})\\},([a-zA-Z -_]+),([0-9]+)=";
+				// So we start with a regex pattern for the extension level format.
+				Pattern extensionExtAttrsPattern = Pattern.compile(extAttrRegex);
+				Matcher extExtAttrsMatcher = extensionExtAttrsPattern.matcher(extendedAttributesText);
+				StringBuffer extExtAttrsXml = new StringBuffer();
+				extExtAttrsXml.append("\r\n<ExtendedAttributes>");
+				int currentExtensionExtAttrEnd = -1;
+				while (extExtAttrsMatcher.find()) {
+					String guid = extExtAttrsMatcher.group(1);
+					String name = extExtAttrsMatcher.group(2);
+					int extAttrLength = Integer.parseInt(extExtAttrsMatcher.group(3));
+					int extAttrStart = extExtAttrsMatcher.end();
+					int extAttrsEnd = extAttrStart + extAttrLength;
+					
+					if (extAttrsEnd > extendedAttributesText.length())
+						throw new Exception("Error while formalizing extended attributes text: The extended attribute length is longer then the contents of the string. This should never happen!");
+					
+					String extExtAttrContent = extendedAttributesText.substring(extAttrStart, extAttrsEnd);
+					
+					// If we are inside a extension section, so currentExtensionExtAttrEnd != -1. And we find a match where the the end index is after the end of extension section we have a problem.
+					// The end of an extension section should always be equal or after any child sections.
+					if (currentExtensionExtAttrEnd != -1 && extAttrStart < currentExtensionExtAttrEnd && extAttrsEnd > currentExtensionExtAttrEnd)
+						throw new Exception("Error while formalizing extended attributes text, the current extension end index is between the start and end of the new extended attribute match. This should never happen!");
+					
+					// If we reached the end of a previous extension list, we update the end to -1 so this match is handled as a OriginatingExtension.
+					if (currentExtensionExtAttrEnd != -1 && extAttrStart >= currentExtensionExtAttrEnd) {
+						logger.fine("The new match is outside of the extension section, so resetting end index.");
+						extExtAttrsXml.append("\r\n</OriginatingExtension>");
+						currentExtensionExtAttrEnd = -1;
+					}
+					
+					// If we outside of a extension attribute list, a new extension part is started.
+					if (currentExtensionExtAttrEnd == -1) {
+						logger.fine(String.format("Found extention [ObjectID=%s;Name=%s;Length=%d;Content='%s'", guid, name, extAttrLength, extExtAttrContent));
+						extExtAttrsXml.append(String.format("\r\n<OriginatingExtension ObjectID=\"%s\" Name=\"%s\">", guid, name));
+						// Now we have added the element for the OriginatingExtension, we need to loop over the matches within the content part of the extension extended attributes.
+						// For each extended attribute we find, we add a separate XML element.
+						// Update the end of the extension extended attribute list to the current one. This way in the next loop we know we are handling an extended attribute part.
+						currentExtensionExtAttrEnd = extAttrsEnd;						
+					}
+					// We are inside a extension section, so we treat the match as an extended attribute within the extension.
+					else {
+						logger.fine(String.format("Found extended attributes [ObjectID=%s;Name=%s;Length=%d;Value='%s'", guid, name, extAttrLength, extExtAttrContent));
+						extExtAttrsXml.append(String.format("\r\n<ExtendedAttribute ObjectID=\"%s\" Name=\"%s\">%s</ExtendedAttribute>", guid, name, extExtAttrContent));
+						// Update the region to scan to after the current extended attribute.
+						extExtAttrsMatcher.region(extAttrsEnd, extExtAttrsMatcher.regionEnd());
+					}
+				}
+				// If we exited the while loop and the end index is not -1, we need to add the ending tag of the extension element.
+				if (currentExtensionExtAttrEnd != -1) {
+					extExtAttrsXml.append("\r\n</OriginatingExtension>");
+				}
+				extExtAttrsXml.append("\r\n</ExtendedAttributes>");
+				xm.insertAfterElement(extExtAttrsXml.toString());
+				// Now we added the replacement of the textual extended attributes, we can remove the ExtendedAttributesText element.
+				xm.remove(nv.expandWhiteSpaces(nv.getElementFragment(), VTDNav.WS_LEADING));
+			}
+		}
+		
+		logger.info("Done formalizing extended attributes in document.");
 		
 		// Output and reparse the modifier xml to the VtdNav.
 		return xm.outputAndReparse();
@@ -727,7 +829,14 @@ public class XmlDecomposer {
 		}
 		// Write the target Xml file.
 		logger.fine(String.format("%s - Writing file: %s", prefix, targetFile.toString()));
-		xm.output(new FileOutputStream(targetFilePath.toString()));
+		// Write the XML file into a array output stream.
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		xm.output(baos);
+		FileOutputStream fos = new FileOutputStream(targetFilePath.toString());
+		// Replace single LF without CR with CRLF and write it to the file.
+		fos.write(baos.toString(fileCharset).replaceAll("(?<!\r)\n", "\r\n").getBytes());
+		// Close the file stream.
+		fos.close();
 		//logger.fine(String.format("%s< %s", prefix, targetDirectoryPath));
 		
 		return targetFilePath;

@@ -7,9 +7,11 @@
 <a:ModificationDate>1586204078</a:ModificationDate>
 <a:Modifier>Willem</a:Modifier>
 <a:TotalSavingCurrency/>
-<a:ExtendedAttributesText>{2B8936D7-8688-4269-BCA9-64EBA2E802A8},XModel_Modeling_Extension,74={41F8D165-86A1-4DE2-A7DC-6EFD4541DAB2},xm_stereotype,16=ExampleTableType
-
-</a:ExtendedAttributesText>
+<ExtendedAttributes>
+<OriginatingExtension ObjectID="2B8936D7-8688-4269-BCA9-64EBA2E802A8" Name="XModel_Modeling_Extension">
+<ExtendedAttribute ObjectID="41F8D165-86A1-4DE2-A7DC-6EFD4541DAB2" Name="xm_stereotype">ExampleTableType</ExtendedAttribute>
+</OriginatingExtension>
+</ExtendedAttributes>
 <c:ExtendedCollections>
 <o:ExtendedCollection Id="8F881B7D-20F7-4F83-A98B-B8F4B39BC2B3">
 <a:ObjectID>8F881B7D-20F7-4F83-A98B-B8F4B39BC2B3</a:ObjectID>

@@ -6,7 +6,7 @@ trigger:
 - feature/*
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: windows-latest # PowerDeComposer will run primary on Windows, so we use this in the build.
 
 steps:
 - task: Maven@3
@@ -21,3 +21,12 @@ steps:
     publishJUnitResults: true
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
     goals: 'test'
+- task: PublishCucumberReport@1
+  displayName: 'Publish Cucumber Report'
+  # Run this task also if the previous task has failed (so a test failed).
+  condition: succeededOrFailed()
+  inputs:
+    jsonDir: ./PowerDeComposerTest/target/cucumber-reports
+    outputPath: ./PowerDeComposerTest/target/cucumber-reports
+    name: 'Unit Tests'
+    title: PowerDeComposer

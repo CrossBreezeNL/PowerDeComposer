@@ -12,9 +12,9 @@ public class UnmarshallValidationEventHandler implements ValidationEventHandler 
 	@Override
 	public boolean handleEvent(ValidationEvent event) {
 		if (event.getLocator() != null)
-			logger.warning(String.format("Error in config file on line %d, column %d, node '%s':\n%s", event.getLocator().getLineNumber(), event.getLocator().getOffset(), event.getLocator().getNode(), event.getMessage()));
+			logger.warning(String.format("Error in config file on line %d, column %d, node '%s':%s%s", event.getLocator().getLineNumber(), event.getLocator().getOffset(), event.getLocator().getNode(), System.lineSeparator(), event.getMessage()));
 		else
-			logger.warning(String.format("Error in config file:\n%s", event.getMessage()));
+			logger.warning(String.format("Error in config file:%s%s", System.lineSeparator(), event.getMessage()));
 		return false;
 	}
 }

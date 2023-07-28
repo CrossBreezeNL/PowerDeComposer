@@ -7,7 +7,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 
 	<properties>
-		<pdc.version>1.5.0</pdc.version>
+		<pdc.version>1.6.0</pdc.version>
 		<cucumber.version>7.11.2</cucumber.version>
 		<junit.version>5.9.2</junit.version>
 		<java.version>1.8</java.version>
@@ -93,6 +93,7 @@
                             cucumber.junit-platform.naming-strategy=long
                         </configurationParameters>
                     </properties>
+					<argLine>-Dfile.encoding=UTF-8</argLine>
                 </configuration>
             </plugin>
         </plugins>

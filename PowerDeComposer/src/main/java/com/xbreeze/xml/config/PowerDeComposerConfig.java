@@ -31,6 +31,9 @@ import java.net.URL;
 import java.util.logging.Logger;
 
 import javax.xml.XMLConstants;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.UnmarshalException;
@@ -41,14 +44,13 @@ import jakarta.xml.bind.annotation.XmlAccessorOrder;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 import com.xbreeze.xml.decompose.config.DecomposeConfig;
+
 
 @XmlRootElement(name = "PowerDeComposerConfig")
 @XmlAccessorType(XmlAccessType.NONE)

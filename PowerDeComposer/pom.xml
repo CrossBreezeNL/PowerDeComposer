@@ -24,7 +24,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.x-breeze.powerdecomposer</groupId>
 	<artifactId>PowerDeComposer</artifactId>
-	<version>1.5.0</version>
+	<version>1.6.0</version>
 	<packaging>jar</packaging>
 	<name>CrossBreeze PowerDeComposer</name>
 	<description>PowerDeComposer is a utility that enables integrating PowerDesigner with the version control system of your choice.</description>

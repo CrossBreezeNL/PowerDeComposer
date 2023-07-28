@@ -107,11 +107,64 @@ public class XmlComposer {
 			// Declare the XInclude namespace.
 			//ap.declareXPathNameSpace("xi", "http://www.w3.org/2001/XInclude");
 			
-			// Search for all xi:include elements.
-			ap.selectXPath("//include");
-			int includeCount = 0;
 			try {
+				// Create a XMLModifier for changing the XML document.
 				XMLModifier vm = new XMLModifier(nav);
+				
+				// De-Formalize all extended attributes.
+				// Select all ExtendedAttributes elements.
+				ap.selectXPath("//ExtendedAttributes");
+				boolean deformalizedExtendedAttributes = false;
+				// Loop thru the set of extended attributes.
+				while ((ap.evalXPath()) != -1) {
+					// Store the fragment of the ExtendedAttributes element (so we can remove it later.
+					long extAttrsNodeFragment = nav.getElementFragment();
+					
+					// Create a string buffer for the extended attribute text.
+					StringBuffer extendedAttributeText = new StringBuffer();
+					extendedAttributeText.append("\r\n<a:ExtendedAttributesText>");
+					
+					// Find the OriginatingExtension elements.
+					AutoPilot ap_extension = new AutoPilot(nav);
+					ap_extension.selectXPath("OriginatingExtension");
+					// Loop thru the set of OriginatingExtension.
+					while ((ap_extension.evalXPath()) != -1) {
+						String extObjectID = nav.toString(nav.getAttrVal("ObjectID"));
+						String extName = nav.toString(nav.getAttrVal("Name"));
+						
+						// Find the ExtendedAttribute elements.
+						AutoPilot ap_extattribute = new AutoPilot(nav);
+						ap_extattribute.selectXPath("ExtendedAttribute");
+						// Create a buffer for the extended attributes of the current extension.
+						StringBuffer extensionExtAttrTextBuffer = new StringBuffer();
+						// Loop thru the set of ExtendedAttribute.
+						while ((ap_extattribute.evalXPath()) != -1) {
+							String extAttrObjectID = nav.toString(nav.getAttrVal("ObjectID"));
+							String extAttrName = nav.toString(nav.getAttrVal("Name"));
+							// Replace a LF without preceding LF to CRLF (since VTD-NAV removed it during parsing).
+							String extAttrValue = nav.toString(nav.getText()).replaceAll("(?<!\r)\n", "\r\n");
+							// Add the current extended attribute to the list for the current extension.
+							extensionExtAttrTextBuffer.append(String.format("{%s},%s,%d=%s\r\n", extAttrObjectID, extAttrName, extAttrValue.length(), extAttrValue));
+						}
+						extensionExtAttrTextBuffer.append("\r\n");
+						String extensionExtAttrText = extensionExtAttrTextBuffer.toString();
+						
+						// Add the extension extended attributes to the extended attributes buffer.
+						// The length is minus 2, to compensate for the trailing CRLF.
+						extendedAttributeText.append(String.format("{%s},%s,%d=%s", extObjectID, extName, extensionExtAttrText.length() - 2, extensionExtAttrText));
+					}
+					extendedAttributeText.append("</a:ExtendedAttributesText>");
+					// Insert the ExtendedAttributesText element.
+					vm.insertAfterElement(extendedAttributeText.toString());
+					// Now we added the replacement of the textual extended attributes, we can remove the ExtendedAttributesText element.
+					vm.remove(nav.expandWhiteSpaces(extAttrsNodeFragment, VTDNav.WS_LEADING));
+					// Set the indicator whether we de-formalized anything to true.
+					deformalizedExtendedAttributes = true;
+				}
+				
+				// Search for all xi:include elements.
+				ap.selectXPath("//include");
+				int includeCount = 0;
 				while ((ap.evalXPath()) != -1) {
 					// Obtain the filename of include
 					AutoPilot ap_href = new AutoPilot(nav);
@@ -151,9 +204,10 @@ public class XmlComposer {
 					includeCount++;
 				}
 				logger.fine(String.format("Found %d includes in XML file %s", includeCount, xmlFile.toString()));
+				
 				// if includes were found, output and parse the modifier and return it,
 				// otherwise return the original one
-				if (includeCount > 0) {
+				if (deformalizedExtendedAttributes || includeCount > 0) {
 					String resolvedXML = XMLUtils.getResultingXml(vm);
 					logger.fine(String.format("XML file %s with includes resolved:", xmlFile.toString()));
 					logger.fine("**** Begin of XML file ****");

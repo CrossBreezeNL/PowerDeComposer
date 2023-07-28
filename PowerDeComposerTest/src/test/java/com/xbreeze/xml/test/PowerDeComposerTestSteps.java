@@ -42,7 +42,7 @@ public class PowerDeComposerTestSteps {
 
 	@Before
 	public void before(final Scenario scenario) throws Exception {
-		
+	
 		// Get the class loader.
 		final ClassLoader loader = Thread.currentThread().getContextClassLoader();
 		
@@ -171,7 +171,9 @@ public class PowerDeComposerTestSteps {
 		}
 		// Write the file.
 		FileWriter targetFileWrite = new FileWriter(targetFilePath.toFile(), Charset.forName("UTF-8"));
-		IOUtils.write(fileContents, targetFileWrite);
+		//System.out.println(String.format("Writing file contents: %s", fileContents));
+		// Replacing LF with preceding CR with CRLF (since Cucumber remove's it from the string.
+		IOUtils.write(fileContents.replaceAll("(?<!\r)\n", "\r\n"), targetFileWrite);
 		targetFileWrite.close();
 	}
 	
@@ -250,7 +252,8 @@ public class PowerDeComposerTestSteps {
 		String actualResultContent = IOUtils.toString(bomInputStream, bomInputStream.getBOMCharsetName());
 		// Assert the expected and actual file contents are the same.
 		assertEquals(
-				expectedFileContents,
+				// When comparing the decomposed results, we need to replace LF with CRLF, since Cucumber will remove the CR.
+				expectedFileContents.replaceAll("(?<!\r)\n", "\r\n"),
 				actualResultContent,
 				"The expected and actual file content is different"
 		);
