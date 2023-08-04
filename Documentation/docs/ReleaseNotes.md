@@ -22,7 +22,7 @@ Click on the header of a version number to go to the documentation of that speci
 
 ## Version 1.6.0
 
-- [ ] 1.6.0 <sup>22-06-2023</sup>
+- [ ] 1.6.0 <sup>02-08-2023</sup>
 > !!! success "Enhanced features"
 >     * [ ] Decompose model
 >         - [X] Added logic to formalize extended attributes text.
