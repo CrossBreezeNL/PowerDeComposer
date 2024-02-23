@@ -18,8 +18,8 @@ public class DecomposeConfig {
 	
 	// Whether to formalize extended attribute (so translate the string representation to XML elements with attributes).
 	// By default this is enabled.
-	@XmlAttribute(name = "formalizeExtendedAtrributes", required = false)
-	private Boolean _formalizeExtendedAtrributes = true;
+	@XmlAttribute(name = "formalizeExtendedAttributes", required = false)
+	private Boolean _formalizeExtendedAttributes = true;
 	
 	private ChangeDetectionConfig _changeDetectionConfig;
 	private List<IdentifierReplacementConfig> _identifierReplacementConfigs;
@@ -38,12 +38,12 @@ public class DecomposeConfig {
 		this._fileRemovalStrategy = fileRemovalStrategy;
 	}
 	
-	public Boolean formalizeExtendedAtrributes() {
-		return _formalizeExtendedAtrributes;
+	public Boolean formalizeExtendedAttributes() {
+		return _formalizeExtendedAttributes;
 	}
 	
-	public void setFormalizeExtendedAttributes(Boolean formalizeExtendedAtrributes) {
-		this._formalizeExtendedAtrributes = formalizeExtendedAtrributes;
+	public void setFormalizeExtendedAttributes(Boolean formalizeExtendedAttributes) {
+		this._formalizeExtendedAttributes = formalizeExtendedAttributes;
 	}
 
 	@XmlElement(name = "ChangeDetection")

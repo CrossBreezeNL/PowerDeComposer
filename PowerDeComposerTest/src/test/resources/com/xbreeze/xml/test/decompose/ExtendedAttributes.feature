@@ -7,7 +7,7 @@ Feature: Decompose Extended Attributes
       """
       <?xml version="1.0" encoding="UTF-8"?>
       <PowerDeComposerConfig>
-      	<Decompose formalizeExtendedAtrributes="true">
+      	<Decompose formalizeExtendedAttributes="true">
       		<DecomposableElement />
       	</Decompose>
       </PowerDeComposerConfig>
@@ -39,7 +39,7 @@ Feature: Decompose Extended Attributes
       """
       <?xml version="1.0" encoding="UTF-8"?>
       <PowerDeComposerConfig>
-      	<Decompose formalizeExtendedAtrributes="false">
+      	<Decompose formalizeExtendedAttributes="false">
       		<DecomposableElement />
       	</Decompose>
       </PowerDeComposerConfig>

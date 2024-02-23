@@ -175,7 +175,7 @@ public class XmlDecomposer {
 		}
 		
 		// Transform the ExtendedAttributeText elements to separate XML elements.
-		if (decomposeConfig.formalizeExtendedAtrributes()) {
+		if (decomposeConfig.formalizeExtendedAttributes()) {
 			nv = formalizeExtendedAttributesText(nv);
 		}
 		

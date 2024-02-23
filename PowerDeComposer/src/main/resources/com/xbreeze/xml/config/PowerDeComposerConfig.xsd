@@ -29,7 +29,7 @@
       <xs:element name="DecomposableElement" type="decomposableElementConfig" minOccurs="0"/>
     </xs:sequence>
     <xs:attribute name="fileRemovalStrategy" type="xs:string"/>
-    <xs:attribute name="formalizeExtendedAtrributes" type="xs:boolean"/>
+    <xs:attribute name="formalizeExtendedAttributes" type="xs:boolean"/>
   </xs:complexType>
 
   <xs:complexType name="changeDetectionConfig">
@@ -123,4 +123,3 @@
     <xs:attribute name="xpath" type="xs:string"/>
   </xs:complexType>
 </xs:schema>
-
