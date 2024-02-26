@@ -1,0 +1,65 @@
+on:
+  workflow_call:
+  
+env:
+  JAVA_VERSION: 11
+  MAVEN_VERSION: 3.8.6
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build-and-test:
+    name: Build and test
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      # Checkout the code
+      - name: checkout
+        uses: actions/checkout@v4
+  
+      # Setup Java
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '${{ env.JAVA_VERSION }}'
+          distribution: 'temurin'
+          architecture: x64
+          cache: 'maven'
+      
+      # Build with Maven
+      - name: Build
+        run: mvn --batch-mode install -DskipTests
+        working-directory: ./PowerDeComposer
+
+      # Test with Maven
+      - name: Run Unit Tests
+        run: mvn --batch-mode test -Dtest="RunPDCUnitTest"
+        working-directory: ./PowerDeComposer
+
+      - name: Test Report
+        uses: phoenix-actions/test-reporting@v12
+        id: test-report               # Set ID reference for step
+        if: success() || failure()    # run this step even if previous step failed
+        with:
+          name: test-results
+          path: PowerDeComposer/target/surefire-reports/TEST-*.xml
+          reporter: java-junit
+
+      # Build single jar
+      - name: Assemble Jar
+        run: mvn --batch-mode assembly:single -DskipTests
+        working-directory: ./PowerDeComposer
+
+      # Publish jars.
+      - uses: actions/upload-artifact@v4
+        with:
+          name: jar-without-dependencies
+          path: PowerDeComposer/target/PowerDeComposer-*[0-9].jar
+          compression-level: 0 # no compression, since jar is already compressed
+      - uses: actions/upload-artifact@v4
+        with:
+          name: jar-with-dependencies
+          path: PowerDeComposer/target/PowerDeComposer-*[0-9]-jar-with-dependencies.jar
+          compression-level: 0 # no compression, since jar is already compressed
