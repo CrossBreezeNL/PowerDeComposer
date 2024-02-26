@@ -300,6 +300,7 @@
 					<generateEpisode>false</generateEpisode>
 					<sources>
 						<source>src/main/java/com/xbreeze/xml/config/PowerDeComposerConfig.java</source>
+						<source>src/main/java/com/xbreeze/xml/decompose/config</source>
 					</sources>
 				</configuration>
 			</plugin>
