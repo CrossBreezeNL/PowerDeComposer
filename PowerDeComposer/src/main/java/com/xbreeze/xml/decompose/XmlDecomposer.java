@@ -59,7 +59,7 @@ import com.ximpleware.XMLModifier;
 import com.ximpleware.XPathParseException;
 
 public class XmlDecomposer {
-	private static final Logger logger = Logger.getLogger(XmlDecomposer.class.getName());
+	private static final Logger logger = Logger.getGlobal();
 	
 	private static final String STR_PREFIX_SPACER = "  ";
 	

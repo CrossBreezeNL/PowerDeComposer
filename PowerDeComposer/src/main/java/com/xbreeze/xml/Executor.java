@@ -26,10 +26,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Paths;
 import java.util.logging.ConsoleHandler;
-import java.util.logging.Filter;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
-import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 import com.xbreeze.xml.compose.XmlComposer;
@@ -38,7 +36,7 @@ import com.xbreeze.xml.decompose.XmlDecomposer;
 
 public class Executor {
 
-	private static final Logger logger = Logger.getLogger("");
+	public static final Logger logger = Logger.getGlobal();
 	
 	/**
 	 * Main function to start the Xml Compose/Decompose process.
@@ -57,24 +55,19 @@ public class Executor {
 		}
 		
 		// Add a logger for the console to log message below warning (and error).
-		ConsoleHandler outputConsoleHandler = new ConsoleHandler() {
+		ConsoleHandler outputConsoleHandler = new ConsoleHandler()
+		{
 			@Override
 			protected synchronized void setOutputStream(OutputStream out) throws SecurityException {
 				super.setOutputStream(System.out);
 			}
 		};
-		Level consoleLogLevel = getLogLevel("INFO");
-		outputConsoleHandler.setLevel(consoleLogLevel);
-		// Only log message with a lower level then warning.
-		outputConsoleHandler.setFilter(new Filter() {
-			@Override
-			public boolean isLoggable(LogRecord record) {
-				return record.getLevel().intValue() < Level.SEVERE.intValue();
-			}
-		});
-		// Update the log level to the lowest level.
-		logger.setLevel((consoleLogLevel.intValue() < logger.getLevel().intValue()) ? consoleLogLevel : logger.getLevel());
+		// Set the console handler to handle all levels (the shown log levels are steered using the logging.properties file).
+		outputConsoleHandler.setLevel(Level.ALL);
+		// Add the new console handler to the global logger.
 		logger.addHandler(outputConsoleHandler);
+		// Disable using any parent handlers (to make sure there not logged twice).
+		logger.setUseParentHandlers(false);
 		
 		// Check the passed arguments.
 		if (args.length == 3 || args.length == 4) {
@@ -106,18 +99,5 @@ public class Executor {
 		} else {
 			throw new Exception("Expecting exactly 3 or 4 arguments: (decompose, xml-file-path, target-directory[, config-file-location]) or (compose, xml-source-file, xml-target-file[, config-file-location]).");
 		}
-	}
-	/**
-	 * Get the log level using the textual representation from the config.
-	 * @param level The log level
-	 * @return The Level constant.
-	 * @throws GeneratorException
-	 */
-	private static Level getLogLevel(String level) throws Exception {
-		try {
-			return Level.parse(level.toUpperCase());
-		} catch (IllegalArgumentException | NullPointerException e) {
-			throw new Exception(String.format("Unknown LogLevel specified: '%s'", level), e);
-		}		
 	}
 }
