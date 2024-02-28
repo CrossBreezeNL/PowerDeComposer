@@ -8,7 +8,7 @@ Feature: Special characters
       """
       <?xml version="1.0" encoding="UTF-8"?>
       <RootElement>
-				<Name>Willem Ötten</Name>
+      	<Name>Willem Ötten</Name>
       </RootElement>
       """
     And the config file:
@@ -25,6 +25,6 @@ Feature: Special characters
       """
       <?xml version="1.0" encoding="UTF-8"?>
       <RootElement>
-				<Name>Willem Ötten</Name>
+      	<Name>Willem Ötten</Name>
       </RootElement>
       """
