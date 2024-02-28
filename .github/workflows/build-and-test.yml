@@ -49,22 +49,25 @@ jobs:
         id: test-report               # Set ID reference for step
         if: success() || failure()    # run this step even if previous step failed
         with:
-          name: test-results
+          name: test-results-${{ matrix.os }}-java-${{ matrix.java }}
           path: PowerDeComposer/target/surefire-reports/TEST-*.xml
           reporter: java-junit
 
       # Build single jar
       - name: Assemble Jar
+        if: runner.os == 'Linux'
         run: mvn --batch-mode assembly:single -DskipTests
         working-directory: ./PowerDeComposer
 
       # Publish jars.
       - uses: actions/upload-artifact@v4
+        if: runner.os == 'Linux'
         with:
           name: jar-without-dependencies
           path: PowerDeComposer/target/PowerDeComposer-*[0-9].jar
           compression-level: 0 # no compression, since jar is already compressed
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4  
+        if: runner.os == 'Linux'
         with:
           name: jar-with-dependencies
           path: PowerDeComposer/target/PowerDeComposer-*[0-9]-jar-with-dependencies.jar
