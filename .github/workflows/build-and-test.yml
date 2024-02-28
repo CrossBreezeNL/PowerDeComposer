@@ -11,9 +11,11 @@ defaults:
 jobs:
   build-and-test:
     strategy:
+      # Don't fail other run's if one fails. Let them all finish.
+      fail-fast: false
       matrix:
-        java-version: [11]
         os: [ubuntu-latest, windows-latest]
+        java: [11]
 
     name: Build and test
     runs-on: ${{ matrix.os }}
@@ -27,7 +29,7 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          java-version: '${{ matrix.java-version }}'
+          java-version: '${{ matrix.java }}'
           distribution: 'temurin'
           architecture: x64
           cache: 'maven'
