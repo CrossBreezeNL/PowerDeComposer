@@ -15,7 +15,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
-        java: [11]
+        java: [11, 17]
 
     name: Build and test
     runs-on: ${{ matrix.os }}
@@ -63,12 +63,12 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: runner.os == 'Linux'
         with:
-          name: jar-without-dependencies
+          name: jar-without-dependencies-java-${{ matrix.java }}
           path: PowerDeComposer/target/PowerDeComposer-*[0-9].jar
           compression-level: 0 # no compression, since jar is already compressed
       - uses: actions/upload-artifact@v4  
         if: runner.os == 'Linux'
         with:
-          name: jar-with-dependencies
+          name: jar-with-dependencies-java-${{ matrix.java }}
           path: PowerDeComposer/target/PowerDeComposer-*[0-9]-jar-with-dependencies.jar
           compression-level: 0 # no compression, since jar is already compressed
