@@ -174,7 +174,6 @@ public class PowerDeComposerTestSteps {
 		}
 		// Write the file.
 		FileWriter targetFileWrite = new FileWriter(targetFilePath.toFile(), Charset.forName("UTF-8"));
-		//System.out.println(String.format("Writing file contents: %s", fileContents));
 		// Replacing LF with preceding CR with CRLF (since Cucumber remove's it from the string.
 		IOUtils.write(fileContents.replaceAll("(?<!\r)\n", "\r\n"), targetFileWrite);
 		targetFileWrite.close();
@@ -272,7 +271,10 @@ public class PowerDeComposerTestSteps {
 		//Open the file and read to string
 		FileInputStream fis = new FileInputStream(file);
 		BOMInputStream bomInputStream = new BOMInputStream(fis);
-		return IOUtils.toString(bomInputStream, bomInputStream.getBOMCharsetName());
+		String fileContents = IOUtils.toString(bomInputStream, bomInputStream.getBOMCharsetName());
+		bomInputStream.close();
+		fis.close();
+		return fileContents;
 	}
 	
 	@Then("^I (do not|do) expect the file '(.*)'$")
