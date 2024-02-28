@@ -234,6 +234,12 @@ public class PowerDeComposerTestSteps {
 		String expectedComposedFileContents = PowerDeComposerTestSteps.getFileContents(expectedComposedFile);
 		thenIExpectTheFileWithContents(this._composedFilePath.toFile(), expectedComposedFileContents);
 	}
+	
+	@Then("^I expect a decomposed file with the following content:$")
+	public void thenIExpectDecomposedFileWithFollowingContent(String expectedDecomposedFileContents)
+			throws Throwable {
+		thenIExpectTheFileWithContentFromCucumber(this._decomposedFilePath.toFile(), expectedDecomposedFileContents);
+	}
 
 	@Then("^I expect a decomposed file '(.*)' with the following content:$")
 	public void thenIExpectDecomposedFileWithFollowingContent(String decomposedFileLocation, String expectedDecomposedFileContents)
@@ -241,10 +247,20 @@ public class PowerDeComposerTestSteps {
 		thenIExpectTheFileWithContentFromCucumber(this._decomposedFolderPath.resolve(decomposedFileLocation).toFile(), expectedDecomposedFileContents);
 	}
 	
-	@Then("^I expect a decomposed file with the following content:$")
-	public void thenIExpectDecomposedFileWithFollowingContent(String expectedDecomposedFileContents)
+	@Then("^I expect a decomposed file with the content equal to '(.*)'$")
+	public void thenIExpectDecomposedFileWithContentEqualToFile(String expectedDecomposedFileLocation)
 			throws Throwable {
-		thenIExpectTheFileWithContentFromCucumber(this._decomposedFilePath.toFile(), expectedDecomposedFileContents);
+		File expectedDecomposedFile = this._scenarioResourcePath.resolve(expectedDecomposedFileLocation).toFile();
+		String expectedDecomposedFileContents = PowerDeComposerTestSteps.getFileContents(expectedDecomposedFile);
+		thenIExpectTheFileWithContents(this._decomposedFolderPath.toFile(), expectedDecomposedFileContents);
+	}
+	
+	@Then("^I expect a decomposed file '(.*)' with content equal to '(.*)'$")
+	public void thenIExpectDecomposedFileWithContentEqualToFile(String decomposedFileLocation, String expectedDecomposedFileLocation)
+			throws Throwable {
+		File expectedDecomposedFile = this._scenarioResourcePath.resolve(expectedDecomposedFileLocation).toFile();
+		String expectedDecomposedFileContents = PowerDeComposerTestSteps.getFileContents(expectedDecomposedFile);
+		thenIExpectTheFileWithContents(this._decomposedFolderPath.resolve(decomposedFileLocation).toFile(), expectedDecomposedFileContents);
 	}
 	
 	// Compare the actual and expected file contents. If it differs throw an assertion error.
