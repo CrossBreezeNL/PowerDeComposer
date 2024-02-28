@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 
@@ -36,9 +37,9 @@ public class PowerDeComposerTestSteps {
 	// The folder of the target files.
 	private Path _decomposedFolderPath;
 	// The resource path of the feature under test.
-	private Path _featureResourcePath;
-	// The resource path for composed and decomposed files for the feature under test.
-	private Path _featureFileResourcePath;
+	private Path _scenarioResourcePath;
+	// The resource path for runtime composed and decomposed files for the feature under test.
+	private Path _scenarioRuntimeResourcePath;
 
 	@Before
 	public void before(final Scenario scenario) throws Exception {
@@ -48,22 +49,24 @@ public class PowerDeComposerTestSteps {
 		
 		// Get the classpath path of the current scenario.
 		// Create a path of it and get the parent path (so we have the classpath folder the resource files are in).
-		this._featureResourcePath = Path.of(loader.getResource(scenario.getUri().getRawSchemeSpecificPart()).toURI()).getParent();
-		this._featureFileResourcePath = _featureResourcePath.resolve(scenario.getName().replace(' ', '_'));
+		Path featureFilePath = Path.of(loader.getResource(scenario.getUri().getRawSchemeSpecificPart()).toURI());
+		String featureName = featureFilePath.getFileName().toFile().toString().replace(".feature", "");
+		this._scenarioResourcePath = featureFilePath.getParent().resolve(featureName).resolve(scenario.getName().replace(' ', '_'));
+		this._scenarioRuntimeResourcePath = _scenarioResourcePath.resolve(scenario.getId());
 		// Create the file resource
-		this.createDirectoryIfItDoesntExist(this._featureFileResourcePath);
+		this.createDirectoryIfItDoesntExist(this._scenarioRuntimeResourcePath);
 		
 		// Initialize the paths to the default values.
-		_configFolderPath = this._featureFileResourcePath.resolve("Config");
-		_composedFolderPath = this._featureFileResourcePath.resolve("Composed");
-		_decomposedFolderPath = this._featureFileResourcePath.resolve("Decomposed");
+		_configFolderPath = this._scenarioRuntimeResourcePath.resolve("Config");
+		_composedFolderPath = this._scenarioRuntimeResourcePath.resolve("Composed");
+		_decomposedFolderPath = this._scenarioRuntimeResourcePath.resolve("Decomposed");
 		
 		// Init the file paths (these can be overridden when the composed or decompose folder path is changes using a phrase.
 		initFilePaths();
 		
 		// Log  the paths.
-		scenario.log(String.format("Feature resource path: %s", _featureResourcePath.toString()));
-		scenario.log(String.format("Feature file-resource path: %s", _featureFileResourcePath.toString()));
+		scenario.log(String.format("Feature resource path: %s", _scenarioResourcePath.toString()));
+		scenario.log(String.format("Feature file-resource path: %s", _scenarioRuntimeResourcePath.toString()));
 	}
 	
 	public void createDirectoryIfItDoesntExist(Path directoryPath) throws Exception {
@@ -93,25 +96,25 @@ public class PowerDeComposerTestSteps {
 	
 	@Given("^the config folder location '(.*)'$")
 	public void givenTheConfigFolderLocation(String configFolderLocation) throws Throwable {
-		this._configFolderPath = this._featureFileResourcePath.resolve(configFolderLocation);
+		this._configFolderPath = this._scenarioResourcePath.resolve(configFolderLocation);
 		initFilePaths();
 	}
 	
 	@Given("^the composed folder location '(.*)'$")
 	public void givenTheComposedFolderLocation(String composedFolderLocation) throws Throwable {
-		this._composedFolderPath = this._featureFileResourcePath.resolve(composedFolderLocation);
+		this._composedFolderPath = this._scenarioResourcePath.resolve(composedFolderLocation);
 		initFilePaths();
 	}
 
 	@Given("^the decomposed folder location '(.*)'$")
 	public void givenTheDecomposedFolderLocation(String decomposedFolderLocation) throws Throwable {
-		this._decomposedFolderPath = this._featureFileResourcePath.resolve(decomposedFolderLocation);
+		this._decomposedFolderPath = this._scenarioResourcePath.resolve(decomposedFolderLocation);
 		initFilePaths();
 	}
 
 	@Given("^the config file '(.*)'$")
 	public void givenTheConfigFileLocation(String pdcConfigLocation) throws Throwable {
-		this._pdcConfigPath = this._featureResourcePath.resolve(pdcConfigLocation);
+		this._pdcConfigPath = this._scenarioResourcePath.resolve(pdcConfigLocation);
 	}
 	
 	@Given("^the config file:$")
@@ -123,7 +126,7 @@ public class PowerDeComposerTestSteps {
 
 	@Given("^the composed file '(.*)'$")
 	public void givenTheXmlComposedFileLocation(String composedFileLocation) throws Throwable {
-		this._composedFilePath = this._featureResourcePath.resolve(composedFileLocation);
+		this._composedFilePath = this._scenarioResourcePath.resolve(composedFileLocation);
 	}
 	
 	@Given("^the composed file '(.*)':$")
@@ -143,7 +146,7 @@ public class PowerDeComposerTestSteps {
 	
 	@Given("^the decomposed file '(.*)'$")
 	public void givenTheDecomposedFileLocation(String xmlFileLocation) throws Throwable {
-		this._decomposedFilePath = this._featureResourcePath.resolve(xmlFileLocation);
+		this._decomposedFilePath = this._scenarioResourcePath.resolve(xmlFileLocation);
 	}
 	
 	@Given("^the decomposed file '(.*)':$")
@@ -224,6 +227,14 @@ public class PowerDeComposerTestSteps {
 			throws Throwable {
 		thenIExpectTheFileWithFollowingContent(this._composedFilePath.toFile(), expectedComposedFileContents);
 	}
+	
+	@Then("^I expect a composed file with the content equal to '(.*)'$")
+	public void thenIExpectComposedFileWithContentEqualToFile(String expectedComposedFileLocation)
+			throws Throwable {
+		File expectedComposedFile = this._scenarioResourcePath.resolve(expectedComposedFileLocation).toFile();
+		String expectedComposedFileContents = PowerDeComposerTestSteps.getFileContents(expectedComposedFile);
+		thenIExpectTheFileWithFollowingContent(this._composedFilePath.toFile(), expectedComposedFileContents);
+	}
 
 	@Then("^I expect a decomposed file '(.*)' with the following content:$")
 	public void thenIExpectDecomposedFileWithFollowingContent(String decomposedFileLocation, String expectedDecomposedFileContents)
@@ -246,10 +257,8 @@ public class PowerDeComposerTestSteps {
 				String.format("The expected file '%s' doesn't exist!", targetFile)
 		);
 		
-		//Open the expected output file and read to string
-		FileInputStream fis = new FileInputStream(targetFile);
-		BOMInputStream bomInputStream = new BOMInputStream(fis);
-		String actualResultContent = IOUtils.toString(bomInputStream, bomInputStream.getBOMCharsetName());
+		// Get the actual output file and read to string.
+		String actualResultContent = PowerDeComposerTestSteps.getFileContents(targetFile);
 		// Assert the expected and actual file contents are the same.
 		assertEquals(
 				// When comparing the decomposed results, we need to replace LF with CRLF, since Cucumber will remove the CR.
@@ -257,6 +266,13 @@ public class PowerDeComposerTestSteps {
 				actualResultContent,
 				"The expected and actual file content is different"
 		);
+	}
+	
+	private static String getFileContents(File file) throws IOException {
+		//Open the file and read to string
+		FileInputStream fis = new FileInputStream(file);
+		BOMInputStream bomInputStream = new BOMInputStream(fis);
+		return IOUtils.toString(bomInputStream, bomInputStream.getBOMCharsetName());
 	}
 	
 	@Then("^I (do not|do) expect the file '(.*)'$")
