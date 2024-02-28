@@ -218,13 +218,13 @@ public class PowerDeComposerTestSteps {
 	@Then("^I expect a composed file '(.*)' with the following content:$")
 	public void thenIExpectComposedFileWithFollowingContent(String composedFileLocation, String expectedComposedFileContents)
 			throws Throwable {
-		thenIExpectTheFileWithFollowingContent(this._composedFolderPath.resolve(composedFileLocation).toFile(), expectedComposedFileContents);
+		thenIExpectTheFileWithContentFromCucumber(this._composedFolderPath.resolve(composedFileLocation).toFile(), expectedComposedFileContents);
 	}
 	
 	@Then("^I expect a composed file with the following content:$")
 	public void thenIExpectComposedFileWithFollowingContent(String expectedComposedFileContents)
 			throws Throwable {
-		thenIExpectTheFileWithFollowingContent(this._composedFilePath.toFile(), expectedComposedFileContents);
+		thenIExpectTheFileWithContentFromCucumber(this._composedFilePath.toFile(), expectedComposedFileContents);
 	}
 	
 	@Then("^I expect a composed file with the content equal to '(.*)'$")
@@ -232,24 +232,29 @@ public class PowerDeComposerTestSteps {
 			throws Throwable {
 		File expectedComposedFile = this._scenarioResourcePath.resolve(expectedComposedFileLocation).toFile();
 		String expectedComposedFileContents = PowerDeComposerTestSteps.getFileContents(expectedComposedFile);
-		thenIExpectTheFileWithFollowingContent(this._composedFilePath.toFile(), expectedComposedFileContents);
+		thenIExpectTheFileWithContents(this._composedFilePath.toFile(), expectedComposedFileContents);
 	}
 
 	@Then("^I expect a decomposed file '(.*)' with the following content:$")
 	public void thenIExpectDecomposedFileWithFollowingContent(String decomposedFileLocation, String expectedDecomposedFileContents)
 			throws Throwable {
-		thenIExpectTheFileWithFollowingContent(this._decomposedFolderPath.resolve(decomposedFileLocation).toFile(), expectedDecomposedFileContents);
+		thenIExpectTheFileWithContentFromCucumber(this._decomposedFolderPath.resolve(decomposedFileLocation).toFile(), expectedDecomposedFileContents);
 	}
 	
 	@Then("^I expect a decomposed file with the following content:$")
 	public void thenIExpectDecomposedFileWithFollowingContent(String expectedDecomposedFileContents)
 			throws Throwable {
-		thenIExpectTheFileWithFollowingContent(this._decomposedFilePath.toFile(), expectedDecomposedFileContents);
+		thenIExpectTheFileWithContentFromCucumber(this._decomposedFilePath.toFile(), expectedDecomposedFileContents);
 	}
 	
 	// Compare the actual and expected file contents. If it differs throw an assertion error.
-	public void thenIExpectTheFileWithFollowingContent(File targetFile, String expectedFileContents)
+	public void thenIExpectTheFileWithContentFromCucumber(File targetFile, String expectedFileContents)
 			throws Throwable {
+		// If the file contents is written in Cucumber, the CR is removed, so we need to restore it here.
+		thenIExpectTheFileWithContents(targetFile, expectedFileContents.replaceAll("(?<!\r)\n", "\r\n"));
+	}
+	
+	public void thenIExpectTheFileWithContents(File targetFile, String expectedFileContents) throws IOException {
 		// Check the file exists.
 		assertTrue(
 				targetFile.exists(),
@@ -258,10 +263,11 @@ public class PowerDeComposerTestSteps {
 		
 		// Get the actual output file and read to string.
 		String actualResultContent = PowerDeComposerTestSteps.getFileContents(targetFile);
+		
 		// Assert the expected and actual file contents are the same.
 		assertEquals(
 				// When comparing the decomposed results, we need to replace LF with CRLF, since Cucumber will remove the CR.
-				expectedFileContents.replaceAll("(?<!\r)\n", "\r\n"),
+				expectedFileContents,
 				actualResultContent,
 				"The expected and actual file content is different"
 		);
