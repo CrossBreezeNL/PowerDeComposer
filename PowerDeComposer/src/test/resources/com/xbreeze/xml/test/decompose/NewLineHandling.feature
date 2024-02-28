@@ -10,7 +10,6 @@ Feature: Decompose New Line Handling
     Then I expect a decomposed file 'ComposedFile.xml' with content equal to 'Decomposed/ExpectedDecomposedFile.xml'
     And I expect a decomposed file 'ChildElements/FirstId.xml' with content equal to 'Decomposed/ChildElements/FirstId.xml'
 
-  @Debug
   Scenario: LF handling
     Given the config file 'Config/Config.xml'
     And the composed file 'Composed/ComposedFile.xml'
