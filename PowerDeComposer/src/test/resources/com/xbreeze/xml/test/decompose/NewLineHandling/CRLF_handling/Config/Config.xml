@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PowerDeComposerConfig>
+	<Decompose>
+		<DecomposableElement>
+			<!-- Decompose elements with the id attribute. -->
+			<ElementCondition xpath="./@id" />
+			<!-- Use the id attribute as file name. -->
+			<TargetFileNames>
+				<TargetFileName xpath="@id" />
+			</TargetFileNames>
+		</DecomposableElement>
+	</Decompose>
+</PowerDeComposerConfig>

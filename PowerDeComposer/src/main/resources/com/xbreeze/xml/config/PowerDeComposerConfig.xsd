@@ -1,126 +1,222 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<xs:schema version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0">
+    
   <xs:element name="PowerDeComposerConfig" type="powerDeComposerConfig"/>
-
+    
   <xs:complexType name="powerDeComposerConfig">
+        
     <xs:sequence>
-      <xs:element name="Decompose" type="decomposeConfig" minOccurs="0"/>
+            
+      <xs:element minOccurs="0" name="Decompose" type="decomposeConfig"/>
+          
     </xs:sequence>
+      
   </xs:complexType>
-
+    
   <xs:complexType name="decomposeConfig">
+        
     <xs:sequence>
-      <xs:element name="ChangeDetection" type="changeDetectionConfig" minOccurs="0"/>
-      <xs:element name="NodeRemovals" minOccurs="0">
+            
+      <xs:element minOccurs="0" name="ChangeDetection" type="changeDetectionConfig"/>
+            
+      <xs:element minOccurs="0" name="NodeRemovals">
+                
         <xs:complexType>
+                    
           <xs:sequence>
-            <xs:element name="NodeRemoval" type="nodeRemovalConfig" minOccurs="0" maxOccurs="unbounded"/>
+                        
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="NodeRemoval" type="nodeRemovalConfig"/>
+                      
           </xs:sequence>
+                  
         </xs:complexType>
+              
       </xs:element>
-      <xs:element name="IdentifierReplacements" minOccurs="0">
+            
+      <xs:element minOccurs="0" name="IdentifierReplacements">
+                
         <xs:complexType>
+                    
           <xs:sequence>
-            <xs:element name="IdentifierReplacement" type="identifierReplacementConfig" minOccurs="0" maxOccurs="unbounded"/>
+                        
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="IdentifierReplacement" type="identifierReplacementConfig"/>
+                      
           </xs:sequence>
+                  
         </xs:complexType>
+              
       </xs:element>
-      <xs:element name="DecomposableElement" type="decomposableElementConfig" minOccurs="0"/>
+            
+      <xs:element minOccurs="0" name="DecomposableElement" type="decomposableElementConfig"/>
+          
     </xs:sequence>
+        
     <xs:attribute name="fileRemovalStrategy" type="xs:string"/>
-    <xs:attribute name="formalizeExtendedAtrributes" type="xs:boolean"/>
+        
+    <xs:attribute name="formalizeExtendedAttributes" type="xs:boolean"/>
+      
   </xs:complexType>
-
+    
   <xs:complexType name="changeDetectionConfig">
+        
     <xs:sequence/>
+        
     <xs:attribute name="xpath" type="xs:string"/>
+      
   </xs:complexType>
-
+    
   <xs:complexType name="nodeRemovalConfig">
+        
     <xs:sequence/>
+        
     <xs:attribute name="xpath" type="xs:string"/>
+      
   </xs:complexType>
-
+    
   <xs:complexType name="identifierReplacementConfig">
+        
     <xs:sequence/>
+        
     <xs:attribute name="identifierNodeXPath" type="xs:string"/>
+        
     <xs:attribute name="referencingNodeXPath" type="xs:string"/>
+        
     <xs:attribute name="replacementValueXPath" type="xs:string"/>
+      
   </xs:complexType>
-
+    
   <xs:complexType name="decomposableElementConfig">
+        
     <xs:complexContent>
+            
       <xs:extension base="allConditionGroup">
+                
         <xs:sequence>
-          <xs:element name="TargetFolderNames" minOccurs="0">
+                    
+          <xs:element minOccurs="0" name="TargetFolderNames">
+                        
             <xs:complexType>
+                            
               <xs:sequence>
-                <xs:element name="TargetFolderName" type="targetFolderNameConfig" minOccurs="0" maxOccurs="unbounded"/>
+                                
+                <xs:element maxOccurs="unbounded" minOccurs="0" name="TargetFolderName" type="targetFolderNameConfig"/>
+                              
               </xs:sequence>
+                          
             </xs:complexType>
+                      
           </xs:element>
-          <xs:element name="TargetFileNames" minOccurs="0">
+                    
+          <xs:element minOccurs="0" name="TargetFileNames">
+                        
             <xs:complexType>
+                            
               <xs:sequence>
-                <xs:element name="TargetFileName" type="targetFileNameConfig" maxOccurs="unbounded"/>
+                                
+                <xs:element maxOccurs="unbounded" name="TargetFileName" type="targetFileNameConfig"/>
+                              
               </xs:sequence>
+                          
             </xs:complexType>
+                      
           </xs:element>
-          <xs:element name="IncludeAttributes" minOccurs="0">
+                    
+          <xs:element minOccurs="0" name="IncludeAttributes">
+                        
             <xs:complexType>
+                            
               <xs:sequence>
-                <xs:element name="IncludeAttribute" type="includeAttributeConfig" minOccurs="0" maxOccurs="unbounded"/>
+                                
+                <xs:element maxOccurs="unbounded" minOccurs="0" name="IncludeAttribute" type="includeAttributeConfig"/>
+                              
               </xs:sequence>
+                          
             </xs:complexType>
+                      
           </xs:element>
+                  
         </xs:sequence>
+              
       </xs:extension>
+          
     </xs:complexContent>
+      
   </xs:complexType>
-
+    
   <xs:complexType name="allConditionGroup">
+        
     <xs:sequence>
-      <xs:choice minOccurs="0" maxOccurs="unbounded">
+            
+      <xs:choice maxOccurs="unbounded" minOccurs="0">
+                
         <xs:element name="AllConditions" type="allConditionGroup"/>
+                
         <xs:element name="OneOffConditions" type="oneOffConditionGroup"/>
+                
         <xs:element name="ElementCondition" type="elementCondition"/>
+              
       </xs:choice>
+          
     </xs:sequence>
+      
   </xs:complexType>
-
+    
   <xs:complexType name="targetFolderNameConfig">
+        
     <xs:sequence/>
+        
     <xs:attribute name="condition" type="xs:string"/>
+        
     <xs:attribute name="overrideParent" type="xs:boolean"/>
+        
     <xs:attribute name="xpath" type="xs:string"/>
+      
   </xs:complexType>
-
+    
   <xs:complexType name="targetFileNameConfig">
+        
     <xs:sequence/>
+        
     <xs:attribute name="condition" type="xs:string"/>
+        
     <xs:attribute name="xpath" type="xs:string"/>
+      
   </xs:complexType>
-
+    
   <xs:complexType name="includeAttributeConfig">
+        
     <xs:sequence/>
+        
     <xs:attribute name="name" type="xs:string"/>
+        
     <xs:attribute name="xpath" type="xs:string"/>
+      
   </xs:complexType>
-
+    
   <xs:complexType name="oneOffConditionGroup">
+        
     <xs:sequence>
-      <xs:choice minOccurs="0" maxOccurs="unbounded">
+            
+      <xs:choice maxOccurs="unbounded" minOccurs="0">
+                
         <xs:element name="AllConditions" type="allConditionGroup"/>
+                
         <xs:element name="OneOffConditions" type="oneOffConditionGroup"/>
+                
         <xs:element name="ElementCondition" type="elementCondition"/>
+              
       </xs:choice>
+          
     </xs:sequence>
+      
   </xs:complexType>
-
+    
   <xs:complexType name="elementCondition">
+        
     <xs:sequence/>
+        
     <xs:attribute name="xpath" type="xs:string"/>
+      
   </xs:complexType>
+  
 </xs:schema>
-

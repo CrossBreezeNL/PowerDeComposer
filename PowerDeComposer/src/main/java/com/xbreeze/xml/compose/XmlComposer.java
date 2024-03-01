@@ -43,7 +43,7 @@ import com.ximpleware.XPathEvalException;
 import com.ximpleware.XPathParseException;
 
 public class XmlComposer {
-	private static final Logger logger = Logger.getLogger("");
+	private static final Logger logger = Logger.getGlobal();
 
 	public XmlComposer(String xmlFilePath, String xmlTargetFilePath) throws Exception {
 		composeXml(xmlFilePath, xmlTargetFilePath);

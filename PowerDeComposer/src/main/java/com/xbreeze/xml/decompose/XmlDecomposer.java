@@ -22,9 +22,7 @@
  *******************************************************************************/
 package com.xbreeze.xml.decompose;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -59,7 +57,7 @@ import com.ximpleware.XMLModifier;
 import com.ximpleware.XPathParseException;
 
 public class XmlDecomposer {
-	private static final Logger logger = Logger.getLogger(XmlDecomposer.class.getName());
+	private static final Logger logger = Logger.getGlobal();
 	
 	private static final String STR_PREFIX_SPACER = "  ";
 	
@@ -175,7 +173,7 @@ public class XmlDecomposer {
 		}
 		
 		// Transform the ExtendedAttributeText elements to separate XML elements.
-		if (decomposeConfig.formalizeExtendedAtrributes()) {
+		if (decomposeConfig.formalizeExtendedAttributes()) {
 			nv = formalizeExtendedAttributesText(nv);
 		}
 		
@@ -754,17 +752,17 @@ public class XmlDecomposer {
 				}
 		    	
 		    	// Get the contents of the XML Fragment.
-		    	String objectXmlPart = nv.toRawString(elementOffset, elementLength);
+		    	byte[] xmlFragmentBytes = nv.getXML().getBytes(elementOffset, elementLength);
 		    	// Parse the XML Fragment and write it to its own file.
 		    	//logger.fine(String.format("Target folder name: '%s'; child target file name: '%s'", childTargetFolderName, childTargetFileName));
 		    	
-				// Remove the xml node which is being referenced.
+				// Remove the xml fragment, which will be written in a separate file.
 				xm.removeContent(elementOffset, elementLength);
 				
 				// Create a VTDNav for navigating the document.
 				VTDNav partNv;
 				try {
-					partNv = XMLUtils.getVTDNav(objectXmlPart, fileCharset, false);
+					partNv = XMLUtils.getVTDNav(xmlFragmentBytes, false);
 				} catch (Exception e) {
 					throw new Exception(String.format("Error while parsing Xml Part: %s", e.getMessage()), e);
 				}
@@ -830,13 +828,7 @@ public class XmlDecomposer {
 		// Write the target Xml file.
 		logger.fine(String.format("%s - Writing file: %s", prefix, targetFile.toString()));
 		// Write the XML file into a array output stream.
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		xm.output(baos);
-		FileOutputStream fos = new FileOutputStream(targetFilePath.toString());
-		// Replace single LF without CR with CRLF and write it to the file.
-		fos.write(baos.toString(fileCharset).replaceAll("(?<!\r)\n", "\r\n").getBytes());
-		// Close the file stream.
-		fos.close();
+		xm.output(targetFilePath.toString());
 		//logger.fine(String.format("%s< %s", prefix, targetDirectoryPath));
 		
 		return targetFilePath;
