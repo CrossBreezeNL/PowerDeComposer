@@ -1,4 +1,4 @@
-@Unit
+@Unit @Debug
 
 Feature: Compose New Line Handling
   Here we test whether PowerDeComposer Compose can handle different newline characters correctly.

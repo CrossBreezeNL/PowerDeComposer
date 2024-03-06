@@ -1,4 +1,4 @@
-@Unit
+@Unit @Debug
 
 Feature: Decompose New Line Handling
   Here we test whether PowerDeComposer Decompose can handle different newline characters correctly.
