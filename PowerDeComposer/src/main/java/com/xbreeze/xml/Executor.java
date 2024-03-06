@@ -43,7 +43,7 @@ public class Executor {
 	 * @param args
 	 * @throws Exception
 	 */
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		
 		// Setup the global LogManager.
 		LogManager logManager = LogManager.getLogManager();
@@ -70,34 +70,41 @@ public class Executor {
 		logger.setUseParentHandlers(false);
 		
 		// Check the passed arguments.
-		if (args.length == 3 || args.length == 4) {
-			String operationType = args[0];
-			
-			// Parse the config.
-			PowerDeComposerConfig pdcConfig;
-			if (args.length == 4) {
-				pdcConfig = PowerDeComposerConfig.fromFile(Paths.get(args[3]).toFile());
-			}
-			else {
-				// Create the default PowerDeComposerConfig.
-				pdcConfig = PowerDeComposerConfig.GetDefaultConfig();
-			}
-			
-			// Perform the operation. 
-			if (operationType.equalsIgnoreCase("decompose")) {
-				String xmlFilePath = args[1].trim();
-				String targetDirectory = args[2].trim();
-				new XmlDecomposer(xmlFilePath, targetDirectory, pdcConfig.getDecomposeConfig());
-			} else
-				if (operationType.equalsIgnoreCase("compose")) {
-					String xmlSourceFile = args[1].trim();
-					String xmlTargetFile = args[2].trim();
-					new XmlComposer(xmlSourceFile, xmlTargetFile);
-				} else {
-					throw new Exception("First argument should be compose or decompose");
+		try {
+			if (args.length == 3 || args.length == 4) {
+				String operationType = args[0];
+				
+				// Parse the config.
+				PowerDeComposerConfig pdcConfig;
+				if (args.length == 4) {
+					pdcConfig = PowerDeComposerConfig.fromFile(Paths.get(args[3]).toFile());
 				}
-		} else {
-			throw new Exception("Expecting exactly 3 or 4 arguments: (decompose, xml-file-path, target-directory[, config-file-location]) or (compose, xml-source-file, xml-target-file[, config-file-location]).");
+				else {
+					// Create the default PowerDeComposerConfig.
+					pdcConfig = PowerDeComposerConfig.GetDefaultConfig();
+				}
+				
+				// Perform the operation. 
+				if (operationType.equalsIgnoreCase("decompose")) {
+					String xmlFilePath = args[1].trim();
+					String targetDirectory = args[2].trim();
+					new XmlDecomposer(xmlFilePath, targetDirectory, pdcConfig.getDecomposeConfig());
+				} else
+					if (operationType.equalsIgnoreCase("compose")) {
+						String xmlSourceFile = args[1].trim();
+						String xmlTargetFile = args[2].trim();
+						new XmlComposer(xmlSourceFile, xmlTargetFile);
+					} else {
+						throw new Exception("First argument should be compose or decompose");
+					}
+			} else {
+				throw new Exception("Expecting exactly 3 or 4 arguments: (decompose, xml-file-path, target-directory[, config-file-location]) or (compose, xml-source-file, xml-target-file[, config-file-location]).");
+			}
+		} catch (Exception e) {
+			System.err.println("An error ocurred while running PowerDeComposer: ");
+			System.err.print(e.getMessage());
+			// Exit java with exit-code 1, so other processes can detect something went wrong.
+			System.exit(1);
 		}
 	}
 }
