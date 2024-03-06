@@ -29,6 +29,8 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.text.StringEscapeUtils;
+
 import com.ximpleware.AutoPilot;
 import com.ximpleware.ModifyException;
 import com.ximpleware.NavException;
@@ -49,8 +51,17 @@ public class XMLUtils {
 	 * @param input The text to escape.
 	 * @return The escaped input.
 	 */
-	public static String excapeXMLChars(String input) {
-		return input.replaceAll("\\<", "&lt;").replaceAll("\\>", "&gt;");
+	public static String escapeXMLChars(String input) {
+		return StringEscapeUtils.escapeXml10(input);
+	}
+	
+	/**
+	 * Unescape XML characters.
+	 * @param input The xml input with escaped XML.
+	 * @return The xml with unescaped chars.
+	 */
+	public static String unescapeXMLChars(String input) {
+		return StringEscapeUtils.unescapeXml(input);
 	}
 	
 	/**

@@ -447,7 +447,11 @@ public class XmlDecomposer {
 			if (nv.getTokenType(extAttrsTextNodeIndex) == VTDNav.TOKEN_STARTING_TAG) {
 				// Get the extended attribute text.
 				// Replace LF with CRLF, since VTD-Nav removes the carriage returns in the file (and PowerDesigner always has CRLF).
-				String extendedAttributesText = nv.toString(nv.getText()).replace("\n", "\r\n");
+				int extendedAttributeTextIndex = nv.getText();
+				//String extendedAttributesText = nv.toString(extendedAttributeTextIndex).replace("\n", "\r\n");
+				String extendedAttributesText = new String(nv.getXML().getBytes(nv.getTokenOffset(extendedAttributeTextIndex), nv.getTokenLength(extendedAttributeTextIndex)));
+				// We unescape the XML characters here, so the length property in the extended attributes can be used (cause it doesn't account for escaped XML characters).
+				extendedAttributesText = XMLUtils.unescapeXMLChars(extendedAttributesText);
 				logger.fine(String.format("Found extended attributes text: %s", extendedAttributesText.replaceAll("\n", "[LF]\n").replaceAll("\r", "[CR]")));
 				
 				// The extended attribute text needs to be parsed so we can create the new XML elements.
@@ -473,7 +477,8 @@ public class XmlDecomposer {
 					if (extAttrsEnd > extendedAttributesText.length())
 						throw new Exception("Error while formalizing extended attributes text: The extended attribute length is longer then the contents of the string. This should never happen!");
 					
-					String extExtAttrContent = extendedAttributesText.substring(extAttrStart, extAttrsEnd);
+					// Get the extended attribute contents and escape XML chars, so we can make valid XML.
+					String extExtAttrContent = XMLUtils.escapeXMLChars(extendedAttributesText.substring(extAttrStart, extAttrsEnd));
 					
 					// If we are inside a extension section, so currentExtensionExtAttrEnd != -1. And we find a match where the the end index is after the end of extension section we have a problem.
 					// The end of an extension section should always be equal or after any child sections.
@@ -785,7 +790,7 @@ public class XmlDecomposer {
 				// Loop through the include attributes to add the min the include tag.
 				for (String includeAttributeName : includeAttributesWithValues.keySet()) {
 					// Insert the include sub element in the include tag.
-					includeElementStringBuffer.append(String.format(" %s=\"%s\"", includeAttributeName, XMLUtils.excapeXMLChars(includeAttributesWithValues.get(includeAttributeName))));				
+					includeElementStringBuffer.append(String.format(" %s=\"%s\"", includeAttributeName, XMLUtils.escapeXMLChars(includeAttributesWithValues.get(includeAttributeName))));				
 				}
 				includeElementStringBuffer.append(" />");
 				

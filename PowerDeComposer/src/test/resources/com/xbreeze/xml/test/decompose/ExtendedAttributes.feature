@@ -150,7 +150,6 @@ Feature: Decompose Extended Attributes
       </RootElement>
       """
 
-  @Debug
   Scenario: Formalize extended attributes with XML chars
   	Given the config file:
       """
