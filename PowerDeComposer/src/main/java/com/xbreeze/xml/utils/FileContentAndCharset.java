@@ -1,10 +1,14 @@
 package com.xbreeze.xml.utils;
 
 import java.nio.charset.Charset;
+import java.util.logging.Logger;
 
 public class FileContentAndCharset {
+	private static final Logger logger = Logger.getGlobal();
+	
 	private String _fileContents;
 	private Charset _fileCharset;
+	private String _lineSeparator;
 	
 	public FileContentAndCharset(String fileContents, Charset fileCharset) {
 		this._fileContents = fileContents;
@@ -12,11 +16,36 @@ public class FileContentAndCharset {
 	}
 
 	public String getFileContents() {
-		return _fileContents;
+		return this._fileContents;
 	}
 
 	public Charset getFileCharset() {
-		return _fileCharset;
+		return this._fileCharset;
+	}
+	
+	/**
+	 * Get the line separator of the file.
+	 * @return The line separator for the file.
+	 * @throws Exception If the line separator can't be found and exception is thrown.
+	 */
+	public String getLineSeparator() throws Exception {
+		// If the line separator is not set yet, derive it from the file contents.
+		if (this._lineSeparator == null) {
+			// Find the first line-feed character.
+			int firstNewLineIndex = this._fileContents.indexOf('\n');
+			
+			if (firstNewLineIndex == -1)
+				throw new Exception("Cannot detect line separator. No line-feed character found in file!");
+			
+			// Check whether there is a carriage return before the line-feed character.
+			if (this._fileContents.charAt(firstNewLineIndex - 1) == '\r') {
+				this._lineSeparator = "\r\n";				
+			} else {
+				this._lineSeparator = "\n";
+			}
+			logger.fine(String.format("Found line separator: %s", this._lineSeparator.replace("\n", "[LF]").replace("\r", "[CR]")));
+		}
+		return this._lineSeparator;
 	}
 	
 	public byte[] getBytes() {

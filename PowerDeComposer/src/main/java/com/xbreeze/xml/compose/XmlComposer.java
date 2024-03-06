@@ -122,7 +122,8 @@ public class XmlComposer {
 					
 					// Create a string buffer for the extended attribute text.
 					StringBuffer extendedAttributeText = new StringBuffer();
-					extendedAttributeText.append("\r\n<a:ExtendedAttributesText>");
+					extendedAttributeText.append(xmlFileContentsAndCharset.getLineSeparator());
+					extendedAttributeText.append("<a:ExtendedAttributesText>");
 					
 					// Find the OriginatingExtension elements.
 					AutoPilot ap_extension = new AutoPilot(nav);
@@ -146,9 +147,10 @@ public class XmlComposer {
 							String extAttrValue = new String(nav.getXML().getBytes(nav.getTokenOffset(extendedAttributeTextIndex), nav.getTokenLength(extendedAttributeTextIndex)));
 							// Add the current extended attribute to the list for the current extension.
 							// For the length we use the unescaped version of the extended attribute text.
-							extensionExtAttrTextBuffer.append(String.format("{%s},%s,%d=%s\r\n", extAttrObjectID, extAttrName, XMLUtils.unescapeXMLChars(extAttrValue).length(), extAttrValue));
+							extensionExtAttrTextBuffer.append(String.format("{%s},%s,%d=%s", extAttrObjectID, extAttrName, XMLUtils.unescapeXMLChars(extAttrValue).length(), extAttrValue));
+							extensionExtAttrTextBuffer.append(xmlFileContentsAndCharset.getLineSeparator());
 						}
-						extensionExtAttrTextBuffer.append("\r\n");
+						extensionExtAttrTextBuffer.append(xmlFileContentsAndCharset.getLineSeparator());
 						String extensionExtAttrText = extensionExtAttrTextBuffer.toString();
 						
 						// Add the extension extended attributes to the extended attributes buffer.
