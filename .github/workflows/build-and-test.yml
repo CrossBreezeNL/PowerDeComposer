@@ -36,7 +36,7 @@ jobs:
       
       # Build with Maven
       - name: Build
-        run: mvn --batch-mode install -DskipTests
+        run: mvn --batch-mode install assembly:single -DskipTests
         working-directory: ./PowerDeComposer
 
       # Test with Maven
@@ -52,12 +52,6 @@ jobs:
           name: test-results-${{ matrix.os }}-java-${{ matrix.java }}
           path: PowerDeComposer/target/surefire-reports/TEST-*.xml
           reporter: java-junit
-
-      # Build single jar
-      - name: Assemble Jar
-        if: runner.os == 'Linux'
-        run: mvn --batch-mode assembly:single -DskipTests
-        working-directory: ./PowerDeComposer
 
       # Publish jars.
       - uses: actions/upload-artifact@v4
