@@ -69,3 +69,32 @@ Feature: Compose Extended Attributes
       </ChildElement>
       </RootElement>
       """
+  
+  Scenario: Compose extended attribute with special characters
+    Given the decomposed file:
+      """
+      <?xml version="1.0" encoding="UTF-8"?>
+      <RootElement>
+      <ChildElement>
+      <ExtendedAttributes>
+      <OriginatingExtension ObjectID="4202E4F4-4187-47CE-83BE-51088F229451" Name="TestExtension">
+      <ExtendedAttribute ObjectID="38253E88-8698-4A5B-8398-0FA2B14556C0" Name="SqlExpression">-- Special characters: &lt;, &gt;, &amp;, &apos;, &quot;, ´, ~, !
+      @AMOUNT &gt; 100</ExtendedAttribute>
+      </OriginatingExtension>
+      </ExtendedAttributes>
+      </ChildElement>
+      </RootElement>
+      """
+    When I perform a compose
+    Then I expect a composed file with the following content:
+      """
+      <?xml version="1.0" encoding="UTF-8"?>
+      <RootElement>
+      <ChildElement>
+      <a:ExtendedAttributesText>{4202E4F4-4187-47CE-83BE-51088F229451},TestExtension,118={38253E88-8698-4A5B-8398-0FA2B14556C0},SqlExpression,60=-- Special characters: &lt;, &gt;, &amp;, &apos;, &quot;, ´, ~, !
+      @AMOUNT &gt; 100
+      
+      </a:ExtendedAttributesText>
+      </ChildElement>
+      </RootElement>
+      """

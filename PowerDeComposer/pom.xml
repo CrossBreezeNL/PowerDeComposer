@@ -108,6 +108,12 @@
 			<artifactId>commons-io</artifactId>
 			<version>2.11.0</version>
 		</dependency>
+		<!-- Apache Commons Text for XML escape/unescaping. -->
+		<dependency>
+		    <groupId>org.apache.commons</groupId>
+		    <artifactId>commons-text</artifactId>
+		    <version>1.11.0</version>
+		</dependency>
 		<!-- JAX-B for the config. -->
 		<dependency>
 			<groupId>jakarta.xml.bind</groupId>

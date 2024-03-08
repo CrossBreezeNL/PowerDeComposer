@@ -3,7 +3,7 @@
 Feature: Special characters
   Here we test whether PowerDeComposer can handle special characters correctly.
   
-  Scenario: Special charachter in file
+  Scenario: Special character in file
     Given the composed file:
       """
       <?xml version="1.0" encoding="UTF-8"?>

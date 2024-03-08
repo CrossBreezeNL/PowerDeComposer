@@ -9,7 +9,14 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.PathMatcher;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.Optional;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -40,6 +47,10 @@ public class PowerDeComposerTestSteps {
 	private Path _scenarioResourcePath;
 	// The resource path for runtime composed and decomposed files for the feature under test.
 	private Path _scenarioRuntimeResourcePath;
+	// The process output, when run using a separate Java process.
+	private String processOutput;
+	// The process execute code, when run using a separate Java process.
+	private int actualExitCode;
 
 	@Before
 	public void before(final Scenario scenario) throws Exception {
@@ -182,37 +193,78 @@ public class PowerDeComposerTestSteps {
 	@When("^I perform a compose$")
 	public void iExecuteCompose() throws Throwable {
 		// Execute PowerDeComposer.
-		if (this._pdcConfigPath != null) {
-			Executor.main(
-				new String[] {
-					"compose",
-					this._decomposedFilePath.toString(),
-					this._composedFilePath.toString(),
-					this._pdcConfigPath.toString()
-				}
-			);
-		} else {
-			Executor.main(
-				new String[] {
-					"compose",
-					this._decomposedFilePath.toString(),
-					this._composedFilePath.toString()
-				}
-			);
-		}
+		Executor.main(getCommandArray("compose"));
 	}
-
+	
+	@When("^I perform a compose in separate process$")
+	public void iExecuteComposeInSeparateProcess() throws Throwable {
+		iExecuteInSeparateProcess("compose");
+	}
+	
 	@When("^I perform a decompose$")
 	public void iExecuteDecompose() throws Throwable {
 		// Execute PowerDeComposer.
-		Executor.main(
-			new String[] {
-				"decompose",
-				this._composedFilePath.toString(),
-				this._decomposedFolderPath.toString(),
+		Executor.main(getCommandArray("decompose"));
+	}
+	
+	@When("^I perform a decompose in separate process$")
+	public void iExecuteDecomposeInSeparateProcess() throws Throwable {
+		iExecuteInSeparateProcess("decompose");
+	}
+	
+	public void iExecuteInSeparateProcess(String operationType) throws Throwable {
+		// Add the first part of the command (in reverse order is java is the first argument).
+		Path pdcTargetPath = Paths.get(Executor.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
+		PathMatcher pdcJarMatcher = pdcTargetPath.getFileSystem().getPathMatcher("regex:.*PowerDeComposer-[0-9\\.]+-jar-with-dependencies.jar");
+		Optional<Path> optionalPdcJarPath = Files.walk(pdcTargetPath, 1).filter(pdcJarMatcher::matches).findFirst();
+		// Throw an exception if the executable jar isn't found.
+		if (optionalPdcJarPath.isEmpty())
+			throw new Exception("The PowerDeComposer jar with dependencies couldn't be found, make sure the jar is build!");
+		
+		// Construct the command line arguments.
+		LinkedList<String> commandLineArgs = new LinkedList<String>();
+		commandLineArgs.add("java");
+		commandLineArgs.add("-jar");
+		commandLineArgs.add(pdcTargetPath.resolve(optionalPdcJarPath.get()).toString());
+		// Add the rest of the pdc command.
+		Collections.addAll(commandLineArgs, getCommandArray(operationType));
+		
+		// Print the command array.
+		String[] cmdArray = commandLineArgs.toArray(new String[0]);
+		System.out.println(String.format("Command array: %s", Arrays.toString(cmdArray)));
+		
+		// Built and start the process.
+		ProcessBuilder pb = new ProcessBuilder().command(cmdArray);
+		Process pdcProcess = pb.start();
+		
+		// Store the output of the process.
+		this.processOutput = new String(pdcProcess.getInputStream().readAllBytes());
+		this.processOutput += new String(pdcProcess.getErrorStream().readAllBytes());
+		
+		// Wait for the process to finish.
+		this.actualExitCode = pdcProcess.waitFor();
+		
+		System.out.println("PowerDeComposer process output:");
+		System.out.println("==================================================");
+		System.out.println(this.processOutput);
+		System.out.println("==================================================");
+	}
+	
+	public String[] getCommandArray(String operationType) {
+		if (this._pdcConfigPath != null) {
+			return new String[] {
+				operationType,
+				operationType.equals("compose") ? this._decomposedFilePath.toString() : this._composedFilePath.toString(),
+				operationType.equals("compose") ? this._composedFilePath.toString() : this._decomposedFolderPath.toString(),
 				this._pdcConfigPath.toString()
-			}
-		);
+			};
+		} else {
+			return new String[] {
+				operationType,
+				operationType.equals("compose") ? this._decomposedFilePath.toString() : this._composedFilePath.toString(),
+				operationType.equals("compose") ? this._composedFilePath.toString() : this._decomposedFolderPath.toString(),
+			};
+		}
 	}
 	
 	@Then("^I expect a composed file '(.*)' with the following content:$")
@@ -287,6 +339,15 @@ public class PowerDeComposerTestSteps {
 				actualResultContent,
 				"The expected and actual file content is different"
 		);
+	}
+	
+	@Then("^I expect exit code (\\d)$")
+	public void iExpectExitCode(int expectedExitCode) throws Throwable {		
+		assertEquals(
+				expectedExitCode,
+				actualExitCode,
+				String.format("The actual exit code (%d) differs from the expected exit code (%d)", actualExitCode, expectedExitCode)
+		);	
 	}
 	
 	private static String getFileContents(File file) throws IOException {

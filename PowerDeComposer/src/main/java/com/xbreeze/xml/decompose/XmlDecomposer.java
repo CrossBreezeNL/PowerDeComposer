@@ -174,7 +174,7 @@ public class XmlDecomposer {
 		
 		// Transform the ExtendedAttributeText elements to separate XML elements.
 		if (decomposeConfig.formalizeExtendedAttributes()) {
-			nv = formalizeExtendedAttributesText(nv);
+			nv = formalizeExtendedAttributesText(nv, xmlFileContentsAndCharset);
 		}
 		
 		// Get the existing list of files in the decomposed model (if it exists). This is needed to track files which are written and which need to be deleted.
@@ -425,7 +425,7 @@ public class XmlDecomposer {
 		return xm.outputAndReparse();
 	}
 	
-	private VTDNav formalizeExtendedAttributesText(VTDNav nv) throws Exception {
+	private VTDNav formalizeExtendedAttributesText(VTDNav nv, FileContentAndCharset xmlFileContentsAndCharset) throws Exception {
 		logger.info("Formalizing extended attributes in document...");
 		
 		// We are going to replace all ExtnededAttributeText elements with it's formal representation, so we need an XmlModifier.
@@ -446,8 +446,10 @@ public class XmlDecomposer {
 			// The found token should be a starting tag.
 			if (nv.getTokenType(extAttrsTextNodeIndex) == VTDNav.TOKEN_STARTING_TAG) {
 				// Get the extended attribute text.
-				// Replace LF with CRLF, since VTD-Nav removes the carriage returns in the file (and PowerDesigner always has CRLF).
-				String extendedAttributesText = nv.toString(nv.getText()).replace("\n", "\r\n");
+				int extendedAttributeTextIndex = nv.getText();
+				String extendedAttributesText = new String(nv.getXML().getBytes(nv.getTokenOffset(extendedAttributeTextIndex), nv.getTokenLength(extendedAttributeTextIndex)));
+				// We unescape the XML characters here, so the length property in the extended attributes can be used (cause it doesn't account for escaped XML characters).
+				extendedAttributesText = XMLUtils.unescapeXMLChars(extendedAttributesText);
 				logger.fine(String.format("Found extended attributes text: %s", extendedAttributesText.replaceAll("\n", "[LF]\n").replaceAll("\r", "[CR]")));
 				
 				// The extended attribute text needs to be parsed so we can create the new XML elements.
@@ -461,7 +463,8 @@ public class XmlDecomposer {
 				Pattern extensionExtAttrsPattern = Pattern.compile(extAttrRegex);
 				Matcher extExtAttrsMatcher = extensionExtAttrsPattern.matcher(extendedAttributesText);
 				StringBuffer extExtAttrsXml = new StringBuffer();
-				extExtAttrsXml.append("\r\n<ExtendedAttributes>");
+				extExtAttrsXml.append(xmlFileContentsAndCharset.getLineSeparator());
+				extExtAttrsXml.append("<ExtendedAttributes>");
 				int currentExtensionExtAttrEnd = -1;
 				while (extExtAttrsMatcher.find()) {
 					String guid = extExtAttrsMatcher.group(1);
@@ -473,7 +476,8 @@ public class XmlDecomposer {
 					if (extAttrsEnd > extendedAttributesText.length())
 						throw new Exception("Error while formalizing extended attributes text: The extended attribute length is longer then the contents of the string. This should never happen!");
 					
-					String extExtAttrContent = extendedAttributesText.substring(extAttrStart, extAttrsEnd);
+					// Get the extended attribute contents and escape XML chars, so we can make valid XML.
+					String extExtAttrContent = XMLUtils.escapeXMLChars(extendedAttributesText.substring(extAttrStart, extAttrsEnd));
 					
 					// If we are inside a extension section, so currentExtensionExtAttrEnd != -1. And we find a match where the the end index is after the end of extension section we have a problem.
 					// The end of an extension section should always be equal or after any child sections.
@@ -483,14 +487,16 @@ public class XmlDecomposer {
 					// If we reached the end of a previous extension list, we update the end to -1 so this match is handled as a OriginatingExtension.
 					if (currentExtensionExtAttrEnd != -1 && extAttrStart >= currentExtensionExtAttrEnd) {
 						logger.fine("The new match is outside of the extension section, so resetting end index.");
-						extExtAttrsXml.append("\r\n</OriginatingExtension>");
+						extExtAttrsXml.append(xmlFileContentsAndCharset.getLineSeparator());
+						extExtAttrsXml.append("</OriginatingExtension>");
 						currentExtensionExtAttrEnd = -1;
 					}
 					
 					// If we outside of a extension attribute list, a new extension part is started.
 					if (currentExtensionExtAttrEnd == -1) {
 						logger.fine(String.format("Found extention [ObjectID=%s;Name=%s;Length=%d;Content='%s'", guid, name, extAttrLength, extExtAttrContent));
-						extExtAttrsXml.append(String.format("\r\n<OriginatingExtension ObjectID=\"%s\" Name=\"%s\">", guid, name));
+						extExtAttrsXml.append(xmlFileContentsAndCharset.getLineSeparator());
+						extExtAttrsXml.append(String.format("<OriginatingExtension ObjectID=\"%s\" Name=\"%s\">", guid, name));
 						// Now we have added the element for the OriginatingExtension, we need to loop over the matches within the content part of the extension extended attributes.
 						// For each extended attribute we find, we add a separate XML element.
 						// Update the end of the extension extended attribute list to the current one. This way in the next loop we know we are handling an extended attribute part.
@@ -499,16 +505,19 @@ public class XmlDecomposer {
 					// We are inside a extension section, so we treat the match as an extended attribute within the extension.
 					else {
 						logger.fine(String.format("Found extended attributes [ObjectID=%s;Name=%s;Length=%d;Value='%s'", guid, name, extAttrLength, extExtAttrContent));
-						extExtAttrsXml.append(String.format("\r\n<ExtendedAttribute ObjectID=\"%s\" Name=\"%s\">%s</ExtendedAttribute>", guid, name, extExtAttrContent));
+						extExtAttrsXml.append(xmlFileContentsAndCharset.getLineSeparator());
+						extExtAttrsXml.append(String.format("<ExtendedAttribute ObjectID=\"%s\" Name=\"%s\">%s</ExtendedAttribute>", guid, name, extExtAttrContent));
 						// Update the region to scan to after the current extended attribute.
 						extExtAttrsMatcher.region(extAttrsEnd, extExtAttrsMatcher.regionEnd());
 					}
 				}
 				// If we exited the while loop and the end index is not -1, we need to add the ending tag of the extension element.
 				if (currentExtensionExtAttrEnd != -1) {
-					extExtAttrsXml.append("\r\n</OriginatingExtension>");
+					extExtAttrsXml.append(xmlFileContentsAndCharset.getLineSeparator());
+					extExtAttrsXml.append("</OriginatingExtension>");
 				}
-				extExtAttrsXml.append("\r\n</ExtendedAttributes>");
+				extExtAttrsXml.append(xmlFileContentsAndCharset.getLineSeparator());
+				extExtAttrsXml.append("</ExtendedAttributes>");
 				xm.insertAfterElement(extExtAttrsXml.toString());
 				// Now we added the replacement of the textual extended attributes, we can remove the ExtendedAttributesText element.
 				xm.remove(nv.expandWhiteSpaces(nv.getElementFragment(), VTDNav.WS_LEADING));
@@ -785,7 +794,7 @@ public class XmlDecomposer {
 				// Loop through the include attributes to add the min the include tag.
 				for (String includeAttributeName : includeAttributesWithValues.keySet()) {
 					// Insert the include sub element in the include tag.
-					includeElementStringBuffer.append(String.format(" %s=\"%s\"", includeAttributeName, XMLUtils.excapeXMLChars(includeAttributesWithValues.get(includeAttributeName))));				
+					includeElementStringBuffer.append(String.format(" %s=\"%s\"", includeAttributeName, XMLUtils.escapeXMLChars(includeAttributesWithValues.get(includeAttributeName))));				
 				}
 				includeElementStringBuffer.append(" />");
 				

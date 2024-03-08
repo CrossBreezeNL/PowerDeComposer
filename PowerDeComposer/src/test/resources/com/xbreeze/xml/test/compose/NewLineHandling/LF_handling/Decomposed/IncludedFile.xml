@@ -1,3 +1,9 @@
 <ChildElement id="FirstId">
+    <ExtendedAttributes>
+      <OriginatingExtension ObjectID="4202E4F4-4187-47CE-83BE-51088F229451" Name="TestExtension">
+        <ExtendedAttribute ObjectID="38253E88-8698-4A5B-8398-0FA2B14556C0" Name="SqlExpression">-- Extended attribute with newline
+@AMOUNT &gt; 100</ExtendedAttribute>
+      </OriginatingExtension>
+    </ExtendedAttributes>
 	<Name>FirstName</Name>
 </ChildElement>

@@ -22,6 +22,17 @@ Click on the header of a version number to go to the documentation of that speci
 
 ## Version 1.6.0
 
+- [ ] 1.6.1 <sup>08-08-2024</sup>
+> !!! warning "Bug fixes"
+>     * [ ] Decompose model
+>         - [X] Fixed new-line handling so line endings are not accidentally converted.
+>         - [X] Fixed special characters and new-line handling for formalized attributes.
+>         - [X] Corrected formalize extended attributes naming in config.
+>     * [ ] Compose model
+>         - [X] Fixed special characters and new-line handling for deformalizing attributes.
+>     * [ ] General
+>         - [X] Setting correct exit code (1) when an error occured when running PowerDeComposer.
+
 - [ ] 1.6.0 <sup>02-08-2023</sup>
 > !!! success "Enhanced features"
 >     * [ ] Decompose model

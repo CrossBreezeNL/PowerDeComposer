@@ -122,7 +122,8 @@ public class XmlComposer {
 					
 					// Create a string buffer for the extended attribute text.
 					StringBuffer extendedAttributeText = new StringBuffer();
-					extendedAttributeText.append("\r\n<a:ExtendedAttributesText>");
+					extendedAttributeText.append(xmlFileContentsAndCharset.getLineSeparator());
+					extendedAttributeText.append("<a:ExtendedAttributesText>");
 					
 					// Find the OriginatingExtension elements.
 					AutoPilot ap_extension = new AutoPilot(nav);
@@ -142,16 +143,20 @@ public class XmlComposer {
 							String extAttrObjectID = nav.toString(nav.getAttrVal("ObjectID"));
 							String extAttrName = nav.toString(nav.getAttrVal("Name"));
 							// Replace a LF without preceding LF to CRLF (since VTD-NAV removed it during parsing).
-							String extAttrValue = nav.toString(nav.getText()).replaceAll("(?<!\r)\n", "\r\n");
+							int extendedAttributeTextIndex = nav.getText();
+							String extAttrValue = new String(nav.getXML().getBytes(nav.getTokenOffset(extendedAttributeTextIndex), nav.getTokenLength(extendedAttributeTextIndex)));
 							// Add the current extended attribute to the list for the current extension.
-							extensionExtAttrTextBuffer.append(String.format("{%s},%s,%d=%s\r\n", extAttrObjectID, extAttrName, extAttrValue.length(), extAttrValue));
+							// For the length we use the unescaped version of the extended attribute text.
+							extensionExtAttrTextBuffer.append(String.format("{%s},%s,%d=%s", extAttrObjectID, extAttrName, XMLUtils.unescapeXMLChars(extAttrValue).length(), extAttrValue));
+							extensionExtAttrTextBuffer.append(xmlFileContentsAndCharset.getLineSeparator());
 						}
-						extensionExtAttrTextBuffer.append("\r\n");
+						extensionExtAttrTextBuffer.append(xmlFileContentsAndCharset.getLineSeparator());
 						String extensionExtAttrText = extensionExtAttrTextBuffer.toString();
 						
 						// Add the extension extended attributes to the extended attributes buffer.
+						// For the length we use the unescaped version of the extended attribute text.
 						// The length is minus 2, to compensate for the trailing CRLF.
-						extendedAttributeText.append(String.format("{%s},%s,%d=%s", extObjectID, extName, extensionExtAttrText.length() - 2, extensionExtAttrText));
+						extendedAttributeText.append(String.format("{%s},%s,%d=%s", extObjectID, extName, XMLUtils.unescapeXMLChars(extensionExtAttrText).length() - 2, extensionExtAttrText));
 					}
 					extendedAttributeText.append("</a:ExtendedAttributesText>");
 					// Insert the ExtendedAttributesText element.
@@ -209,7 +214,7 @@ public class XmlComposer {
 				// otherwise return the original one
 				if (deformalizedExtendedAttributes || includeCount > 0) {
 					String resolvedXML = XMLUtils.getResultingXml(vm);
-					logger.fine(String.format("XML file %s with includes resolved:", xmlFile.toString()));
+					logger.fine(String.format("XML file %s with includes and formalized attributes resolved:", xmlFile.toString()));
 					logger.fine("**** Begin of XML file ****");
 					logger.fine(resolvedXML);
 					logger.fine("**** End of XML file ****");
