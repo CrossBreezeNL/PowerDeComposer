@@ -24,13 +24,16 @@ Information about PowerDeComposer can also be found on the [website](http://powe
 In order to make the usage of PowerDeComposer a bit simplier a PowerShell module with example decompose configurations and scripts are created. These can all be found [here](./PowerShell/).
 
 
-# How to publish to sonatype nexus using Maven
+## How to publish to sonatype nexus using Maven
+
 In order to release PowerDeComposer into Maven Central we use a docker container and a local certificate. Follow the sections below to publish a new release.
 
-## Setup PGP certificate locally
+### Setup PGP certificate locally
+
 In order to sign code for nexus, you need to have PGP certificates locally and public key shared with a keyserver. Follow the steps on [this](https://central.sonatype.org/publish/requirements/gpg/) website to setup PGP and generate a key-pair.
 
-## Configure maven
+### Configure maven
+
 You don't need to have Maven installed locally, it will be ran via Docker. We do need a Maven settings file for the authentication details.
 For this, create the file .m2/settings.xml with the following contents and replace the placeholders with your credentials:
 
@@ -50,7 +53,8 @@ For this, create the file .m2/settings.xml with the following contents and repla
 </settings>
 ```
 
-## Publish the release
+### Publish the release
+
 In order to publish the release, execute the following command in the root of the repository:
 
 ```powershell

@@ -43,6 +43,8 @@ import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.XMLReader;
 
 import com.xbreeze.xml.DeComposerException;
+import org.apache.commons.text.StringEscapeUtils;
+
 import com.ximpleware.AutoPilot;
 import com.ximpleware.ModifyException;
 import com.ximpleware.NavException;
@@ -63,8 +65,17 @@ public class XMLUtils {
 	 * @param input The text to escape.
 	 * @return The escaped input.
 	 */
-	public static String excapeXMLChars(String input) {
-		return input.replaceAll("\\<", "&lt;").replaceAll("\\>", "&gt;");
+	public static String escapeXMLChars(String input) {
+		return StringEscapeUtils.escapeXml10(input);
+	}
+	
+	/**
+	 * Unescape XML characters.
+	 * @param input The xml input with escaped XML.
+	 * @return The xml with unescaped chars.
+	 */
+	public static String unescapeXMLChars(String input) {
+		return StringEscapeUtils.unescapeXml(input);
 	}
 	
 	public static XmlObject parseXmlFile(File xmlFile) throws DeComposerException {
@@ -135,13 +146,24 @@ public class XMLUtils {
 	
 	/**
 	 * Get the VTDNav object for a XML document.
-	 * See: https://vtd-xml.sourceforge.io/javadoc/.
-	 * @param xmlDocument The XML document as a String.
+	 * @param xmlFileContentsAndCharset The XML document wrapped in a FileContentAndCharset object.
 	 * @param namespaceAware Whether the parser is namespace aware.
 	 * @return The VTDNav.
 	 * @throws GeneratorException
 	 */
 	public static VTDNav getVTDNav(FileContentAndCharset xmlFileContentsAndCharset, boolean namespaceAware) throws Exception {
+		return getVTDNav(xmlFileContentsAndCharset.getBytes(), namespaceAware);
+	}
+	
+	/**
+	 * Get the VTDNav object for a XML document.
+	 * See: https://vtd-xml.sourceforge.io/javadoc/.
+	 * @param xmlFileBytes The XML document as a byte[].
+	 * @param namespaceAware Whether the parser is namespace aware.
+	 * @return The VTDNav.
+	 * @throws GeneratorException
+	 */
+	public static VTDNav getVTDNav(byte[] xmlFileBytes, boolean namespaceAware) throws Exception {
 		// Create a VTGGen object.
 		VTDGen vg = new VTDGen();
 		
@@ -149,7 +171,7 @@ public class XMLUtils {
 		vg.enableIgnoredWhiteSpace(true);
 		
 		// Set the document (in original file encoding).
-		vg.setDoc(xmlFileContentsAndCharset.getBytes());
+		vg.setDoc(xmlFileBytes);
 		
 		// When enabling namespace awareness, you must map the URLs of all used namespaces here.
 		try {

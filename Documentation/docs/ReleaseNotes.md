@@ -20,7 +20,27 @@ Click on the header of a version number to go to the documentation of that speci
 [//]: # (>     * [ ] Binding)
 [//]: # (>         * [X] Some issue...)
 
-## Version 1.5.0
+## Version 1.6
+
+- [ ] 1.6.1 <sup>08-03-2024</sup>
+> !!! warning "Bug fixes"
+>     * [ ] Decompose model
+>         - [X] Fixed new-line handling so line endings are not accidentally converted.
+>         - [X] Fixed special characters and new-line handling for formalized attributes.
+>         - [X] Corrected formalize extended attributes naming in config.
+>     * [ ] Compose model
+>         - [X] Fixed special characters and new-line handling for deformalizing attributes.
+>     * [ ] General
+>         - [X] Setting correct exit code (1) when an error occured when running PowerDeComposer.
+
+- [ ] 1.6.0 <sup>02-08-2023</sup>
+> !!! success "Enhanced features"
+>     * [ ] Decompose model
+>         - [X] Added logic to formalize extended attributes text.
+>     * [ ] Compose model
+>         - [X] Added logic to de-formalize extended attributes text.
+
+## Version 1.5
 
 - [ ] 1.5.0 <sup>03-04-2023</sup>
 > !!! success "Enhanced features"
@@ -30,7 +50,7 @@ Click on the header of a version number to go to the documentation of that speci
 >     * [ ] Performance
 >         - [X] Faster search for duplicate identifier replacement values.
 
-## Version 1.4.0
+## Version 1.4
 
 - [ ] 1.4.0 <sup>30-03-2022</sup>
 > !!! success "Enhanced features"
@@ -42,7 +62,7 @@ Click on the header of a version number to go to the documentation of that speci
 >     * [ ] Decompose model
 >         - [X] Fixed case sensitivity issues with folders and files. All filepath compares are now case-insensitive.
 
-## Version 1.3.3
+## Version 1.3
 
 - [ ] 1.3.3 <sup>22-03-2022</sup>
 > !!! warning "Bug fixes"
@@ -50,21 +70,15 @@ Click on the header of a version number to go to the documentation of that speci
 >         - [X] Fixed error in NodeRemoval on processing-instruction attribute.
 >         - [X] Fixed error in deriving folder and file names based on TargetFolderName and TargetFileName configuration.
 
-## Version 1.3.2
-
 - [ ] 1.3.2 <sup>20-10-2021</sup>
 > !!! success "Enhanced features"
 >     * [ ] Decompose model
 >         - [X] Moved node removal to be first step, before identifier replacement to solve possible duplicate identifier replacement issues.
 
-## Version 1.3.1
-
 - [ ] 1.3.1 <sup>12-10-2021</sup>
 > !!! warning "Bug fixes"
 >     * [ ] Decompose model
 >         - [X] Fixed problem where TargetFileName was not always derived correctly.
-
-## Version 1.3.0
 
 - [ ] 1.3.0 <sup>13-04-2021</sup>
 > !!! success "Enhanced features"
@@ -80,14 +94,12 @@ Click on the header of a version number to go to the documentation of that speci
 >     * [ ] Configuration
 >         - [X] Updated default configuration so the decomposed folder structure and file names are more readable.
 
-## Version 1.2.1
+## Version 1.2
 
 - [ ] 1.2.1 <sup>25-11-2020</sup>
 > !!! success "Enhanced features"
 >     * [ ] Decompose model
 >         - [X] Fixed encoding of decomposed files so it always takes encoding of original file.
-
-## Version 1.2.0
 
 - [ ] 1.2.0 <sup>14-10-2020</sup>
 > !!! success "Enhanced features"
@@ -99,14 +111,12 @@ Click on the header of a version number to go to the documentation of that speci
 >     * [ ] Configuration
 >         - [X] Fully refactored config so decomposing can be configured in more detail. (See [Configuration](Configuration.md))
 
-## Version 1.1.2
+## Version 1.1
 
 - [ ] 1.1.2 <sup>25-08-2020</sup>
 > !!! success "Enhanced features"
 >     * [ ] Configuration
 >         - [X] Added configuration of decompose using config file. (See [Configuration](Configuration.md))
-
-## Version 1.1.1
 
 - [ ] 1.1.1 <sup>22-05-2020</sup>
 > !!! warning "Bug fixes"
@@ -114,8 +124,6 @@ Click on the header of a version number to go to the documentation of that speci
 >         - [X] Fixed encoding of file so special characters are handled correctly.
 >     * [ ] Compose model
 >         - [X] Fixed encoding of file so special characters are handled correctly.
-
-## Version 1.1
 
 - [ ] 1.1 <sup>18-04-2020</sup>
 > !!! success "Enhanced features"

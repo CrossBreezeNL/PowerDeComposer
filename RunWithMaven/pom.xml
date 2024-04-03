@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.x-breeze.powerdecomposer</groupId>
   <artifactId>PowerDeComposerRunner</artifactId>
-  <version>1.5.0</version>
+  <version>1.6.0</version>
   <name>CrossBreeze PowerDeComposer Runner</name>
   <description>Maven runner for PowerDeComposer.</description>
   <dependencies>
@@ -11,7 +11,7 @@
 		<groupId>com.x-breeze.powerdecomposer</groupId>
 		<artifactId>PowerDeComposer</artifactId>
 		<!-- Change the version number below to update to a later version of PowerDeComposer -->	  
-		<version>1.5.0</version>
+		<version>1.6.0</version>
 	</dependency>
   </dependencies>
   <build>
@@ -21,7 +21,13 @@
             <artifactId>exec-maven-plugin</artifactId>
             <version>3.1.0</version>
             <configuration>
-                <mainClass>com.xbreeze.xml.Executor</mainClass>				
+                <mainClass>com.xbreeze.xml.Executor</mainClass>
+                <systemProperties>
+                    <systemProperty>
+                        <key>file.encoding</key>
+                        <value>UTF-8</value>
+                    </systemProperty>
+                </systemProperties>
             </configuration>
         </plugin>
     </plugins>
