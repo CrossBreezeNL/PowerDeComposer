@@ -77,7 +77,7 @@ Please note that you can only run PowerDeComposer versions from 1.1.0 and up via
 
 ## Bugs & issues
 
-When you encounter an issue while using PowerDeComposer please report it by sending an e-mail to [info@x-breeze.com](mailto:info@x-breeze.com?SUBJECT=PowerDeComposer%20-%20Bug%20report) with the subject 'PowerDeComposer - Bug report'.
+When you encounter an issue while using PowerDeComposer please report the issue on [GitHub](https://github.com/CrossBreezeNL/PowerDeComposer/issues).
 
 Please provide the following information:
 
