@@ -147,6 +147,7 @@
 			<groupId>net.sf.saxon</groupId>
 			<artifactId>Saxon-HE</artifactId>
 			<version>10.6</version>
+		</dependency>
 
 		<!-- Test dependencies. -->
 		<dependency>
