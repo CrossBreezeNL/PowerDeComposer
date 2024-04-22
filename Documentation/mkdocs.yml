@@ -1,5 +1,5 @@
 # Project information
-site_name: 'PowerDeComposer v1.6.0'
+site_name: 'PowerDeComposer v1.6'
 
 # Copyright
 copyright: 'Copyright &copy; 2023 - CrossBreeze'
@@ -29,6 +29,8 @@ nav:
 # Extra
 extra:
   social:
+    - icon: fontawesome/brands/github
+      link: 'https://github.com/CrossBreezeNL/PowerDeComposer'
     - icon: fontawesome/brands/twitter
       link: 'https://twitter.com/CrossBreeze_NL'
 
