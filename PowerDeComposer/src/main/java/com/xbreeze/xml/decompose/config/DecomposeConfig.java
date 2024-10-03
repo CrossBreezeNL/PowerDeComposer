@@ -2,6 +2,8 @@ package com.xbreeze.xml.decompose.config;
 
 import java.util.List;
 
+import com.xbreeze.xml.config.DecomposeFileType;
+
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlAttribute;
@@ -15,6 +17,11 @@ public class DecomposeConfig {
 	// The default value for the file removal strategy is includes (since this is the safest option, choose files for speed).
 	@XmlAttribute(name = "fileRemovalStrategy", required = false)
 	private String _fileRemovalStrategy = "includes";
+	
+	// The target file type to write. This can be any value of DecomposeFileType.
+	// By default this is XML.
+	@XmlAttribute(name = "targetFileType", required = false)
+	private DecomposeFileType _targetFileType = DecomposeFileType.xml;
 	
 	// Whether to formalize extended attribute (so translate the string representation to XML elements with attributes).
 	// By default this is enabled.
@@ -36,6 +43,10 @@ public class DecomposeConfig {
 	
 	public void setFileRemovalStrategy(String fileRemovalStrategy) {
 		this._fileRemovalStrategy = fileRemovalStrategy;
+	}
+	
+	public DecomposeFileType getDecomposeFileType() {
+		return this._targetFileType;
 	}
 	
 	public Boolean formalizeExtendedAttributes() {

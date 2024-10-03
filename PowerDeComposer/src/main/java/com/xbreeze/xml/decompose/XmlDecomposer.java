@@ -22,7 +22,10 @@
  *******************************************************************************/
 package com.xbreeze.xml.decompose;
 
+import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -40,13 +43,16 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
+import org.assimbly.docconverter.DocConverter;
 
 import com.xbreeze.xml.config.AbstractConfigElementWithXPathAttributeAndCondition;
+import com.xbreeze.xml.config.DecomposeFileType;
 import com.xbreeze.xml.decompose.config.DecomposableElementConfig;
 import com.xbreeze.xml.decompose.config.DecomposeConfig;
 import com.xbreeze.xml.decompose.config.IdentifierReplacementConfig;
 import com.xbreeze.xml.decompose.config.IncludeAttributeConfig;
 import com.xbreeze.xml.decompose.config.NodeRemovalConfig;
+import com.xbreeze.xml.decompose.config.TargetFileNameConfig;
 import com.xbreeze.xml.decompose.config.TargetFolderNameConfig;
 import com.xbreeze.xml.utils.FileContentAndCharset;
 import com.xbreeze.xml.utils.FileUtils;
@@ -100,18 +106,19 @@ public class XmlDecomposer {
 		// As long as all uses of the File object use this relative path it works.
 		Path targetDirectoryPath = Paths.get(targetDirectory);
 		logger.fine(String.format("Target directory path: '%s'", targetDirectoryPath));
-		File targetFile = targetDirectoryPath.resolve(xmlFile.getName()).toFile();
-		logger.fine(String.format("Target file: '%s'", targetFile));
 		
 		// Create the TargetFileInfo object for the original file.
 		TargetFileInfo targetFileInfo = new TargetFileInfo();
 		targetFileInfo.FileNameWithoutExtension = FilenameUtils.getBaseName(xmlFile.getName());
-		targetFileInfo.FileExtension = FilenameUtils.getExtension(xmlFile.getName());
+		targetFileInfo.FileType = decomposeConfig.getDecomposeFileType();
 		targetFileInfo.FolderPath = targetDirectoryPath;
-		targetFileInfo.FilePathWithoutChildren = targetDirectoryPath.resolve(xmlFile.getName());
+		targetFileInfo.FilePathWithoutChildren = targetDirectoryPath.resolve(targetFileInfo.getTargetFileName());
 		logger.fine(String.format("File path without children: '%s'", targetFileInfo.FilePathWithoutChildren));
-		targetFileInfo.FilePathWithChildren = targetDirectoryPath.resolve(xmlFile.getName());
+		targetFileInfo.FilePathWithChildren = targetDirectoryPath.resolve(targetFileInfo.getTargetFileName());
 		logger.fine(String.format("File path with children: '%s'", targetFileInfo.FilePathWithChildren));
+		
+		File targetFile = targetDirectoryPath.resolve(targetFileInfo.getTargetFileName()).toFile();
+		logger.fine(String.format("Target file: '%s'", targetFile));
 		
 		// If configured, perform changes detection here before doing anything else.
 		if (decomposeConfig.getChangeDetectionConfig() != null) {
@@ -741,7 +748,7 @@ public class XmlDecomposer {
 		    	Path childTargetSubFolderPath = deriveTargetFolderPath(nv, decomposableElementConfig.getTargetFolderNameConfigs(), currentFileInfo.FolderPath, childTargetFolderName);
 		    	
 		    	// Derive the target file name for the current decomposable element.
-				TargetFileInfo childFileInfo = deriveTargetFileAndFolderPath(nv, decomposableElementConfig.getTargetFileNameConfigs(), childTargetSubFolderPath, "xml", currentDecomposedFiles);
+				TargetFileInfo childFileInfo = deriveTargetFileAndFolderPath(nv, decomposableElementConfig.getTargetFileNameConfigs(), childTargetSubFolderPath, currentFileInfo.FileType, currentDecomposedFiles);
 		    	// If the target folder configuration doesn't yield a valid result, throw an exception.
 		    	if (childFileInfo == null) {
 		    		throw new Exception(String.format("A valid child target file name is not found for element %s at %s", elementName, elementOffset));
@@ -837,7 +844,20 @@ public class XmlDecomposer {
 		// Write the target Xml file.
 		logger.fine(String.format("%s - Writing file: %s", prefix, targetFile.toString()));
 		// Write the XML file into a array output stream.
-		xm.output(targetFilePath.toString());
+		if (currentFileInfo.FileType.equals(DecomposeFileType.xml)) {
+			xm.output(targetFilePath.toString());
+		} else if (currentFileInfo.FileType.equals(DecomposeFileType.yaml)) {
+			ByteArrayOutputStream xmlBaos = new ByteArrayOutputStream();
+			// Write the modified XML into the output stream.
+			xm.output(xmlBaos);
+			String yamlFileContents = DocConverter.convertXmlToYaml(new String(xmlBaos.toString()));
+			// Write the YaML to file.
+		    BufferedWriter writer = new BufferedWriter(new FileWriter(targetFilePath.toString(), fileCharset));
+		    writer.write(yamlFileContents);
+		    writer.close();
+		} else {
+			throw new Exception(String.format("Unspported decompose file type '%s'", currentFileInfo.FileType.name()));
+		}
 		//logger.fine(String.format("%s< %s", prefix, targetDirectoryPath));
 		
 		return targetFilePath;
@@ -880,7 +900,7 @@ public class XmlDecomposer {
 		return targetDirectoryPath.resolve(parentElementFolderName);
 	}
 	
-	private TargetFileInfo deriveTargetFileAndFolderPath(VTDNav nv, List<? extends AbstractConfigElementWithXPathAttributeAndCondition> configuredOptions, Path targetDirectoryPath, String targetFileExtension, TreeSet<File> unallowedFiles) throws XPathParseException {
+	private TargetFileInfo deriveTargetFileAndFolderPath(VTDNav nv, List<? extends AbstractConfigElementWithXPathAttributeAndCondition> configuredOptions, Path targetDirectoryPath, DecomposeFileType parentFileType, TreeSet<File> unallowedFiles) throws XPathParseException {
 		if (configuredOptions != null && configuredOptions.size() > 0) {
 	    	AutoPilot sap = new AutoPilot(nv);
 	    	for (AbstractConfigElementWithXPathAttributeAndCondition co : configuredOptions) {
@@ -901,7 +921,15 @@ public class XmlDecomposer {
     					// Create the object type to return.
     					TargetFileInfo fileAndFolderPath = new TargetFileInfo();
     					fileAndFolderPath.FileNameWithoutExtension = foundValue;
-    					fileAndFolderPath.FileExtension = targetFileExtension;
+    					
+    					// If the configured option is a target file name config, we retrieve the file extension.
+    					if (co instanceof TargetFileNameConfig) {
+    						fileAndFolderPath.FileType = ((TargetFileNameConfig)co).getDecomposeFileType();
+    					}
+    					// If the file extension is unknown up to this point, we take the file type of the parent file.
+    					if (fileAndFolderPath.FileType == null)
+    						fileAndFolderPath.FileType = parentFileType;
+    					
     					fileAndFolderPath.FolderPath = targetDirectoryPath.resolve(fileAndFolderPath.FileNameWithoutExtension);
     					// If the current element is decompose without children, the file will be as follows.
 						fileAndFolderPath.FilePathWithoutChildren = targetDirectoryPath.resolve(fileAndFolderPath.getTargetFileName());
@@ -945,12 +973,12 @@ public class XmlDecomposer {
 		public Path FilePathWithChildren;
 		
 		public String FileNameWithoutExtension;
-		public String FileExtension;
+		public DecomposeFileType FileType;
 		
 		public String getTargetFileName() {
 			// If the target file extensions is defined, use it.
-			if (this.FileExtension != null && this.FileExtension.length() > 0)
-				return String.format("%s.%s", this.FileNameWithoutExtension, this.FileExtension);
+			if (this.FileType != null && this.FileType.name().length() > 0)
+				return String.format("%s.%s", this.FileNameWithoutExtension, this.FileType.name());
 			return null;
 		}
 	}

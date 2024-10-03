@@ -130,6 +130,12 @@
 			<artifactId>jaxb-impl</artifactId>
 			<version>4.0.2</version>
 		</dependency>
+		<!-- XML <> YAML converter. -->
+		<dependency>
+		    <groupId>io.github.assimbly</groupId>
+		    <artifactId>docconverter</artifactId>
+		    <version>1.11.0</version>
+		</dependency>
 
 		<!-- Test dependencies. -->
 		<dependency>
@@ -267,7 +273,8 @@
 				<version>3.6.0</version>
 				<executions>
 					<execution>
-						<id>execution</id>
+						<id>assemble-jar-with-dependencies</id>
+						<phase>package</phase>
 						<goals>
 							<goal>single</goal>
 						</goals>

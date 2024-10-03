@@ -53,6 +53,8 @@
         
     <xs:attribute name="fileRemovalStrategy" type="xs:string"/>
         
+    <xs:attribute name="targetFileType" type="decomposeFileType"/>
+        
     <xs:attribute name="formalizeExtendedAttributes" type="xs:boolean"/>
       
   </xs:complexType>
@@ -177,6 +179,8 @@
         
     <xs:sequence/>
         
+    <xs:attribute name="targetFileType" type="decomposeFileType"/>
+        
     <xs:attribute name="condition" type="xs:string"/>
         
     <xs:attribute name="xpath" type="xs:string"/>
@@ -218,5 +222,17 @@
     <xs:attribute name="xpath" type="xs:string"/>
       
   </xs:complexType>
+    
+  <xs:simpleType name="decomposeFileType">
+        
+    <xs:restriction base="xs:string">
+            
+      <xs:enumeration value="xml"/>
+            
+      <xs:enumeration value="yaml"/>
+          
+    </xs:restriction>
+      
+  </xs:simpleType>
   
 </xs:schema>

@@ -1,6 +1,6 @@
 @Unit
-Feature: Configure TargetFileName
-  Here we test the usage of the TargetFileNames configuration during decompose.
+Feature: Configure TargetFileName XPath
+  Here we test the usage of the TargetFileNames XPath configuration during decompose.
 
   Scenario Outline: TargetFileName is value of <Scenario>
     Given the composed file:
