@@ -796,7 +796,7 @@ public class XmlDecomposer {
 					// Insert the include sub element in the include tag.
 					includeElementStringBuffer.append(String.format(" %s=\"%s\"", includeAttributeName, XMLUtils.escapeXMLChars(includeAttributesWithValues.get(includeAttributeName))));				
 				}
-				includeElementStringBuffer.append(" />");
+				includeElementStringBuffer.append(" xmlns:xi=\"http://www.w3.org/2001/XInclude\" />");
 				
 				// Insert the full include element.
 		    	xm.insertBeforeElement(includeElementStringBuffer.toString());
